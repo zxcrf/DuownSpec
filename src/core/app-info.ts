@@ -1,3 +1,3 @@
-export const CLI_COMMAND = 'opsx';
-export const GLOBAL_NAMESPACE = 'opsx';
-export const PACKAGE_NAME = '@fission-ai/opsx';
+export const CLI_COMMAND = 'dwsp';
+export const GLOBAL_NAMESPACE = 'dwsp';
+export const PACKAGE_NAME = '@duowen-ai/dwsp';

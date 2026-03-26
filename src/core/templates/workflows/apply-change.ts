@@ -9,8 +9,8 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 export function getApplyChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-apply-change',
-    description: 'Implement tasks from an OpenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.',
-    instructions: `Implement tasks from an OpenSpec change.
+    description: 'Implement tasks from an DuowenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.',
+    instructions: `Implement tasks from an DuowenSpec change.
 
 **Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
@@ -21,13 +21,13 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
    If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
-   - If ambiguous, run \`openspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
 
-   Always announce: "Using change: <name>" and how to override (e.g., \`/opsx:apply <other>\`).
+   Always announce: "Using change: <name>" and how to override (e.g., \`/dwsp:apply <other>\`).
 
 2. **Check status to understand the schema**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   duowenspec status --change "<name>" --json
    \`\`\`
    Parse the JSON to understand:
    - \`schemaName\`: The workflow being used (e.g., "spec-driven")
@@ -36,7 +36,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 3. **Get apply instructions**
 
    \`\`\`bash
-   openspec instructions apply --change "<name>" --json
+   duowenspec instructions apply --change "<name>" --json
    \`\`\`
 
    This returns:
@@ -70,7 +70,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
    In this enterprise-first fork, \`superpowers:executing-plans\` is the default
    implementation augmentation inside this stage. \`superpowers:test-driven-development\`
    and \`superpowers:subagent-driven-development\` may also be used when they fit
-   the task. OpenSpec still owns task completion, change state, and whether the
+   the task. DuowenSpec still owns task completion, change state, and whether the
    work is actually done.
 
    For each pending task:
@@ -163,20 +163,20 @@ This skill supports the "actions on a change" model:
 - **Can be invoked anytime**: Before all artifacts are done (if tasks exist), after partial implementation, interleaved with other actions
 - **Allows artifact updates**: If implementation reveals design issues, suggest updating artifacts - not phase-locked, work fluidly`,
     license: 'MIT',
-    compatibility: 'Requires openspec CLI.',
+    compatibility: 'Requires duowenspec CLI.',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxApplyCommandTemplate(): CommandTemplate {
   return {
-    name: 'OPSX: Apply',
-    description: 'Implement tasks from an OpenSpec change (Experimental)',
+    name: 'DWSP: Apply',
+    description: 'Implement tasks from an DuowenSpec change (Experimental)',
     category: 'Workflow',
     tags: ['workflow', 'artifacts', 'experimental'],
-    content: `Implement tasks from an OpenSpec change.
+    content: `Implement tasks from an DuowenSpec change.
 
-**Input**: Optionally specify a change name (e.g., \`/opsx:apply add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally specify a change name (e.g., \`/dwsp:apply add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 **Steps**
 
@@ -185,13 +185,13 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
    If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
-   - If ambiguous, run \`openspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
 
-   Always announce: "Using change: <name>" and how to override (e.g., \`/opsx:apply <other>\`).
+   Always announce: "Using change: <name>" and how to override (e.g., \`/dwsp:apply <other>\`).
 
 2. **Check status to understand the schema**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   duowenspec status --change "<name>" --json
    \`\`\`
    Parse the JSON to understand:
    - \`schemaName\`: The workflow being used (e.g., "spec-driven")
@@ -200,7 +200,7 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
 3. **Get apply instructions**
 
    \`\`\`bash
-   openspec instructions apply --change "<name>" --json
+   duowenspec instructions apply --change "<name>" --json
    \`\`\`
 
    This returns:
@@ -210,7 +210,7 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
    - Dynamic instruction based on current state
 
    **Handle states:**
-   - If \`state: "blocked"\` (missing artifacts): show message, suggest using \`/opsx:continue\`
+   - If \`state: "blocked"\` (missing artifacts): show message, suggest using \`/dwsp:continue\`
    - If \`state: "all_done"\`: congratulate, suggest archive
    - Otherwise: proceed to implementation
 
@@ -234,7 +234,7 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
    In this enterprise-first fork, \`superpowers:executing-plans\` is the default
    implementation augmentation inside this stage. \`superpowers:test-driven-development\`
    and \`superpowers:subagent-driven-development\` may also be used when they fit
-   the task. OpenSpec still owns task completion, change state, and whether the
+   the task. DuowenSpec still owns task completion, change state, and whether the
    work is actually done.
 
    For each pending task:
@@ -286,7 +286,7 @@ Working on task 4/7: <task description>
 - [x] Task 2
 ...
 
-All tasks complete! You can archive this change with \`/opsx:archive\`.
+All tasks complete! You can archive this change with \`/dwsp:archive\`.
 \`\`\`
 
 **Output On Pause (Issue Encountered)**

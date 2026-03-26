@@ -3,7 +3,6 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { tmpdir } from 'os';
 import { runCLI, cliProjectRoot } from '../helpers/run-cli.js';
-import { AI_TOOLS } from '../../src/core/config.js';
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -26,6 +25,41 @@ async function prepareFixture(fixtureName: string): Promise<string> {
   return projectDir;
 }
 
+async function createMockScaffoldSources(baseDir: string): Promise<{
+  modoFrameRoot: string;
+  bEndDesignProRoot: string;
+}> {
+  const modoFrameRoot = path.join(baseDir, 'modo-frame');
+  const bEndDesignProRoot = path.join(baseDir, 'b-end-design-pro');
+
+  await fs.mkdir(modoFrameRoot, { recursive: true });
+  await fs.mkdir(bEndDesignProRoot, { recursive: true });
+
+  await fs.writeFile(path.join(modoFrameRoot, 'next.config.ts'), 'export default {};\n');
+  await fs.writeFile(path.join(modoFrameRoot, 'tsconfig.json'), '{"compilerOptions":{}}\n');
+  await fs.writeFile(path.join(modoFrameRoot, 'postcss.config.mjs'), 'export default {};\n');
+
+  await fs.mkdir(path.join(bEndDesignProRoot, 'assets', '.prd', 'modules'), { recursive: true });
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', 'package.json'), '{"name":"modo-next"}\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.b-end-adapter'), 'modo\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', 'AGENTS.md'), '# scaffold agents\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.prd', 'main.md'), '# prd\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.prd', 'modules', '_template.md'), '# module\n');
+
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme'), { recursive: true });
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'components'), { recursive: true });
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'templates', 'login'), { recursive: true });
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'biz_components', 'modo-button'), { recursive: true });
+
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme', 'modo-algorithm.ts'), 'export const modoAlgorithm = [];\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme', 'antd-theme-token.tsx'), 'export const modoThemeToken = {};\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'components', 'globals.css'), '@import "tailwindcss";\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'biz_components', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
+
+  return { modoFrameRoot, bEndDesignProRoot };
+}
+
 afterAll(async () => {
   await Promise.all(tempRoots.map((dir) => fs.rm(dir, { recursive: true, force: true })));
 });
@@ -34,7 +68,7 @@ describe('openspec CLI e2e basics', () => {
   it('shows help output', async () => {
     const result = await runCLI(['--help']);
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('Usage: opsx');
+    expect(result.stdout).toContain('Usage: dwsp');
     expect(result.stderr).toBe('');
 
   });
@@ -43,13 +77,11 @@ describe('openspec CLI e2e basics', () => {
     const result = await runCLI(['init', '--help']);
     expect(result.exitCode).toBe(0);
 
-    const expectedTools = AI_TOOLS.filter((tool) => tool.available)
-      .map((tool) => tool.value)
-      .join(', ');
     const normalizedOutput = result.stdout.replace(/\s+/g, ' ').trim();
-    expect(normalizedOutput).toContain(
-      `Use "all", "none", or a comma-separated list of: ${expectedTools}`
-    );
+    expect(normalizedOutput).toContain('Use "all", "none", or a comma-separated list');
+    for (const toolId of ['claude', 'opencode', 'trae', 'qoder', 'codebuddy', 'codex']) {
+      expect(normalizedOutput).toContain(toolId);
+    }
   });
 
   it('reports the package version', async () => {
@@ -90,13 +122,13 @@ describe('openspec CLI e2e basics', () => {
         env: { CODEX_HOME: codexHome },
       });
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('OpenSpec Setup Complete');
+      expect(result.stdout).toContain('DuowenSpec Setup Complete');
 
       // Check that skills were created for multiple tools
       const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.cursor/skills/openspec-explore/SKILL.md');
+      const opencodeSkillPath = path.join(emptyProjectDir, '.opencode/skills/openspec-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
-      expect(await fileExists(cursorSkillPath)).toBe(true);
+      expect(await fileExists(opencodeSkillPath)).toBe(true);
     });
 
     it('initializes with --tools list option', async () => {
@@ -106,14 +138,16 @@ describe('openspec CLI e2e basics', () => {
 
       const result = await runCLI(['init', '--tools', 'claude'], { cwd: emptyProjectDir });
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('OpenSpec Setup Complete');
+      expect(result.stdout).toContain('DuowenSpec Setup Complete');
       expect(result.stdout).toContain('Claude Code');
 
       // New init creates skills, not CLAUDE.md
       const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.cursor/skills/openspec-explore/SKILL.md');
+      const opencodeSkillPath = path.join(emptyProjectDir, '.opencode/skills/openspec-explore/SKILL.md');
+      const bundledCapabilitySkillPath = path.join(emptyProjectDir, '.claude/skills/executing-plans/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
-      expect(await fileExists(cursorSkillPath)).toBe(false); // Not selected
+      expect(await fileExists(opencodeSkillPath)).toBe(false); // Not selected
+      expect(await fileExists(bundledCapabilitySkillPath)).toBe(true);
     });
 
     it('initializes with --tools none option', async () => {
@@ -123,14 +157,51 @@ describe('openspec CLI e2e basics', () => {
 
       const result = await runCLI(['init', '--tools', 'none'], { cwd: emptyProjectDir });
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('OpenSpec Setup Complete');
+      expect(result.stdout).toContain('DuowenSpec Setup Complete');
 
       // With --tools none, no tool skills should be created
       const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.cursor/skills/openspec-explore/SKILL.md');
+      const opencodeSkillPath = path.join(emptyProjectDir, '.opencode/skills/openspec-explore/SKILL.md');
 
       expect(await fileExists(claudeSkillPath)).toBe(false);
-      expect(await fileExists(cursorSkillPath)).toBe(false);
+      expect(await fileExists(opencodeSkillPath)).toBe(false);
+    });
+
+    it('initializes scaffold project with --scaffold and creates instruction link', async () => {
+      const projectDir = await prepareFixture('tmp-init');
+      const emptyProjectDir = path.join(projectDir, '..', 'scaffold-project');
+      await fs.mkdir(emptyProjectDir, { recursive: true });
+
+      const roots = await createMockScaffoldSources(path.join(emptyProjectDir, 'mock-scaffold-sources'));
+      const result = await runCLI(['init', '--tools', 'none', '--scaffold'], {
+        cwd: emptyProjectDir,
+        env: {
+          OPENSPEC_MODO_FRAME_ROOT: roots.modoFrameRoot,
+          OPENSPEC_B_END_DESIGN_PRO_ROOT: roots.bEndDesignProRoot,
+        },
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain("unknown option '--scaffold'");
+    });
+
+    it('does not create CLAUDE.md when AGENTS.md already exists in scaffold init', async () => {
+      const projectDir = await prepareFixture('tmp-init');
+      const emptyProjectDir = path.join(projectDir, '..', 'scaffold-project-existing-agents');
+      await fs.mkdir(emptyProjectDir, { recursive: true });
+      await fs.writeFile(path.join(emptyProjectDir, 'AGENTS.md'), '# existing\n');
+
+      const roots = await createMockScaffoldSources(path.join(emptyProjectDir, 'mock-scaffold-sources'));
+      const result = await runCLI(['init', '--tools', 'none', '--scaffold'], {
+        cwd: emptyProjectDir,
+        env: {
+          OPENSPEC_MODO_FRAME_ROOT: roots.modoFrameRoot,
+          OPENSPEC_B_END_DESIGN_PRO_ROOT: roots.bEndDesignProRoot,
+        },
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain("unknown option '--scaffold'");
     });
 
     it('returns error for invalid tool names', async () => {

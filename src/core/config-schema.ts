@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ENTERPRISE_DEFAULT_WORKFLOWS } from './profiles.js';
 
 /**
- * Zod schema for global OpenSpec configuration.
+ * Zod schema for global DuowenSpec configuration.
  * Uses passthrough() to preserve unknown fields for forward compatibility.
  */
 export const GlobalConfigSchema = z

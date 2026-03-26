@@ -8,6 +8,10 @@ import path from 'path';
 import fs from 'fs/promises';
 import os from 'os';
 import { randomUUID } from 'crypto';
+import {
+  ENTERPRISE_ALLOW_MISSING_CAPABILITIES,
+  ENTERPRISE_EXCEPTIONS_HEADER,
+} from '../../src/core/enterprise-capability-preflight.js';
 
 // Shared mutable mock config state
 const mockState = {
@@ -53,9 +57,10 @@ describe('UpdateCommand', () => {
     testDir = path.join(os.tmpdir(), `openspec-test-${randomUUID()}`);
     await fs.mkdir(testDir, { recursive: true });
 
-    // Create openspec directory
+    // Create duowenspec directory
     const openspecDir = path.join(testDir, 'openspec');
     await fs.mkdir(openspecDir, { recursive: true });
+    await writeEnterpriseException(testDir);
 
     updateCommand = new UpdateCommand();
 
@@ -75,15 +80,15 @@ describe('UpdateCommand', () => {
   });
 
   describe('basic validation', () => {
-    it('should throw error if openspec directory does not exist', async () => {
-      // Remove openspec directory
+    it('should throw error if duowenspec directory does not exist', async () => {
+      // Remove duowenspec directory
       await fs.rm(path.join(testDir, 'openspec'), {
         recursive: true,
         force: true,
       });
 
       await expect(updateCommand.execute(testDir)).rejects.toThrow(
-        "No OpenSpec directory found. Run 'openspec init' first."
+        "No DuowenSpec directory found. Run 'duowenspec init' first."
       );
     });
 
@@ -93,10 +98,23 @@ describe('UpdateCommand', () => {
       await updateCommand.execute(testDir);
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('No configured tools found')
+        expect.stringContaining('No configured tools found.')
       );
 
       consoleSpy.mockRestore();
+    });
+
+    it('should restore bundled enterprise capability skills during update', async () => {
+      await fs.rm(path.join(testDir, 'AGENTS.md'), { force: true });
+
+      const initCommand = new InitCommand({ tools: 'claude', force: true });
+      await initCommand.execute(testDir);
+
+      const capabilitySkill = path.join(testDir, '.claude', 'skills', 'requesting-code-review', 'SKILL.md');
+      await fs.rm(capabilitySkill, { force: true });
+
+      await expect(updateCommand.execute(testDir)).resolves.toBeUndefined();
+      expect(await FileSystemUtils.fileExists(capabilitySkill)).toBe(true);
     });
   });
 
@@ -199,7 +217,7 @@ Old instructions content
   });
 
   describe('command updates', () => {
-    it('should update opsx commands for configured Claude tool', async () => {
+    it('should update dwsp commands for configured Claude tool', async () => {
       // Set up a configured Claude tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
       await fs.mkdir(path.join(skillsDir, 'openspec-explore'), {
@@ -212,8 +230,8 @@ Old instructions content
 
       await updateCommand.execute(testDir);
 
-      // Check opsx command files were created
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      // Check dwsp command files were created
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       const exploreCmd = path.join(commandsDir, 'explore.md');
       const exists = await FileSystemUtils.fileExists(exploreCmd);
       expect(exists).toBe(true);
@@ -226,7 +244,7 @@ Old instructions content
       expect(content).toContain('tags:');
     });
 
-    it('should update enterprise-default opsx commands when tool is configured', async () => {
+    it('should update enterprise-default dwsp commands when tool is configured', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
       await fs.mkdir(path.join(skillsDir, 'openspec-explore'), {
@@ -240,7 +258,7 @@ Old instructions content
       await updateCommand.execute(testDir);
 
       const defaultCommandIds = ['explore', 'apply', 'review', 'archive', 'propose', 'verify', 'document'];
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       for (const cmdId of defaultCommandIds) {
         const cmdFile = path.join(commandsDir, `${cmdId}.md`);
         const exists = await FileSystemUtils.fileExists(cmdFile);
@@ -268,8 +286,8 @@ Old instructions content
         'old'
       );
 
-      // Set up Cursor
-      const cursorSkillsDir = path.join(testDir, '.cursor', 'skills');
+      // Set up OpenCode
+      const cursorSkillsDir = path.join(testDir, '.opencode', 'skills');
       await fs.mkdir(path.join(cursorSkillsDir, 'openspec-explore'), {
         recursive: true,
       });
@@ -294,7 +312,7 @@ Old instructions content
       );
       expect(claudeSkill).toContain('name: openspec-explore');
 
-      // Verify Cursor skills updated
+      // Verify OpenCode skills updated
       const cursorSkill = await fs.readFile(
         path.join(cursorSkillsDir, 'openspec-explore', 'SKILL.md'),
         'utf-8'
@@ -304,60 +322,88 @@ Old instructions content
       consoleSpy.mockRestore();
     });
 
-    it('should update Qwen tool with correct command format', async () => {
-      // Set up Qwen
-      const qwenSkillsDir = path.join(testDir, '.qwen', 'skills');
-      await fs.mkdir(path.join(qwenSkillsDir, 'openspec-explore'), {
+    it('should update Qoder tool with correct command format', async () => {
+      // Set up Qoder
+      const qoderSkillsDir = path.join(testDir, '.qoder', 'skills');
+      await fs.mkdir(path.join(qoderSkillsDir, 'openspec-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(qwenSkillsDir, 'openspec-explore', 'SKILL.md'),
+        path.join(qoderSkillsDir, 'openspec-explore', 'SKILL.md'),
         'old'
       );
 
       await updateCommand.execute(testDir);
 
-      // Check Qwen command format (TOML) - Qwen uses flat path structure: opsx-<id>.toml
-      const qwenCmd = path.join(
+      // Check Qoder command format
+      const qoderCmd = path.join(
         testDir,
-        '.qwen',
+        '.qoder',
         'commands',
-        'opsx-explore.toml'
+        'dwsp',
+        'explore.md'
       );
-      const exists = await FileSystemUtils.fileExists(qwenCmd);
+      const exists = await FileSystemUtils.fileExists(qoderCmd);
       expect(exists).toBe(true);
 
-      const content = await fs.readFile(qwenCmd, 'utf-8');
-      expect(content).toContain('description =');
-      expect(content).toContain('prompt =');
+      const content = await fs.readFile(qoderCmd, 'utf-8');
+      expect(content).toContain('name:');
+      expect(content).toContain('description:');
     });
 
-    it('should update Windsurf tool with correct command format', async () => {
-      // Set up Windsurf
-      const windsurfSkillsDir = path.join(testDir, '.windsurf', 'skills');
-      await fs.mkdir(path.join(windsurfSkillsDir, 'openspec-explore'), {
+    it('should update CodeBuddy tool with correct command format', async () => {
+      // Set up CodeBuddy
+      const codebuddySkillsDir = path.join(testDir, '.codebuddy', 'skills');
+      await fs.mkdir(path.join(codebuddySkillsDir, 'openspec-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(windsurfSkillsDir, 'openspec-explore', 'SKILL.md'),
+        path.join(codebuddySkillsDir, 'openspec-explore', 'SKILL.md'),
         'old'
       );
 
       await updateCommand.execute(testDir);
 
-      // Check Windsurf command format
-      const windsurfCmd = path.join(
+      // Check CodeBuddy command format
+      const codebuddyCmd = path.join(
         testDir,
-        '.windsurf',
-        'workflows',
-        'opsx-explore.md'
+        '.codebuddy',
+        'commands',
+        'dwsp',
+        'explore.md'
       );
-      const exists = await FileSystemUtils.fileExists(windsurfCmd);
+      const exists = await FileSystemUtils.fileExists(codebuddyCmd);
       expect(exists).toBe(true);
 
-      const content = await fs.readFile(windsurfCmd, 'utf-8');
+      const content = await fs.readFile(codebuddyCmd, 'utf-8');
       expect(content).toContain('---');
       expect(content).toContain('name:');
+      expect(content).toContain('argument-hint:');
+    });
+
+    it('should update Trae skills but keep command files absent (no adapter)', async () => {
+      const traeSkillsDir = path.join(testDir, '.trae', 'skills');
+      await fs.mkdir(path.join(traeSkillsDir, 'openspec-explore'), { recursive: true });
+      await fs.writeFile(path.join(traeSkillsDir, 'openspec-explore', 'SKILL.md'), 'old');
+
+      const consoleSpy = vi.spyOn(console, 'log');
+
+      await updateCommand.execute(testDir);
+
+      expect(await FileSystemUtils.fileExists(
+        path.join(traeSkillsDir, 'openspec-explore', 'SKILL.md')
+      )).toBe(true);
+      expect(await FileSystemUtils.fileExists(
+        path.join(testDir, '.trae', 'commands', 'dwsp', 'explore.md')
+      )).toBe(false);
+
+      const calls = consoleSpy.mock.calls.map(call =>
+        call.map(arg => String(arg)).join(' ')
+      );
+      const hasUpdatedMessage = calls.some(call => call.includes('Trae') && call.includes('Updated'));
+      expect(hasUpdatedMessage).toBe(true);
+
+      consoleSpy.mockRestore();
     });
   });
 
@@ -399,7 +445,7 @@ Old instructions content
     });
 
     it('should continue updating other tools when one fails', async () => {
-      // Set up Claude and Cursor
+      // Set up Claude and OpenCode
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
       await fs.mkdir(path.join(claudeSkillsDir, 'openspec-explore'), {
         recursive: true,
@@ -409,7 +455,7 @@ Old instructions content
         'old'
       );
 
-      const cursorSkillsDir = path.join(testDir, '.cursor', 'skills');
+      const cursorSkillsDir = path.join(testDir, '.opencode', 'skills');
       await fs.mkdir(path.join(cursorSkillsDir, 'openspec-explore'), {
         recursive: true,
       });
@@ -433,9 +479,9 @@ Old instructions content
 
       await updateCommand.execute(testDir);
 
-      // Cursor should still be updated - check the actual format from ora spinner
+      // OpenCode should still be updated - check the actual format from ora spinner
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Updated: Cursor')
+        expect.stringContaining('✓ Updated: OpenCode')
       );
 
       // Claude should be reported as failed
@@ -460,7 +506,7 @@ Old instructions content
 
       // Should report no configured tools
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('No configured tools found')
+        expect.stringContaining('No configured tools found.')
       );
 
       consoleSpy.mockRestore();
@@ -560,9 +606,8 @@ Old instructions content
 
       await updateCommand.execute(testDir);
 
-      // The success output uses "✓ Updated: <name>"
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Updated: Claude Code')
+        expect.stringContaining('✓ Updated: Claude Code')
       );
 
       consoleSpy.mockRestore();
@@ -584,7 +629,7 @@ Old instructions content
       await updateCommand.execute(testDir);
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Restart your IDE')
+        expect.stringContaining('Restart your IDE for changes to take effect.')
       );
 
       consoleSpy.mockRestore();
@@ -592,7 +637,7 @@ Old instructions content
   });
 
   describe('smart update detection', () => {
-    it('should show "up to date" message when skills have current version', async () => {
+    it('should show "all tools up to date" message when skills have current version', async () => {
       // Initialize full core profile output so there is no profile/delivery drift.
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
@@ -602,10 +647,10 @@ Old instructions content
       await updateCommand.execute(testDir);
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('up to date')
+        expect.stringContaining('✓ All 1 tool(s) up to date')
       );
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('--force')
+        expect.stringContaining('Use --force to refresh files anyway.')
       );
 
       consoleSpy.mockRestore();
@@ -696,7 +741,7 @@ Old version content
   });
 
   describe('--force flag', () => {
-    it('should update when force is true even if up to date', async () => {
+    it('should update when force is true even if already up to date', async () => {
       // Set up a configured tool with current version
       const skillsDir = path.join(testDir, '.claude', 'skills');
       await fs.mkdir(path.join(skillsDir, 'openspec-explore'), {
@@ -720,14 +765,14 @@ Content
       const forceUpdateCommand = new UpdateCommand({ force: true });
       await forceUpdateCommand.execute(testDir);
 
-      // Should show "Force updating" message
+      // Should show "强制更新" message
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Force updating')
+        expect.stringContaining('Force updating 1 tool(s)')
       );
 
       // Should show updated message
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Updated: Claude Code')
+        expect.stringContaining('✓ Updated: Claude Code')
       );
 
       consoleSpy.mockRestore();
@@ -754,7 +799,7 @@ Content
         call.map(arg => String(arg)).join(' ')
       );
 
-      // Should not show "Use --force" since force was used
+      // Should not show "使用 --force" since force was used
       const hasForceHint = allCalls.some(call => call.includes('Use --force'));
       expect(hasForceHint).toBe(false);
 
@@ -775,8 +820,8 @@ metadata:
 `
       );
 
-      // Set up Cursor with old version
-      const cursorSkillDir = path.join(testDir, '.cursor', 'skills', 'openspec-explore');
+      // Set up OpenCode with old version
+      const cursorSkillDir = path.join(testDir, '.opencode', 'skills', 'openspec-explore');
       await fs.mkdir(cursorSkillDir, { recursive: true });
       await fs.writeFile(
         path.join(cursorSkillDir, 'SKILL.md'),
@@ -827,8 +872,8 @@ metadata:
     });
 
     it('should only update tools that need updating', async () => {
-      // Initialize both tools so Cursor is fully synced with profile/delivery.
-      const initCommand = new InitCommand({ tools: 'claude,cursor', force: true });
+      // Initialize both tools so OpenCode is fully synced with profile/delivery.
+      const initCommand = new InitCommand({ tools: 'claude,opencode', force: true });
       await initCommand.execute(testDir);
 
       // Make Claude stale to force a version update.
@@ -848,9 +893,9 @@ metadata:
         expect.stringContaining('Updating 1 tool(s)')
       );
 
-      // Should mention Cursor is already up to date
+      // Should mention OpenCode is already up to date
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Already up to date: cursor')
+        expect.stringContaining('Already up to date: opencode')
       );
 
       consoleSpy.mockRestore();
@@ -869,9 +914,9 @@ metadata:
         'old'
       );
 
-      // Create legacy CLAUDE.md with OpenSpec markers
+      // Create legacy CLAUDE.md with DuowenSpec markers
       const legacyContent = `${OPENSPEC_MARKERS.start}
-# OpenSpec Instructions
+# DuowenSpec Instructions
 
 These instructions are for AI assistants.
 ${OPENSPEC_MARKERS.end}
@@ -886,12 +931,12 @@ ${OPENSPEC_MARKERS.end}
 
       // Should show v1 upgrade message
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Upgrading to the new OpenSpec')
+        expect.stringContaining('Upgrading to the new DuowenSpec')
       );
 
       // Should show marker removal message (config files are never deleted, only have markers removed)
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Removed OpenSpec markers from CLAUDE.md')
+        expect.stringContaining('Removed DuowenSpec markers from CLAUDE.md')
       );
 
       // Config file should still exist (never deleted)
@@ -919,9 +964,9 @@ ${OPENSPEC_MARKERS.end}
         'old'
       );
 
-      // Create legacy CLAUDE.md with OpenSpec markers
+      // Create legacy CLAUDE.md with DuowenSpec markers
       const legacyContent = `${OPENSPEC_MARKERS.start}
-# OpenSpec Instructions
+# DuowenSpec Instructions
 ${OPENSPEC_MARKERS.end}
 `;
       await fs.writeFile(path.join(testDir, 'CLAUDE.md'), legacyContent);
@@ -933,7 +978,7 @@ ${OPENSPEC_MARKERS.end}
 
       // Should show v1 upgrade message
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Upgrading to the new OpenSpec')
+        expect.stringContaining('Upgrading to the new DuowenSpec')
       );
 
       // Should show warning about --force
@@ -943,7 +988,7 @@ ${OPENSPEC_MARKERS.end}
 
       // Should continue with update
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Updated: Claude Code')
+        expect.stringContaining('✓ Updated: Claude Code')
       );
 
       // Legacy file should still exist (not cleaned up)
@@ -1049,14 +1094,14 @@ ${OPENSPEC_MARKERS.end}
         call.map(arg => String(arg)).join(' ')
       );
       const hasLegacyMessage = calls.some(call =>
-        call.includes('Upgrading to the new OpenSpec')
+        call.includes('Upgrading to the new DuowenSpec')
       );
       expect(hasLegacyMessage).toBe(false);
 
       consoleSpy.mockRestore();
     });
 
-    it('should remove OpenSpec marker block from mixed content files', async () => {
+    it('should remove DuowenSpec marker block from mixed content files', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
       await fs.mkdir(path.join(skillsDir, 'openspec-explore'), {
@@ -1067,13 +1112,13 @@ ${OPENSPEC_MARKERS.end}
         'old'
       );
 
-      // Create CLAUDE.md with mixed content (user content + OpenSpec markers)
+      // Create CLAUDE.md with mixed content (user content + DuowenSpec markers)
       const mixedContent = `# My Project
 
 Some user-defined instructions here.
 
 ${OPENSPEC_MARKERS.start}
-# OpenSpec Instructions
+# DuowenSpec Instructions
 
 These instructions are for AI assistants.
 ${OPENSPEC_MARKERS.end}
@@ -1090,7 +1135,7 @@ More user content after markers.
 
       // Should show marker removal message
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Removed OpenSpec markers from CLAUDE.md')
+        expect.stringContaining('Removed DuowenSpec markers from CLAUDE.md')
       );
 
       // File should still exist
@@ -1132,7 +1177,7 @@ More user content after markers.
 
       // Should show detected tools message
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Tools detected from legacy artifacts')
+        expect.stringContaining('Tools detected from legacy artifacts:')
       );
 
       // Should show Claude Code being set up
@@ -1142,10 +1187,10 @@ More user content after markers.
 
       // Should show getting started message for newly configured tools
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Getting started')
+        expect.stringContaining('Getting started:')
       );
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('/opsx:propose')
+        expect.stringContaining('/dwsp:propose')
       );
 
       // Skills should be created
@@ -1161,16 +1206,16 @@ More user content after markers.
     });
 
     it('should upgrade multiple legacy tools with --force', async () => {
-      // Create legacy command directories for Claude and Cursor
+      // Create legacy command directories for Claude and OpenCode
       await fs.mkdir(path.join(testDir, '.claude', 'commands', 'openspec'), { recursive: true });
       await fs.writeFile(
         path.join(testDir, '.claude', 'commands', 'openspec', 'proposal.md'),
         'content'
       );
 
-      await fs.mkdir(path.join(testDir, '.cursor', 'commands'), { recursive: true });
+      await fs.mkdir(path.join(testDir, '.opencode', 'command'), { recursive: true });
       await fs.writeFile(
-        path.join(testDir, '.cursor', 'commands', 'openspec-proposal.md'),
+        path.join(testDir, '.opencode', 'command', 'openspec-proposal.md'),
         'content'
       );
 
@@ -1182,12 +1227,12 @@ More user content after markers.
 
       // Should detect both tools
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Tools detected from legacy artifacts')
+        expect.stringContaining('Tools detected from legacy artifacts:')
       );
 
       // Both tools should have skills created
       const claudeSkillFile = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
-      const cursorSkillFile = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
+      const cursorSkillFile = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
 
       expect(await FileSystemUtils.fileExists(claudeSkillFile)).toBe(true);
       expect(await FileSystemUtils.fileExists(cursorSkillFile)).toBe(true);
@@ -1223,18 +1268,18 @@ More user content after markers.
         expect.stringContaining('Removed .claude/commands/openspec/')
       );
 
-      // Should NOT show "Tools detected from legacy artifacts" because claude is already configured
+      // Should NOT show "从旧版痕迹检测到工具" because claude is already configured
       const calls = consoleSpy.mock.calls.map(call =>
         call.map(arg => String(arg)).join(' ')
       );
       const hasDetectedMessage = calls.some(call =>
-        call.includes('Tools detected from legacy artifacts')
+        call.includes('Tools detected from legacy artifacts:')
       );
       expect(hasDetectedMessage).toBe(false);
 
-      // Should update existing skills (not "Getting started" for newly configured)
+      // Should update existing skills (not "开始使用" for newly configured)
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Updated: Claude Code')
+        expect.stringContaining('✓ Updated: Claude Code')
       );
 
       consoleSpy.mockRestore();
@@ -1249,16 +1294,16 @@ More user content after markers.
         'existing skill'
       );
 
-      // Create legacy commands for both Claude (configured) and Cursor (not configured)
+      // Create legacy commands for both Claude (configured) and OpenCode (not configured)
       await fs.mkdir(path.join(testDir, '.claude', 'commands', 'openspec'), { recursive: true });
       await fs.writeFile(
         path.join(testDir, '.claude', 'commands', 'openspec', 'proposal.md'),
         'content'
       );
 
-      await fs.mkdir(path.join(testDir, '.cursor', 'commands'), { recursive: true });
+      await fs.mkdir(path.join(testDir, '.opencode', 'command'), { recursive: true });
       await fs.writeFile(
-        path.join(testDir, '.cursor', 'commands', 'openspec-proposal.md'),
+        path.join(testDir, '.opencode', 'command', 'openspec-proposal.md'),
         'content'
       );
 
@@ -1268,18 +1313,18 @@ More user content after markers.
       const forceUpdateCommand = new UpdateCommand({ force: true });
       await forceUpdateCommand.execute(testDir);
 
-      // Should detect Cursor as a legacy tool to upgrade (but not Claude)
+      // Should detect OpenCode as a legacy tool to upgrade (but not Claude)
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Tools detected from legacy artifacts')
+        expect.stringContaining('Tools detected from legacy artifacts:')
       );
 
-      // Cursor skills should be created
-      const cursorSkillFile = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
+      // OpenCode skills should be created
+      const cursorSkillFile = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
       expect(await FileSystemUtils.fileExists(cursorSkillFile)).toBe(true);
 
-      // Should show "Getting started" for newly configured Cursor
+      // Should show getting-started guidance for newly configured OpenCode
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Getting started')
+        expect.stringContaining('Getting started:')
       );
 
       consoleSpy.mockRestore();
@@ -1298,12 +1343,12 @@ More user content after markers.
 
       await updateCommand.execute(testDir);
 
-      // Should NOT show "Getting started" message
+      // Should NOT show getting-started message
       const calls = consoleSpy.mock.calls.map(call =>
         call.map(arg => String(arg)).join(' ')
       );
       const hasGettingStarted = calls.some(call =>
-        call.includes('Getting started')
+        call.includes('Getting started:')
       );
       expect(hasGettingStarted).toBe(false);
 
@@ -1353,8 +1398,8 @@ More user content after markers.
       const forceUpdateCommand = new UpdateCommand({ force: true });
       await forceUpdateCommand.execute(testDir);
 
-      // New opsx commands should be created
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      // New dwsp commands should be created
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       const exploreCmd = path.join(commandsDir, 'explore.md');
       const exists = await FileSystemUtils.fileExists(exploreCmd);
       expect(exists).toBe(true);
@@ -1385,7 +1430,7 @@ More user content after markers.
         path.join(skillsDir, 'openspec-propose', 'SKILL.md')
       )).toBe(false);
 
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       expect(await FileSystemUtils.fileExists(
         path.join(commandsDir, 'explore.md')
       )).toBe(true);
@@ -1448,7 +1493,7 @@ More user content after markers.
       )).toBe(true);
 
       // Commands should NOT be created
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       expect(await FileSystemUtils.fileExists(
         path.join(commandsDir, 'explore.md')
       )).toBe(false);
@@ -1468,15 +1513,18 @@ More user content after markers.
       await updateCommand.execute(testDir);
 
       // Commands should be created
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       expect(await FileSystemUtils.fileExists(
         path.join(commandsDir, 'explore.md')
       )).toBe(true);
 
-      // Skills should be removed for commands-only delivery
+      // Workflow skills should be removed for commands-only delivery
       expect(await FileSystemUtils.fileExists(
         path.join(skillsDir, 'openspec-explore', 'SKILL.md')
       )).toBe(false);
+      expect(await FileSystemUtils.fileExists(
+        path.join(skillsDir, 'executing-plans', 'SKILL.md')
+      )).toBe(true);
     });
 
     it('should remove skills for configured tools without command adapters in commands-only delivery', async () => {
@@ -1503,9 +1551,12 @@ More user content after markers.
       expect(await FileSystemUtils.fileExists(
         path.join(skillsDir, 'openspec-explore', 'SKILL.md')
       )).toBe(false);
+      expect(await FileSystemUtils.fileExists(
+        path.join(skillsDir, 'executing-plans', 'SKILL.md')
+      )).toBe(true);
     });
 
-    it('should apply config sync when templates are up to date', async () => {
+    it('should apply config sync when templates are already up to date', async () => {
       setMockConfig({
         featureFlags: {},
         profile: 'core',
@@ -1527,7 +1578,7 @@ content
 `
       );
 
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       await fs.mkdir(commandsDir, { recursive: true });
       await fs.writeFile(path.join(commandsDir, 'explore.md'), 'old command');
 
@@ -1546,7 +1597,7 @@ content
         delivery: 'commands',
       });
 
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       await fs.mkdir(commandsDir, { recursive: true });
       await fs.writeFile(path.join(commandsDir, 'explore.md'), 'existing command');
 
@@ -1554,12 +1605,12 @@ content
 
       await updateCommand.execute(testDir);
 
-      // Should not short-circuit with "No configured tools found"
+      // Should not short-circuit with "No configured tools found."
       const calls = consoleSpy.mock.calls.map(call =>
         call.map(arg => String(arg)).join(' ')
       );
       const hasNoConfiguredMessage = calls.some(call =>
-        call.includes('No configured tools found')
+        call.includes('No configured tools found.')
       );
       expect(hasNoConfiguredMessage).toBe(false);
 
@@ -1587,7 +1638,7 @@ content
       // Add a non-core workflow
       await fs.mkdir(path.join(skillsDir, 'openspec-new-change'), { recursive: true });
       await fs.writeFile(path.join(skillsDir, 'openspec-new-change', 'SKILL.md'), 'old');
-      const extraCommandFile = path.join(testDir, '.claude', 'commands', 'opsx', 'new.md');
+      const extraCommandFile = path.join(testDir, '.claude', 'commands', 'dwsp', 'new.md');
       await fs.mkdir(path.dirname(extraCommandFile), { recursive: true });
       await fs.writeFile(extraCommandFile, 'old');
 
@@ -1621,19 +1672,19 @@ content
       await fs.mkdir(path.join(claudeSkillsDir, 'openspec-explore'), { recursive: true });
       await fs.writeFile(path.join(claudeSkillsDir, 'openspec-explore', 'SKILL.md'), 'old');
 
-      // Create a Cursor directory (not configured — no skills)
-      await fs.mkdir(path.join(testDir, '.cursor'), { recursive: true });
+      // Create a OpenCode directory (not configured — no skills)
+      await fs.mkdir(path.join(testDir, '.opencode'), { recursive: true });
 
       const consoleSpy = vi.spyOn(console, 'log');
 
       await updateCommand.execute(testDir);
 
-      // Should detect Cursor as a new tool
+      // Should detect OpenCode as a new tool
       const calls = consoleSpy.mock.calls.map(call =>
         call.map(arg => String(arg)).join(' ')
       );
       const hasNewToolMessage = calls.some(call =>
-        call.includes("Detected new tool: Cursor. Run 'openspec init' to add it.")
+        call.includes('Detected new tool') && call.includes('OpenCode') && call.includes("Run 'duowenspec init'")
       );
       expect(hasNewToolMessage).toBe(true);
 
@@ -1647,8 +1698,8 @@ content
       await fs.writeFile(path.join(claudeSkillsDir, 'openspec-explore', 'SKILL.md'), 'old');
 
       // Create two unconfigured tool directories
-      await fs.mkdir(path.join(testDir, '.github'), { recursive: true });
-      await fs.mkdir(path.join(testDir, '.windsurf'), { recursive: true });
+      await fs.mkdir(path.join(testDir, '.qoder'), { recursive: true });
+      await fs.mkdir(path.join(testDir, '.codebuddy'), { recursive: true });
 
       const consoleSpy = vi.spyOn(console, 'log');
 
@@ -1659,15 +1710,15 @@ content
       );
 
       const consolidatedCalls = calls.filter(call =>
-        call.includes('Detected new tools:')
+        call.includes('Detected new tools:') && call.includes("Run 'duowenspec init' to add them.")
       );
       expect(consolidatedCalls).toHaveLength(1);
-      expect(consolidatedCalls[0]).toContain('GitHub Copilot');
-      expect(consolidatedCalls[0]).toContain('Windsurf');
-      expect(consolidatedCalls[0]).toContain("Run 'openspec init' to add them.");
+      expect(consolidatedCalls[0]).toContain('Qoder');
+      expect(consolidatedCalls[0]).toContain('CodeBuddy');
+      expect(consolidatedCalls[0]).toContain("Run 'duowenspec init' to add them.");
 
       const repeatedSingularCalls = calls.filter(call =>
-        call.includes('Detected new tool:')
+        call.includes('Detected new tool:') && call.includes("Run 'duowenspec init' to add it.")
       );
       expect(repeatedSingularCalls).toHaveLength(0);
 
@@ -1688,7 +1739,7 @@ content
         call.map(arg => String(arg)).join(' ')
       );
       const hasNewToolMessage = calls.some(call =>
-        call.includes('Detected new tool')
+        call.includes('Detected new tool:') || call.includes('Detected new tools:')
       );
       expect(hasNewToolMessage).toBe(false);
 
@@ -1717,12 +1768,12 @@ content
       await fs.mkdir(path.join(claudeSkillsDir, 'openspec-explore'), { recursive: true });
       await fs.writeFile(path.join(claudeSkillsDir, 'openspec-explore', 'SKILL.md'), 'content');
 
-      // Cursor has apply
-      const cursorSkillsDir = path.join(testDir, '.cursor', 'skills');
+      // OpenCode has apply
+      const cursorSkillsDir = path.join(testDir, '.opencode', 'skills');
       await fs.mkdir(path.join(cursorSkillsDir, 'openspec-apply-change'), { recursive: true });
       await fs.writeFile(path.join(cursorSkillsDir, 'openspec-apply-change', 'SKILL.md'), 'content');
 
-      const workflows = scanInstalledWorkflows(testDir, ['claude', 'cursor']);
+      const workflows = scanInstalledWorkflows(testDir, ['claude', 'opencode']);
       expect(workflows).toContain('explore');
       expect(workflows).toContain('apply');
     });
@@ -1743,7 +1794,7 @@ content
     });
 
     it('should detect installed workflows from managed command files', async () => {
-      const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
+      const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
       await fs.mkdir(commandsDir, { recursive: true });
       await fs.writeFile(path.join(commandsDir, 'explore.md'), 'content');
 
@@ -1774,3 +1825,10 @@ content
     });
   });
 });
+
+async function writeEnterpriseException(projectPath: string): Promise<void> {
+  await fs.writeFile(
+    path.join(projectPath, 'AGENTS.md'),
+    `## ${ENTERPRISE_EXCEPTIONS_HEADER}\n- ${ENTERPRISE_ALLOW_MISSING_CAPABILITIES}\n`
+  );
+}

@@ -9,7 +9,7 @@ export class ViewCommand {
     const openspecDir = path.join(targetPath, 'openspec');
     
     if (!fs.existsSync(openspecDir)) {
-      console.error(chalk.red('No openspec directory found'));
+      console.error(chalk.red('No duowenspec directory found'));
       process.exit(1);
     }
 
@@ -75,7 +75,7 @@ export class ViewCommand {
     }
 
     console.log('\n' + '═'.repeat(60));
-    console.log(chalk.dim(`\nUse ${chalk.white('openspec list --changes')} or ${chalk.white('openspec list --specs')} for detailed views`));
+    console.log(chalk.dim(`\nUse ${chalk.white('duowenspec list --changes')} or ${chalk.white('duowenspec list --specs')} for detailed views`));
   }
 
   private async getChangesData(openspecDir: string): Promise<{

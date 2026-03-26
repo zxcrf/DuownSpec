@@ -20,3 +20,12 @@ export { getDocumentChangeSkillTemplate, getOpsxDocumentCommandTemplate } from '
 export { getOnboardSkillTemplate, getOpsxOnboardCommandTemplate } from './workflows/onboard.js';
 export { getOpsxProposeSkillTemplate, getOpsxProposeCommandTemplate } from './workflows/propose.js';
 export { getFeedbackSkillTemplate } from './workflows/feedback.js';
+export {
+  getBrainstormingSkillTemplate,
+  getExecutingPlansSkillTemplate,
+  getTestDrivenDevelopmentSkillTemplate,
+  getSubagentDrivenDevelopmentSkillTemplate,
+  getRequestingCodeReviewSkillTemplate,
+  getReceivingCodeReviewSkillTemplate,
+  getVerificationBeforeCompletionSkillTemplate,
+} from './capabilities/superpowers.js';

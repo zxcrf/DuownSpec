@@ -31,9 +31,17 @@ import {
   getOpsxDocumentCommandTemplate,
   getOpsxOnboardCommandTemplate,
   getOpsxProposeCommandTemplate,
+  getExecutingPlansSkillTemplate,
+  getBrainstormingSkillTemplate,
+  getTestDrivenDevelopmentSkillTemplate,
+  getSubagentDrivenDevelopmentSkillTemplate,
+  getRequestingCodeReviewSkillTemplate,
+  getReceivingCodeReviewSkillTemplate,
+  getVerificationBeforeCompletionSkillTemplate,
   type SkillTemplate,
 } from '../templates/skill-templates.js';
 import type { CommandContent } from '../command-generation/index.js';
+import { getBundledEnterpriseCapabilitySkills } from '../enterprise-capability-skills.js';
 
 /**
  * Skill template with directory name and workflow ID mapping.
@@ -78,6 +86,34 @@ export function getSkillTemplates(workflowFilter?: readonly string[]): SkillTemp
 
   const filterSet = new Set(workflowFilter);
   return all.filter(entry => filterSet.has(entry.workflowId));
+}
+
+export function getEnterpriseCapabilitySkillTemplates(
+  workflowFilter: readonly string[]
+): SkillTemplateEntry[] {
+  const templateById = new Map([
+    ['brainstorming', getBrainstormingSkillTemplate],
+    ['executing-plans', getExecutingPlansSkillTemplate],
+    ['test-driven-development', getTestDrivenDevelopmentSkillTemplate],
+    ['subagent-driven-development', getSubagentDrivenDevelopmentSkillTemplate],
+    ['requesting-code-review', getRequestingCodeReviewSkillTemplate],
+    ['receiving-code-review', getReceivingCodeReviewSkillTemplate],
+    ['verification-before-completion', getVerificationBeforeCompletionSkillTemplate],
+  ] as const);
+
+  return getBundledEnterpriseCapabilitySkills(workflowFilter).map((skill) => {
+    const createTemplate = templateById.get(skill.id);
+
+    if (!createTemplate) {
+      throw new Error(`Missing bundled capability template for ${skill.id}`);
+    }
+
+    return {
+      template: createTemplate(),
+      dirName: skill.dirName,
+      workflowId: skill.id,
+    };
+  });
 }
 
 /**
@@ -129,7 +165,7 @@ export function getCommandContents(workflowFilter?: readonly string[]): CommandC
  * Generates skill file content with YAML frontmatter.
  *
  * @param template - The skill template
- * @param generatedByVersion - The OpenSpec version to embed in the file
+ * @param generatedByVersion - The DuowenSpec version to embed in the file
  * @param transformInstructions - Optional callback to transform the instructions content
  */
 export function generateSkillContent(

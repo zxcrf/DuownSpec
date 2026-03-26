@@ -8,8 +8,8 @@ export function getReviewChangeSkillTemplate(): SkillTemplate {
 
 This is a required enterprise checkpoint. Use \`superpowers:requesting-code-review\`
 and \`superpowers:receiving-code-review\` for the review capability, but keep
-OpenSpec as the source of truth for whether the change moves forward to
-\`/opsx:verify\` or back to implementation.
+DuowenSpec as the source of truth for whether the change moves forward to
+\`/dwsp:verify\` or back to implementation.
 
 **Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
@@ -20,15 +20,15 @@ OpenSpec as the source of truth for whether the change moves forward to
    If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
-   - If ambiguous, run \`openspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
 
-   Always announce: "Reviewing change: <name>" and how to override (for example \`/opsx:review <other>\`).
+   Always announce: "Reviewing change: <name>" and how to override (for example \`/dwsp:review <other>\`).
 
 2. **Load the change context**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   duowenspec status --change "<name>" --json
+   duowenspec instructions apply --change "<name>" --json
    \`\`\`
 
    Read every context file returned by the apply instructions before reviewing.
@@ -60,7 +60,7 @@ OpenSpec as the source of truth for whether the change moves forward to
 
    - If critical issues exist: stop and send the change back to implementation
    - If only minor follow-ups exist: state them clearly before verification
-   - If review passes: recommend moving to \`/opsx:verify\`
+   - If review passes: recommend moving to \`/dwsp:verify\`
 
 **Guardrails**
 - Review for bugs, regressions, and release risk first
@@ -68,14 +68,14 @@ OpenSpec as the source of truth for whether the change moves forward to
 - Do not mark review as passed if release-blocking issues remain
 - If you cannot verify a claim from the available context, say so clearly`,
     license: 'MIT',
-    compatibility: 'Requires openspec CLI.',
+    compatibility: 'Requires duowenspec CLI.',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxReviewCommandTemplate(): CommandTemplate {
   return {
-    name: 'OPSX: Review',
+    name: 'DWSP: Review',
     description: 'Review a completed change and capture release-blocking findings',
     category: 'Workflow',
     tags: ['workflow', 'review', 'enterprise'],
@@ -83,10 +83,10 @@ export function getOpsxReviewCommandTemplate(): CommandTemplate {
 
 This is a required enterprise checkpoint. Use \`superpowers:requesting-code-review\`
 and \`superpowers:receiving-code-review\` for the review capability, but keep
-OpenSpec as the source of truth for whether the change moves forward to
-\`/opsx:verify\` or back to implementation.
+DuowenSpec as the source of truth for whether the change moves forward to
+\`/dwsp:verify\` or back to implementation.
 
-**Input**: Optionally specify a change name after \`/opsx:review\` (for example \`/opsx:review add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally specify a change name after \`/dwsp:review\` (for example \`/dwsp:review add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 **Steps**
 
@@ -95,13 +95,13 @@ OpenSpec as the source of truth for whether the change moves forward to
    If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
-   - If ambiguous, run \`openspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
 
 2. **Load the change context**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   duowenspec status --change "<name>" --json
+   duowenspec instructions apply --change "<name>" --json
    \`\`\`
 
    Read every context file returned by the apply instructions before reviewing.
@@ -128,6 +128,6 @@ OpenSpec as the source of truth for whether the change moves forward to
 5. **Decide the next step**
 
    - If critical issues exist: stop and send the change back to implementation
-   - If review passes: recommend moving to \`/opsx:verify\``,
+   - If review passes: recommend moving to \`/dwsp:verify\``,
   };
 }

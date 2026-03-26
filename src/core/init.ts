@@ -1,7 +1,7 @@
 /**
  * Init Command
  *
- * Sets up OpenSpec with Agent Skills and /opsx:* slash commands.
+ * Sets up DuowenSpec with Agent Skills and /dwsp:* slash commands.
  * This is the unified setup command that replaces both the old init and experimental commands.
  */
 
@@ -37,6 +37,7 @@ import {
   getToolSkillStatus,
   getToolStates,
   getSkillTemplates,
+  getEnterpriseCapabilitySkillTemplates,
   getCommandContents,
   generateSkillContent,
   type ToolSkillStatus,
@@ -45,6 +46,11 @@ import { getGlobalConfig, type Delivery, type Profile } from './global-config.js
 import { getProfileWorkflows, CORE_WORKFLOWS, ALL_WORKFLOWS } from './profiles.js';
 import { getAvailableTools } from './available-tools.js';
 import { migrateIfNeeded } from './migration.js';
+import { assertEnterpriseCapabilitiesAvailable } from './enterprise-capability-preflight.js';
+import {
+  getAllEnterpriseCapabilitySkillDirNames,
+  getBundledEnterpriseCapabilitySkillDirNames,
+} from './enterprise-capability-skills.js';
 
 const require = createRequire(import.meta.url);
 const { version: OPENSPEC_VERSION } = require('../../package.json');
@@ -143,6 +149,9 @@ export class InitCommand {
     // Validate selected tools
     const validatedTools = this.validateTools(selectedToolIds, toolStates);
 
+    // Enterprise workflow capability preflight must run before any files are written
+    await this.assertRequiredEnterpriseCapabilities(projectPath, validatedTools);
+
     // Create directory structure and config
     await this.createDirectoryStructure(openspecPath, extendMode);
 
@@ -212,7 +221,7 @@ export class InitCommand {
 
     if (this.force || !canPrompt) {
       // --force flag or non-interactive mode: proceed with cleanup automatically.
-      // Legacy slash commands are 100% OpenSpec-managed, and config file cleanup
+      // Legacy slash commands are 100% DuowenSpec-managed, and config file cleanup
       // only removes markers (never deletes files), so auto-cleanup is safe.
       await this.performLegacyCleanup(projectPath, detection);
       return;
@@ -325,7 +334,7 @@ export class InitCommand {
       .map((toolId) => AI_TOOLS.find((t) => t.value === toolId)?.name || toolId);
 
     if (configuredNames.length > 0) {
-      console.log(`OpenSpec configured: ${configuredNames.join(', ')} (pre-selected)`);
+      console.log(`DuowenSpec configured: ${configuredNames.join(', ')} (pre-selected)`);
     }
 
     const detectedOnlyNames = detectedTools
@@ -450,6 +459,18 @@ export class InitCommand {
     return validatedTools;
   }
 
+  private async assertRequiredEnterpriseCapabilities(
+    _projectPath: string,
+    tools: Array<{ value: string; name: string; skillsDir: string }>
+  ): Promise<void> {
+    void tools;
+    const globalConfig = getGlobalConfig();
+    const profile: Profile = this.resolveProfileOverride() ?? globalConfig.profile ?? 'custom';
+    const workflows = getProfileWorkflows(profile, globalConfig.workflows);
+
+    assertEnterpriseCapabilitiesAvailable(workflows);
+  }
+
   // ═══════════════════════════════════════════════════════════
   // DIRECTORY STRUCTURE
   // ═══════════════════════════════════════════════════════════
@@ -470,7 +491,7 @@ export class InitCommand {
       return;
     }
 
-    const spinner = this.startSpinner('Creating OpenSpec structure...');
+    const spinner = this.startSpinner('Creating DuowenSpec structure...');
 
     const directories = [
       openspecPath,
@@ -485,7 +506,7 @@ export class InitCommand {
 
     spinner.stopAndPersist({
       symbol: PALETTE.white('▌'),
-      text: PALETTE.white('OpenSpec structure created'),
+      text: PALETTE.white('DuowenSpec structure created'),
     });
   }
 
@@ -520,7 +541,9 @@ export class InitCommand {
     // Get skill and command templates filtered by profile workflows
     const shouldGenerateSkills = delivery !== 'commands';
     const shouldGenerateCommands = delivery !== 'skills';
-    const skillTemplates = shouldGenerateSkills ? getSkillTemplates(workflows) : [];
+    const workflowSkillTemplates = shouldGenerateSkills ? getSkillTemplates(workflows) : [];
+    const capabilitySkillTemplates = getEnterpriseCapabilitySkillTemplates(workflows);
+    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates];
     const commandContents = shouldGenerateCommands ? getCommandContents(workflows) : [];
 
     // Process each tool
@@ -528,11 +551,10 @@ export class InitCommand {
       const spinner = ora(`Setting up ${tool.name}...`).start();
 
       try {
-        // Generate skill files if delivery includes skills
-        if (shouldGenerateSkills) {
-          // Use tool-specific skillsDir
-          const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
+        const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
 
+        // Generate skill files if delivery includes skills
+        if (skillTemplates.length > 0) {
           // Create skill directories and SKILL.md files
           for (const { template, dirName } of skillTemplates) {
             const skillDir = path.join(skillsDir, dirName);
@@ -548,9 +570,9 @@ export class InitCommand {
           }
         }
         if (!shouldGenerateSkills) {
-          const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
           removedSkillCount += await this.removeSkillDirs(skillsDir);
         }
+        removedSkillCount += await this.removeUnselectedCapabilitySkillDirs(skillsDir, workflows);
 
         // Generate commands if delivery includes commands
         if (shouldGenerateCommands) {
@@ -639,7 +661,7 @@ export class InitCommand {
     configStatus: 'created' | 'exists' | 'skipped'
   ): void {
     console.log();
-    console.log(chalk.bold('OpenSpec Setup Complete'));
+    console.log(chalk.bold('DuowenSpec Setup Complete'));
     console.log();
 
     // Show created vs refreshed tools
@@ -658,7 +680,9 @@ export class InitCommand {
       const delivery: Delivery = globalConfig.delivery ?? 'both';
       const workflows = getProfileWorkflows(profile, globalConfig.workflows);
       const toolDirs = [...new Set(successfulTools.map((t) => t.skillsDir))].join(', ');
-      const skillCount = delivery !== 'commands' ? getSkillTemplates(workflows).length : 0;
+      const workflowSkillCount = delivery !== 'commands' ? getSkillTemplates(workflows).length : 0;
+      const capabilitySkillCount = getEnterpriseCapabilitySkillTemplates(workflows).length;
+      const skillCount = workflowSkillCount + capabilitySkillCount;
       const commandCount = delivery !== 'skills' ? getCommandContents(workflows).length : 0;
       if (skillCount > 0 && commandCount > 0) {
         console.log(`${skillCount} skills and ${commandCount} commands in ${toolDirs}/`);
@@ -705,18 +729,18 @@ export class InitCommand {
     console.log();
     if (activeWorkflows.includes('propose')) {
       console.log(chalk.bold('Getting started:'));
-      console.log('  Start your first enterprise proposal: /opsx:propose "your idea"');
+      console.log('  Start your first enterprise proposal: /dwsp:propose "your idea"');
     } else if (activeWorkflows.includes('new')) {
       console.log(chalk.bold('Getting started:'));
-      console.log('  Start your first change: /opsx:new "your idea"');
+      console.log('  Start your first change: /dwsp:new "your idea"');
     } else {
-      console.log("Done. Run 'openspec config profile' to configure your workflows.");
+      console.log("Done. Run 'duowenspec config profile' to configure your workflows.");
     }
 
     // Links
     console.log();
-    console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/OpenSpec')}`);
-    console.log(`Feedback:   ${chalk.cyan('https://github.com/Fission-AI/OpenSpec/issues')}`);
+    console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
+    console.log(`Feedback:   ${chalk.cyan('https://github.com/Fission-AI/DuowenSpec/issues')}`);
 
     // Restart instruction if any tools were configured
     if (results.createdTools.length > 0 || results.refreshedTools.length > 0) {
@@ -742,6 +766,30 @@ export class InitCommand {
     for (const workflow of ALL_WORKFLOWS) {
       const dirName = WORKFLOW_TO_SKILL_DIR[workflow];
       if (!dirName) continue;
+
+      const skillDir = path.join(skillsDir, dirName);
+      try {
+        if (fs.existsSync(skillDir)) {
+          await fs.promises.rm(skillDir, { recursive: true, force: true });
+          removed++;
+        }
+      } catch {
+        // Ignore errors
+      }
+    }
+
+    return removed;
+  }
+
+  private async removeUnselectedCapabilitySkillDirs(
+    skillsDir: string,
+    desiredWorkflows: readonly string[]
+  ): Promise<number> {
+    const desiredSet = new Set(getBundledEnterpriseCapabilitySkillDirNames(desiredWorkflows));
+    let removed = 0;
+
+    for (const dirName of getAllEnterpriseCapabilitySkillDirNames()) {
+      if (desiredSet.has(dirName)) continue;
 
       const skillDir = path.join(skillsDir, dirName);
       try {

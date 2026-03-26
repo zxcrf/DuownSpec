@@ -7,7 +7,7 @@ export function getDocumentChangeSkillTemplate(): SkillTemplate {
     instructions: `Document the final delivered state of a change before release and archive.
 
 This is a required enterprise checkpoint. Finish delivery documentation here as
-an enterprise workflow gate, but keep OpenSpec as the source of truth for
+an enterprise workflow gate, but keep DuowenSpec as the source of truth for
 release readiness and final archive progression. Do not assume superpowers has
 a matching built-in documentation skill for this step.
 
@@ -20,13 +20,13 @@ a matching built-in documentation skill for this step.
    If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
-   - If ambiguous, run \`openspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
 
 2. **Load the change context**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   duowenspec status --change "<name>" --json
+   duowenspec instructions apply --change "<name>" --json
    \`\`\`
 
    Read the proposal, specs, design, and tasks if available.
@@ -58,25 +58,25 @@ a matching built-in documentation skill for this step.
 - Treat documentation as a release gate
 - Do not mark it complete if required deliverables are still missing`,
     license: 'MIT',
-    compatibility: 'Requires openspec CLI.',
+    compatibility: 'Requires duowenspec CLI.',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxDocumentCommandTemplate(): CommandTemplate {
   return {
-    name: 'OPSX: Document',
+    name: 'DWSP: Document',
     description: 'Confirm required delivery documentation is complete before release and archive',
     category: 'Workflow',
     tags: ['workflow', 'document', 'enterprise'],
     content: `Document the final delivered state of a change before release and archive.
 
 This is a required enterprise checkpoint. Finish delivery documentation here as
-an enterprise workflow gate, but keep OpenSpec as the source of truth for
+an enterprise workflow gate, but keep DuowenSpec as the source of truth for
 release readiness and final archive progression. Do not assume superpowers has
 a matching built-in documentation skill for this step.
 
-**Input**: Optionally specify a change name after \`/opsx:document\`. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally specify a change name after \`/dwsp:document\`. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 **Steps**
 
@@ -85,13 +85,13 @@ a matching built-in documentation skill for this step.
    If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
-   - If ambiguous, run \`openspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
 
 2. **Load the change context**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   duowenspec status --change "<name>" --json
+   duowenspec instructions apply --change "<name>" --json
    \`\`\`
 
 3. **Check documentation completeness**

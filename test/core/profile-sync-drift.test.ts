@@ -8,12 +8,21 @@ import {
 } from '../../src/core/profile-sync-drift.js';
 import { CORE_WORKFLOWS } from '../../src/core/profiles.js';
 import { CommandAdapterRegistry } from '../../src/core/command-generation/index.js';
+import {
+  getBundledEnterpriseCapabilitySkillDirNames,
+} from '../../src/core/enterprise-capability-skills.js';
 
 function writeSkill(projectDir: string, workflowId: string): void {
   const skillDirName = WORKFLOW_TO_SKILL_DIR[workflowId as keyof typeof WORKFLOW_TO_SKILL_DIR];
   const skillPath = path.join(projectDir, '.claude', 'skills', skillDirName, 'SKILL.md');
   fs.mkdirSync(path.dirname(skillPath), { recursive: true });
   fs.writeFileSync(skillPath, `name: ${skillDirName}\n`);
+}
+
+function writeCapabilitySkill(projectDir: string, capabilityDirName: string): void {
+  const skillPath = path.join(projectDir, '.claude', 'skills', capabilityDirName, 'SKILL.md');
+  fs.mkdirSync(path.dirname(skillPath), { recursive: true });
+  fs.writeFileSync(skillPath, `name: ${capabilityDirName}\n`);
 }
 
 function writeCommand(projectDir: string, workflowId: string): void {
@@ -28,6 +37,10 @@ function writeCommand(projectDir: string, workflowId: string): void {
 function setupCoreSkills(projectDir: string): void {
   for (const workflow of CORE_WORKFLOWS) {
     writeSkill(projectDir, workflow);
+  }
+  const capabilityDirs = getBundledEnterpriseCapabilitySkillDirNames(CORE_WORKFLOWS);
+  for (const dirName of capabilityDirs) {
+    writeCapabilitySkill(projectDir, dirName);
   }
 }
 

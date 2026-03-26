@@ -4,6 +4,10 @@ import path from 'path';
 import os from 'os';
 import { InitCommand } from '../../src/core/init.js';
 import { saveGlobalConfig, getGlobalConfig } from '../../src/core/global-config.js';
+import {
+  ENTERPRISE_ALLOW_MISSING_CAPABILITIES,
+  ENTERPRISE_EXCEPTIONS_HEADER,
+} from '../../src/core/enterprise-capability-preflight.js';
 
 const { confirmMock, showWelcomeScreenMock, searchableMultiSelectMock } = vi.hoisted(() => ({
   confirmMock: vi.fn(),
@@ -36,6 +40,7 @@ describe('InitCommand', () => {
     configTempDir = path.join(os.tmpdir(), `openspec-config-init-${Date.now()}`);
     await fs.mkdir(configTempDir, { recursive: true });
     process.env.XDG_CONFIG_HOME = configTempDir;
+    await writeEnterpriseException(testDir);
 
     // Mock console.log to suppress output during tests
     vi.spyOn(console, 'log').mockImplementation(() => { });
@@ -53,7 +58,7 @@ describe('InitCommand', () => {
   });
 
   describe('execute with --tools flag', () => {
-    it('should create OpenSpec directory structure', async () => {
+    it('should create DuowenSpec directory structure', async () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
 
       await initCommand.execute(testDir);
@@ -122,13 +127,13 @@ describe('InitCommand', () => {
       await initCommand.execute(testDir);
 
       const defaultCommandNames = [
-        'opsx/propose.md',
-        'opsx/explore.md',
-        'opsx/apply.md',
-        'opsx/review.md',
-        'opsx/verify.md',
-        'opsx/document.md',
-        'opsx/archive.md',
+        'dwsp/propose.md',
+        'dwsp/explore.md',
+        'dwsp/apply.md',
+        'dwsp/review.md',
+        'dwsp/verify.md',
+        'dwsp/document.md',
+        'dwsp/archive.md',
       ];
 
       for (const cmdName of defaultCommandNames) {
@@ -137,11 +142,11 @@ describe('InitCommand', () => {
       }
 
       const nonDefaultCommandNames = [
-        'opsx/new.md',
-        'opsx/continue.md',
-        'opsx/ff.md',
-        'opsx/sync.md',
-        'opsx/bulk-archive.md',
+        'dwsp/new.md',
+        'dwsp/continue.md',
+        'dwsp/ff.md',
+        'dwsp/sync.md',
+        'dwsp/bulk-archive.md',
       ];
 
       for (const cmdName of nonDefaultCommandNames) {
@@ -150,34 +155,34 @@ describe('InitCommand', () => {
       }
     });
 
-    it('should create skills in Cursor skills directory', async () => {
-      const initCommand = new InitCommand({ tools: 'cursor', force: true });
+    it('should create skills in OpenCode skills directory', async () => {
+      const initCommand = new InitCommand({ tools: 'opencode', force: true });
 
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
       expect(await fileExists(skillFile)).toBe(true);
     });
 
-    it('should create skills in Windsurf skills directory', async () => {
-      const initCommand = new InitCommand({ tools: 'windsurf', force: true });
+    it('should create skills in CodeBuddy skills directory', async () => {
+      const initCommand = new InitCommand({ tools: 'codebuddy', force: true });
 
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.windsurf', 'skills', 'openspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.codebuddy', 'skills', 'openspec-explore', 'SKILL.md');
       expect(await fileExists(skillFile)).toBe(true);
     });
 
     it('should create skills for multiple tools at once', async () => {
-      const initCommand = new InitCommand({ tools: 'claude,cursor', force: true });
+      const initCommand = new InitCommand({ tools: 'claude,opencode', force: true });
 
       await initCommand.execute(testDir);
 
       const claudeSkill = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
+      const opencodeSkill = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
-      expect(await fileExists(cursorSkill)).toBe(true);
+      expect(await fileExists(opencodeSkill)).toBe(true);
     });
 
     it('should select all tools with --tools all option', async () => {
@@ -187,12 +192,12 @@ describe('InitCommand', () => {
 
       // Check a few representative tools
       const claudeSkill = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
-      const windsurfSkill = path.join(testDir, '.windsurf', 'skills', 'openspec-explore', 'SKILL.md');
+      const opencodeSkill = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
+      const codebuddySkill = path.join(testDir, '.codebuddy', 'skills', 'openspec-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
-      expect(await fileExists(cursorSkill)).toBe(true);
-      expect(await fileExists(windsurfSkill)).toBe(true);
+      expect(await fileExists(opencodeSkill)).toBe(true);
+      expect(await fileExists(codebuddySkill)).toBe(true);
     });
 
     it('should skip tool configuration with --tools none option', async () => {
@@ -200,7 +205,7 @@ describe('InitCommand', () => {
 
       await initCommand.execute(testDir);
 
-      // Should create OpenSpec structure but no skills
+      // Should create DuowenSpec structure but no skills
       const openspecPath = path.join(testDir, 'openspec');
       expect(await directoryExists(openspecPath)).toBe(true);
 
@@ -216,15 +221,15 @@ describe('InitCommand', () => {
     });
 
     it('should handle comma-separated tool names with spaces', async () => {
-      const initCommand = new InitCommand({ tools: 'claude, cursor', force: true });
+      const initCommand = new InitCommand({ tools: 'claude, opencode', force: true });
 
       await initCommand.execute(testDir);
 
       const claudeSkill = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
+      const opencodeSkill = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
-      expect(await fileExists(cursorSkill)).toBe(true);
+      expect(await fileExists(opencodeSkill)).toBe(true);
     });
 
     it('should reject combining reserved keywords with explicit tool ids', async () => {
@@ -252,6 +257,7 @@ describe('InitCommand', () => {
 
     it('should handle non-existent target directory', async () => {
       const newDir = path.join(testDir, 'new-project');
+      await writeEnterpriseException(newDir);
       const initCommand = new InitCommand({ tools: 'claude', force: true });
 
       await initCommand.execute(newDir);
@@ -260,20 +266,50 @@ describe('InitCommand', () => {
       expect(await directoryExists(openspecPath)).toBe(true);
     });
 
+    it('should ignore unsupported scaffold option on the direct command class', async () => {
+      await fs.rm(path.join(testDir, 'AGENTS.md'), { force: true });
+
+      const initCommand = new InitCommand({
+        tools: 'none',
+        force: true,
+        scaffold: true,
+      } as any);
+      await initCommand.execute(testDir);
+
+      expect(await fileExists(path.join(testDir, 'openspec', 'config.yaml'))).toBe(true);
+      expect(await fileExists(path.join(testDir, 'package.json'))).toBe(false);
+      expect(await fileExists(path.join(testDir, 'CLAUDE.md'))).toBe(false);
+    });
+
+    it('should preserve AGENTS.md when unsupported scaffold option is ignored', async () => {
+      await fs.writeFile(path.join(testDir, 'AGENTS.md'), '# Existing\n');
+
+      const initCommand = new InitCommand({
+        tools: 'none',
+        force: true,
+        scaffold: true,
+      } as any);
+      await initCommand.execute(testDir);
+
+      expect(await fileExists(path.join(testDir, 'AGENTS.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, 'CLAUDE.md'))).toBe(false);
+      expect(await fileExists(path.join(testDir, 'openspec', 'config.yaml'))).toBe(true);
+    });
+
     it('should work in extend mode (re-running init)', async () => {
       const initCommand1 = new InitCommand({ tools: 'claude', force: true });
       await initCommand1.execute(testDir);
 
       // Run init again with a different tool
-      const initCommand2 = new InitCommand({ tools: 'cursor', force: true });
+      const initCommand2 = new InitCommand({ tools: 'opencode', force: true });
       await initCommand2.execute(testDir);
 
       // Both tools should have skills
       const claudeSkill = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.cursor', 'skills', 'openspec-explore', 'SKILL.md');
+      const opencodeSkill = path.join(testDir, '.opencode', 'skills', 'openspec-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
-      expect(await fileExists(cursorSkill)).toBe(true);
+      expect(await fileExists(opencodeSkill)).toBe(true);
     });
 
     it('should refresh skills on re-run for the same tool', async () => {
@@ -361,7 +397,7 @@ describe('InitCommand', () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
 
-      const cmdFile = path.join(testDir, '.claude', 'commands', 'opsx', 'explore.md');
+      const cmdFile = path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md');
       const content = await fs.readFile(cmdFile, 'utf-8');
 
       // Claude commands use YAML frontmatter
@@ -370,11 +406,11 @@ describe('InitCommand', () => {
       expect(content).toContain('description:');
     });
 
-    it('should generate Cursor commands with correct format', async () => {
-      const initCommand = new InitCommand({ tools: 'cursor', force: true });
+    it('should generate OpenCode commands with correct format', async () => {
+      const initCommand = new InitCommand({ tools: 'opencode', force: true });
       await initCommand.execute(testDir);
 
-      const cmdFile = path.join(testDir, '.cursor', 'commands', 'opsx-explore.md');
+      const cmdFile = path.join(testDir, '.opencode', 'commands', 'dwsp-explore.md');
       expect(await fileExists(cmdFile)).toBe(true);
 
       const content = await fs.readFile(cmdFile, 'utf-8');
@@ -413,52 +449,64 @@ describe('InitCommand', () => {
   });
 
   describe('tool-specific adapters', () => {
-    it('should generate Gemini CLI commands as TOML files', async () => {
-      const initCommand = new InitCommand({ tools: 'gemini', force: true });
+    it('should generate CodeBuddy commands', async () => {
+      const initCommand = new InitCommand({ tools: 'codebuddy', force: true });
       await initCommand.execute(testDir);
 
-      const cmdFile = path.join(testDir, '.gemini', 'commands', 'opsx', 'explore.toml');
+      const cmdFile = path.join(testDir, '.codebuddy', 'commands', 'dwsp', 'explore.md');
       expect(await fileExists(cmdFile)).toBe(true);
 
       const content = await fs.readFile(cmdFile, 'utf-8');
-      expect(content).toContain('description =');
-      expect(content).toContain('prompt =');
+      expect(content).toContain('argument-hint:');
     });
 
-    it('should generate Windsurf commands', async () => {
-      const initCommand = new InitCommand({ tools: 'windsurf', force: true });
+    it('should generate Qoder command files', async () => {
+      const initCommand = new InitCommand({ tools: 'qoder', force: true });
       await initCommand.execute(testDir);
 
-      const cmdFile = path.join(testDir, '.windsurf', 'workflows', 'opsx-explore.md');
-      expect(await fileExists(cmdFile)).toBe(true);
-    });
-
-    it('should generate Continue prompt files', async () => {
-      const initCommand = new InitCommand({ tools: 'continue', force: true });
-      await initCommand.execute(testDir);
-
-      const cmdFile = path.join(testDir, '.continue', 'prompts', 'opsx-explore.prompt');
+      const cmdFile = path.join(testDir, '.qoder', 'commands', 'dwsp', 'explore.md');
       expect(await fileExists(cmdFile)).toBe(true);
 
       const content = await fs.readFile(cmdFile, 'utf-8');
-      expect(content).toContain('name: opsx-explore');
-      expect(content).toContain('invokable: true');
+      expect(content).toContain('name: DWSP: Explore');
+      expect(content).toContain('category:');
     });
 
-    it('should generate Cline workflow files', async () => {
-      const initCommand = new InitCommand({ tools: 'cline', force: true });
+    it('should generate Codex prompts under CODEX_HOME', async () => {
+      const codexHome = path.join(testDir, '.codex-home-prompts');
+      process.env.CODEX_HOME = codexHome;
+
+      const initCommand = new InitCommand({ tools: 'codex', force: true });
       await initCommand.execute(testDir);
 
-      const cmdFile = path.join(testDir, '.clinerules', 'workflows', 'opsx-explore.md');
+      const cmdFile = path.join(codexHome, 'prompts', 'dwsp-explore.md');
       expect(await fileExists(cmdFile)).toBe(true);
+
+      const content = await fs.readFile(cmdFile, 'utf-8');
+      expect(content).toContain('argument-hint:');
     });
 
-    it('should generate GitHub Copilot prompt files', async () => {
-      const initCommand = new InitCommand({ tools: 'github-copilot', force: true });
+    it('should create Trae skills but skip command generation', async () => {
+      const consoleSpy = vi.spyOn(console, 'log');
+
+      const initCommand = new InitCommand({ tools: 'trae', force: true });
       await initCommand.execute(testDir);
 
-      const cmdFile = path.join(testDir, '.github', 'prompts', 'opsx-explore.prompt.md');
-      expect(await fileExists(cmdFile)).toBe(true);
+      const skillFile = path.join(testDir, '.trae', 'skills', 'openspec-explore', 'SKILL.md');
+      expect(await fileExists(skillFile)).toBe(true);
+
+      const commandFile = path.join(testDir, '.trae', 'commands', 'dwsp', 'explore.md');
+      expect(await fileExists(commandFile)).toBe(false);
+
+      const allCalls = consoleSpy.mock.calls.map(call =>
+        call.map(arg => String(arg)).join(' ')
+      );
+      const hasSkipMessage = allCalls.some(call =>
+        call.includes('trae') && (call.includes('跳过') || call.includes('skipped'))
+      );
+      expect(hasSkipMessage).toBe(true);
+
+      consoleSpy.mockRestore();
     });
   });
 });
@@ -476,6 +524,7 @@ describe('InitCommand - profile and detection features', () => {
     configTempDir = path.join(os.tmpdir(), `openspec-config-test-${Date.now()}`);
     await fs.mkdir(configTempDir, { recursive: true });
     process.env.XDG_CONFIG_HOME = configTempDir;
+    await writeEnterpriseException(testDir);
     vi.spyOn(console, 'log').mockImplementation(() => {});
     confirmMock.mockReset();
     confirmMock.mockResolvedValue(true);
@@ -555,16 +604,16 @@ describe('InitCommand - profile and detection features', () => {
   });
 
   it('should preselect configured tools but not directory-detected tools in extend mode', async () => {
-    // Simulate existing OpenSpec project (extend mode).
+    // Simulate existing DuowenSpec project (extend mode).
     await fs.mkdir(path.join(testDir, 'openspec'), { recursive: true });
 
-    // Configured with OpenSpec
+    // Configured with DuowenSpec
     const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'openspec-explore');
     await fs.mkdir(claudeSkillDir, { recursive: true });
     await fs.writeFile(path.join(claudeSkillDir, 'SKILL.md'), 'configured');
 
-    // Directory detected only (not configured with OpenSpec)
-    await fs.mkdir(path.join(testDir, '.github'), { recursive: true });
+    // Directory detected only (not configured with DuowenSpec)
+    await fs.mkdir(path.join(testDir, '.qoder'), { recursive: true });
 
     searchableMultiSelectMock.mockResolvedValue(['claude']);
 
@@ -577,18 +626,18 @@ describe('InitCommand - profile and detection features', () => {
     const [{ choices }] = searchableMultiSelectMock.mock.calls[0] as [{ choices: Array<{ value: string; preSelected?: boolean; detected?: boolean }> }];
 
     const claude = choices.find((choice) => choice.value === 'claude');
-    const githubCopilot = choices.find((choice) => choice.value === 'github-copilot');
+    const qoder = choices.find((choice) => choice.value === 'qoder');
 
     expect(claude?.preSelected).toBe(true);
-    expect(githubCopilot?.preSelected).toBe(false);
-    expect(githubCopilot?.detected).toBe(true);
+    expect(qoder?.preSelected).toBe(false);
+    expect(qoder?.detected).toBe(true);
   });
 
   it('should preselect detected tools for first-time interactive setup', async () => {
-    // First-time init: no openspec/ directory and no configured OpenSpec skills.
-    await fs.mkdir(path.join(testDir, '.github'), { recursive: true });
+    // First-time init: no openspec/ directory and no configured DuowenSpec skills.
+    await fs.mkdir(path.join(testDir, '.qoder'), { recursive: true });
 
-    searchableMultiSelectMock.mockResolvedValue(['github-copilot']);
+    searchableMultiSelectMock.mockResolvedValue(['qoder']);
 
     const initCommand = new InitCommand({ force: true });
     vi.spyOn(initCommand as any, 'canPromptInteractively').mockReturnValue(true);
@@ -597,9 +646,9 @@ describe('InitCommand - profile and detection features', () => {
 
     expect(searchableMultiSelectMock).toHaveBeenCalledTimes(1);
     const [{ choices }] = searchableMultiSelectMock.mock.calls[0] as [{ choices: Array<{ value: string; preSelected?: boolean }> }];
-    const githubCopilot = choices.find((choice) => choice.value === 'github-copilot');
+    const qoder = choices.find((choice) => choice.value === 'qoder');
 
-    expect(githubCopilot?.preSelected).toBe(true);
+    expect(qoder?.preSelected).toBe(true);
   });
 
   it('should respect custom profile from global config', async () => {
@@ -626,8 +675,8 @@ describe('InitCommand - profile and detection features', () => {
 
   it('should migrate commands-only extend mode to custom profile without injecting propose', async () => {
     await fs.mkdir(path.join(testDir, 'openspec'), { recursive: true });
-    await fs.mkdir(path.join(testDir, '.claude', 'commands', 'opsx'), { recursive: true });
-    await fs.writeFile(path.join(testDir, '.claude', 'commands', 'opsx', 'explore.md'), '# explore\n');
+    await fs.mkdir(path.join(testDir, '.claude', 'commands', 'dwsp'), { recursive: true });
+    await fs.writeFile(path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md'), '# explore\n');
 
     const initCommand = new InitCommand({ tools: 'claude', force: true });
     await initCommand.execute(testDir);
@@ -637,8 +686,8 @@ describe('InitCommand - profile and detection features', () => {
     expect(config.delivery).toBe('commands');
     expect(config.workflows).toEqual(['explore']);
 
-    const exploreCommand = path.join(testDir, '.claude', 'commands', 'opsx', 'explore.md');
-    const proposeCommand = path.join(testDir, '.claude', 'commands', 'opsx', 'propose.md');
+    const exploreCommand = path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md');
+    const proposeCommand = path.join(testDir, '.claude', 'commands', 'dwsp', 'propose.md');
     expect(await fileExists(exploreCommand)).toBe(true);
     expect(await fileExists(proposeCommand)).toBe(false);
 
@@ -690,11 +739,11 @@ describe('InitCommand - profile and detection features', () => {
     expect(await fileExists(skillFile)).toBe(true);
 
     // Commands should NOT exist
-    const cmdFile = path.join(testDir, '.claude', 'commands', 'opsx', 'explore.md');
+    const cmdFile = path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md');
     expect(await fileExists(cmdFile)).toBe(false);
   });
 
-  it('should respect delivery=commands setting (no skills)', async () => {
+  it('should respect delivery=commands setting (no workflow skills)', async () => {
     saveGlobalConfig({
       featureFlags: {},
       profile: 'custom',
@@ -705,12 +754,16 @@ describe('InitCommand - profile and detection features', () => {
     const initCommand = new InitCommand({ tools: 'claude', force: true });
     await initCommand.execute(testDir);
 
-    // Skills should NOT exist
-    const skillFile = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
-    expect(await fileExists(skillFile)).toBe(false);
+    // Workflow skills should NOT exist
+    const workflowSkillFile = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
+    expect(await fileExists(workflowSkillFile)).toBe(false);
+
+    // Bundled enterprise capability skills should still exist
+    const capabilitySkillFile = path.join(testDir, '.claude', 'skills', 'executing-plans', 'SKILL.md');
+    expect(await fileExists(capabilitySkillFile)).toBe(true);
 
     // Commands should exist
-    const cmdFile = path.join(testDir, '.claude', 'commands', 'opsx', 'explore.md');
+    const cmdFile = path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md');
     expect(await fileExists(cmdFile)).toBe(true);
   });
 
@@ -725,7 +778,7 @@ describe('InitCommand - profile and detection features', () => {
     const initCommand1 = new InitCommand({ tools: 'claude', force: true });
     await initCommand1.execute(testDir);
 
-    const cmdFile = path.join(testDir, '.claude', 'commands', 'opsx', 'explore.md');
+    const cmdFile = path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md');
     expect(await fileExists(cmdFile)).toBe(true);
 
     saveGlobalConfig({
@@ -742,6 +795,52 @@ describe('InitCommand - profile and detection features', () => {
 
     const skillFile = path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md');
     expect(await fileExists(skillFile)).toBe(true);
+    expect(await fileExists(path.join(testDir, '.claude', 'skills', 'executing-plans', 'SKILL.md'))).toBe(true);
+  });
+
+  describe('bundled enterprise capability skills', () => {
+    it('should initialize strict enterprise mode without requiring preinstalled external skills', async () => {
+      await fs.rm(path.join(testDir, 'AGENTS.md'), { force: true });
+
+      const initCommand = new InitCommand({ tools: 'claude', force: true });
+      await initCommand.execute(testDir);
+
+      const capabilitySkills = [
+        'brainstorming',
+        'executing-plans',
+        'test-driven-development',
+        'subagent-driven-development',
+        'requesting-code-review',
+        'receiving-code-review',
+        'verification-before-completion',
+      ];
+
+      for (const skillName of capabilitySkills) {
+        const skillFile = path.join(testDir, '.claude', 'skills', skillName, 'SKILL.md');
+        expect(await fileExists(skillFile)).toBe(true);
+      }
+    });
+
+    it('should still install bundled capability skills when delivery is commands-only', async () => {
+      await fs.rm(path.join(testDir, 'AGENTS.md'), { force: true });
+      saveGlobalConfig({
+        featureFlags: {},
+        profile: 'custom',
+        delivery: 'commands',
+        workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
+      });
+
+      const initCommand = new InitCommand({ tools: 'claude', force: true });
+      await initCommand.execute(testDir);
+
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'openspec-explore', 'SKILL.md'))).toBe(false);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'brainstorming', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'executing-plans', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'test-driven-development', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'subagent-driven-development', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'verification-before-completion', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'commands', 'dwsp', 'explore.md'))).toBe(true);
+    });
   });
 });
 
@@ -761,4 +860,47 @@ async function directoryExists(dirPath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+async function writeEnterpriseException(projectPath: string): Promise<void> {
+  await fs.mkdir(projectPath, { recursive: true });
+  await fs.writeFile(
+    path.join(projectPath, 'AGENTS.md'),
+    `## ${ENTERPRISE_EXCEPTIONS_HEADER}\n- ${ENTERPRISE_ALLOW_MISSING_CAPABILITIES}\n`
+  );
+}
+
+async function createScaffoldSourceRoots(baseDir: string): Promise<{
+  modoFrameRoot: string;
+  bEndDesignProRoot: string;
+}> {
+  const modoFrameRoot = path.join(baseDir, 'modo-frame');
+  const bEndDesignProRoot = path.join(baseDir, 'b-end-design-pro');
+
+  await fs.mkdir(modoFrameRoot, { recursive: true });
+  await fs.mkdir(bEndDesignProRoot, { recursive: true });
+
+  await fs.writeFile(path.join(modoFrameRoot, 'next.config.ts'), 'export default {};\n');
+  await fs.writeFile(path.join(modoFrameRoot, 'tsconfig.json'), '{"compilerOptions":{}}\n');
+  await fs.writeFile(path.join(modoFrameRoot, 'postcss.config.mjs'), 'export default {};\n');
+
+  await fs.mkdir(path.join(bEndDesignProRoot, 'assets', '.prd', 'modules'), { recursive: true });
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', 'package.json'), '{"name":"modo-next"}\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.b-end-adapter'), 'modo\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', 'AGENTS.md'), '# scaffold agents\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.prd', 'main.md'), '# prd\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.prd', 'modules', '_template.md'), '# module\n');
+
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme'), { recursive: true });
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'components'), { recursive: true });
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'templates', 'login'), { recursive: true });
+  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'biz_components', 'modo-button'), { recursive: true });
+
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme', 'modo-algorithm.ts'), 'export const modoAlgorithm = [];\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme', 'antd-theme-token.tsx'), 'export const modoThemeToken = {};\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'components', 'globals.css'), '@import "tailwindcss";\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
+  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'biz_components', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
+
+  return { modoFrameRoot, bEndDesignProRoot };
 }

@@ -1,7 +1,7 @@
 /**
  * Update Command
  *
- * Refreshes OpenSpec skills and commands for configured tools.
+ * Refreshes DuowenSpec skills and commands for configured tools.
  * Supports profile-aware updates, delivery changes, migration, and smart update detection.
  */
 
@@ -20,6 +20,7 @@ import {
 import {
   getToolVersionStatus,
   getSkillTemplates,
+  getEnterpriseCapabilitySkillTemplates,
   getCommandContents,
   generateSkillContent,
   getToolsWithSkillsDir,
@@ -47,6 +48,11 @@ import {
   scanInstalledWorkflows as scanInstalledWorkflowsShared,
   migrateIfNeeded as migrateIfNeededShared,
 } from './migration.js';
+import { assertEnterpriseCapabilitiesAvailable } from './enterprise-capability-preflight.js';
+import {
+  getAllEnterpriseCapabilitySkillDirNames,
+  getBundledEnterpriseCapabilitySkillDirNames,
+} from './enterprise-capability-skills.js';
 
 const require = createRequire(import.meta.url);
 const { version: OPENSPEC_VERSION } = require('../../package.json');
@@ -83,13 +89,13 @@ export class UpdateCommand {
     const resolvedProjectPath = path.resolve(projectPath);
     const openspecPath = path.join(resolvedProjectPath, OPENSPEC_DIR_NAME);
 
-    // 1. Check openspec directory exists
+    // 1. Check duowenspec directory exists
     if (!await FileSystemUtils.directoryExists(openspecPath)) {
-      throw new Error(`No OpenSpec directory found. Run 'openspec init' first.`);
+      throw new Error(`No DuowenSpec directory found. Run 'duowenspec init' first.`);
     }
 
     // 2. Perform one-time migration if needed before any legacy upgrade generation.
-    // Use detected tool directories to preserve existing opsx skills/commands.
+    // Use detected tool directories to preserve existing dwsp skills/commands.
     const detectedTools = getAvailableTools(resolvedProjectPath);
     migrateIfNeededShared(resolvedProjectPath, detectedTools);
 
@@ -116,7 +122,7 @@ export class UpdateCommand {
 
     if (configuredTools.length === 0 && newlyConfiguredTools.length === 0) {
       console.log(chalk.yellow('No configured tools found.'));
-      console.log(chalk.dim('Run "openspec init" to set up tools.'));
+      console.log(chalk.dim('Run "duowenspec init" to set up tools.'));
       return;
     }
 
@@ -158,6 +164,9 @@ export class UpdateCommand {
       return;
     }
 
+    const toolsToUpdate = this.force ? configuredTools : [...toolsToUpdateSet];
+    assertEnterpriseCapabilitiesAvailable(desiredWorkflows);
+
     // 8. Display update plan
     if (this.force) {
       console.log(`Force updating ${configuredTools.length} tool(s): ${configuredTools.join(', ')}`);
@@ -167,11 +176,12 @@ export class UpdateCommand {
     console.log();
 
     // 9. Determine what to generate based on delivery
-    const skillTemplates = shouldGenerateSkills ? getSkillTemplates(desiredWorkflows) : [];
+    const workflowSkillTemplates = shouldGenerateSkills ? getSkillTemplates(desiredWorkflows) : [];
+    const capabilitySkillTemplates = getEnterpriseCapabilitySkillTemplates(desiredWorkflows);
+    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates];
     const commandContents = shouldGenerateCommands ? getCommandContents(desiredWorkflows) : [];
 
     // 10. Update tools (all if force, otherwise only those needing update)
-    const toolsToUpdate = this.force ? configuredTools : [...toolsToUpdateSet];
     const updatedTools: string[] = [];
     const failedTools: Array<{ name: string; error: string }> = [];
     let removedCommandCount = 0;
@@ -188,8 +198,8 @@ export class UpdateCommand {
       try {
         const skillsDir = path.join(resolvedProjectPath, tool.skillsDir, 'skills');
 
-        // Generate skill files if delivery includes skills
-        if (shouldGenerateSkills) {
+        // Generate workflow skills when enabled, plus bundled enterprise capability skills
+        if (skillTemplates.length > 0) {
           for (const { template, dirName } of skillTemplates) {
             const skillDir = path.join(skillsDir, dirName);
             const skillFile = path.join(skillDir, 'SKILL.md');
@@ -200,8 +210,13 @@ export class UpdateCommand {
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
 
+        }
+
+        if (shouldGenerateSkills) {
           removedDeselectedSkillCount += await this.removeUnselectedSkillDirs(skillsDir, desiredWorkflows);
         }
+
+        removedDeselectedSkillCount += await this.removeUnselectedCapabilitySkillDirs(skillsDir, desiredWorkflows);
 
         // Delete skill directories if delivery is commands-only
         if (!shouldGenerateSkills) {
@@ -268,13 +283,13 @@ export class UpdateCommand {
     if (newlyConfiguredTools.length > 0) {
       console.log();
       console.log(chalk.bold('Getting started:'));
-      console.log('  /opsx:propose   Start an enterprise proposal');
-      console.log('  /opsx:apply     Implement approved tasks');
-      console.log('  /opsx:review    Run the required review checkpoint');
-      console.log('  /opsx:verify    Run the release-readiness verification gate');
-      console.log('  /opsx:document  Complete the required documentation checkpoint');
+      console.log('  /dwsp:propose   Start an enterprise proposal');
+      console.log('  /dwsp:apply     Implement approved tasks');
+      console.log('  /dwsp:review    Run the required review checkpoint');
+      console.log('  /dwsp:verify    Run the release-readiness verification gate');
+      console.log('  /dwsp:document  Complete the required documentation checkpoint');
       console.log();
-      console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/OpenSpec')}`);
+      console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
     }
 
     const configuredAndNewTools = [...new Set([...configuredTools, ...newlyConfiguredTools])];
@@ -348,7 +363,7 @@ export class UpdateCommand {
       console.log();
       console.log(
         chalk.yellow(
-          `Detected new ${toolNoun}: ${newToolNames.join(', ')}. Run 'openspec init' to add ${pronoun}.`
+          `Detected new ${toolNoun}: ${newToolNames.join(', ')}. Run 'duowenspec init' to add ${pronoun}.`
         )
       );
     }
@@ -367,7 +382,7 @@ export class UpdateCommand {
     const extraWorkflows = installedWorkflows.filter((w) => !profileSet.has(w));
 
     if (extraWorkflows.length > 0) {
-      console.log(chalk.dim(`Note: ${extraWorkflows.length} extra workflows not in profile (use \`openspec config profile\` to manage)`));
+      console.log(chalk.dim(`Note: ${extraWorkflows.length} extra workflows not in profile (use \`duowenspec config profile\` to manage)`));
     }
   }
 
@@ -412,6 +427,29 @@ export class UpdateCommand {
       const dirName = WORKFLOW_TO_SKILL_DIR[workflow];
       if (!dirName) continue;
 
+      const skillDir = path.join(skillsDir, dirName);
+      try {
+        if (fs.existsSync(skillDir)) {
+          await fs.promises.rm(skillDir, { recursive: true, force: true });
+          removed++;
+        }
+      } catch {
+        // Ignore errors
+      }
+    }
+
+    return removed;
+  }
+
+  private async removeUnselectedCapabilitySkillDirs(
+    skillsDir: string,
+    desiredWorkflows: readonly (typeof ALL_WORKFLOWS)[number][]
+  ): Promise<number> {
+    const desiredSet = new Set(getBundledEnterpriseCapabilitySkillDirNames(desiredWorkflows));
+    let removed = 0;
+
+    for (const dirName of getAllEnterpriseCapabilitySkillDirNames()) {
+      if (desiredSet.has(dirName)) continue;
       const skillDir = path.join(skillsDir, dirName);
       try {
         if (fs.existsSync(skillDir)) {
@@ -491,7 +529,7 @@ export class UpdateCommand {
   }
 
   /**
-   * Detect and handle legacy OpenSpec artifacts.
+   * Detect and handle legacy DuowenSpec artifacts.
    * Unlike init, update warns but continues if legacy files found in non-interactive mode.
    * Returns array of tool IDs that were newly configured during legacy upgrade.
    */
@@ -645,11 +683,15 @@ export class UpdateCommand {
       }
     }
 
+    assertEnterpriseCapabilitiesAvailable(desiredWorkflows);
+
     // Create skills/commands for selected tools using effective profile+delivery.
     const newlyConfigured: string[] = [];
     const shouldGenerateSkills = delivery !== 'commands';
     const shouldGenerateCommands = delivery !== 'skills';
-    const skillTemplates = shouldGenerateSkills ? getSkillTemplates(desiredWorkflows) : [];
+    const workflowSkillTemplates = shouldGenerateSkills ? getSkillTemplates(desiredWorkflows) : [];
+    const capabilitySkillTemplates = getEnterpriseCapabilitySkillTemplates(desiredWorkflows);
+    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates];
     const commandContents = shouldGenerateCommands ? getCommandContents(desiredWorkflows) : [];
 
     for (const toolId of selectedTools) {
@@ -661,8 +703,8 @@ export class UpdateCommand {
       try {
         const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
 
-        // Create skill files when delivery includes skills
-        if (shouldGenerateSkills) {
+        // Create skill files when delivery includes skills, plus bundled capability skills
+        if (skillTemplates.length > 0) {
           for (const { template, dirName } of skillTemplates) {
             const skillDir = path.join(skillsDir, dirName);
             const skillFile = path.join(skillDir, 'SKILL.md');
@@ -673,6 +715,8 @@ export class UpdateCommand {
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
         }
+
+        await this.removeUnselectedCapabilitySkillDirs(skillsDir, desiredWorkflows);
 
         // Create commands when delivery includes commands
         if (shouldGenerateCommands) {

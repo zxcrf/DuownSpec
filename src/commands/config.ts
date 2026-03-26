@@ -92,7 +92,7 @@ const WORKFLOW_PROMPT_META: Record<string, WorkflowPromptMeta> = {
   },
   onboard: {
     name: 'Onboard',
-    description: 'Guided onboarding flow for OpenSpec',
+    description: 'Guided onboarding flow for DuowenSpec',
   },
 };
 
@@ -206,7 +206,7 @@ function maybeWarnConfigDrift(
   if (!hasProjectConfigDrift(projectDir, state.workflows, state.delivery)) {
     return;
   }
-  console.log(colorize('Warning: Global config is not applied to this project. Run `openspec update` to sync.'));
+  console.log(colorize('Warning: Global config is not applied to this project. Run `duowenspec update` to sync.'));
 }
 
 /**
@@ -217,7 +217,7 @@ function maybeWarnConfigDrift(
 export function registerConfigCommand(program: Command): void {
   const configCmd = program
     .command('config')
-    .description('View and modify global OpenSpec configuration')
+    .description('View and modify global DuowenSpec configuration')
     .option('--scope <scope>', 'Config scope (only "global" supported currently)')
     .hook('preAction', (thisCommand) => {
       const opts = thisCommand.opts();
@@ -307,7 +307,7 @@ export function registerConfigCommand(program: Command): void {
       if (!keyValidation.valid && !allowUnknown) {
         const reason = keyValidation.reason ? ` ${keyValidation.reason}.` : '';
         console.error(`Error: Invalid configuration key "${key}".${reason}`);
-        console.error('Use "openspec config list" to see available keys.');
+        console.error('Use "duowenspec config list" to see available keys.');
         console.error('Pass --allow-unknown to bypass this check.');
         process.exitCode = 1;
         return;
@@ -362,7 +362,7 @@ export function registerConfigCommand(program: Command): void {
     .action(async (options: { all?: boolean; yes?: boolean }) => {
       if (!options.all) {
         console.error('Error: --all flag is required for reset');
-        console.error('Usage: openspec config reset --all [-y]');
+        console.error('Usage: duowenspec config reset --all [-y]');
         process.exitCode = 1;
         return;
       }
@@ -469,7 +469,7 @@ export function registerConfigCommand(program: Command): void {
         config.workflows = [...CORE_WORKFLOWS];
         // Preserve delivery setting
         saveGlobalConfig(config);
-        console.log('Config updated. Run `openspec update` in your projects to apply.');
+        console.log('Config updated. Run `duowenspec update` in your projects to apply.');
         return;
       }
 
@@ -481,7 +481,7 @@ export function registerConfigCommand(program: Command): void {
 
       // Non-interactive check
       if (!process.stdout.isTTY) {
-        console.error('Interactive mode required. Use `openspec config profile` interactively or update config via file/flags.');
+        console.error('Interactive mode required. Use `duowenspec config profile` interactively or update config via file/flags.');
         process.exitCode = 1;
         return;
       }
@@ -619,7 +619,7 @@ export function registerConfigCommand(program: Command): void {
         config.workflows = nextState.workflows;
         saveGlobalConfig(config);
 
-        // Check if inside an OpenSpec project
+        // Check if inside an DuowenSpec project
         const projectDir = process.cwd();
         const openspecDir = path.join(projectDir, OPENSPEC_DIR_NAME);
         if (fs.existsSync(openspecDir)) {
@@ -630,17 +630,17 @@ export function registerConfigCommand(program: Command): void {
 
           if (applyNow) {
             try {
-              execSync('npx openspec update', { stdio: 'inherit', cwd: projectDir });
-              console.log('Run `openspec update` in your other projects to apply.');
+              execSync('npx duowenspec update', { stdio: 'inherit', cwd: projectDir });
+              console.log('Run `duowenspec update` in your other projects to apply.');
             } catch {
-              console.error('`openspec update` failed. Please run it manually to apply the profile changes.');
+              console.error('`duowenspec update` failed. Please run it manually to apply the profile changes.');
               process.exitCode = 1;
             }
             return;
           }
         }
 
-        console.log('Config updated. Run `openspec update` in your projects to apply.');
+        console.log('Config updated. Run `duowenspec update` in your projects to apply.');
       } catch (error) {
         if (isPromptCancellationError(error)) {
           console.log('Config profile cancelled.');

@@ -127,5 +127,5 @@ export function migrateIfNeeded(projectPath: string, tools: AIToolOption[]): voi
   saveGlobalConfig(config);
 
   console.log(`Migrated: custom profile with ${installedWorkflows.length} workflows`);
-  console.log("New in this fork: /opsx:propose drives the enterprise-first workflow.");
+  console.log("New in this fork: /dwsp:propose drives the enterprise-first workflow.");
 }

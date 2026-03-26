@@ -3,6 +3,10 @@ import * as fs from 'fs';
 import { AI_TOOLS } from './config.js';
 import type { Delivery } from './global-config.js';
 import { ALL_WORKFLOWS } from './profiles.js';
+import {
+  getAllEnterpriseCapabilitySkillDirNames,
+  getBundledEnterpriseCapabilitySkillDirNames,
+} from './enterprise-capability-skills.js';
 import { CommandAdapterRegistry } from './command-generation/index.js';
 import { COMMAND_IDS, getConfiguredTools } from './shared/index.js';
 
@@ -35,7 +39,7 @@ function toKnownWorkflows(workflows: readonly string[]): WorkflowId[] {
 }
 
 /**
- * Checks whether a tool has at least one generated OpenSpec command file.
+ * Checks whether a tool has at least one generated DuowenSpec command file.
  */
 export function toolHasAnyConfiguredCommand(projectPath: string, toolId: string): boolean {
   const adapter = CommandAdapterRegistry.get(toolId);
@@ -99,6 +103,7 @@ export function hasToolProfileOrDeliveryDrift(
   const knownDesiredWorkflows = toKnownWorkflows(desiredWorkflows);
   const desiredWorkflowSet = new Set<WorkflowId>(knownDesiredWorkflows);
   const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
+  const bundledCapabilityDirs = new Set(getBundledEnterpriseCapabilitySkillDirNames(knownDesiredWorkflows));
   const adapter = CommandAdapterRegistry.get(toolId);
   const shouldGenerateSkills = delivery !== 'commands';
   const shouldGenerateCommands = delivery !== 'skills';
@@ -128,6 +133,21 @@ export function hasToolProfileOrDeliveryDrift(
       if (fs.existsSync(skillDir)) {
         return true;
       }
+    }
+  }
+
+  for (const capabilityDir of bundledCapabilityDirs) {
+    const capabilitySkillFile = path.join(skillsDir, capabilityDir, 'SKILL.md');
+    if (!fs.existsSync(capabilitySkillFile)) {
+      return true;
+    }
+  }
+
+  for (const capabilityDir of getAllEnterpriseCapabilitySkillDirNames()) {
+    if (bundledCapabilityDirs.has(capabilityDir)) continue;
+    const capabilitySkillDir = path.join(skillsDir, capabilityDir);
+    if (fs.existsSync(capabilitySkillDir)) {
+      return true;
     }
   }
 

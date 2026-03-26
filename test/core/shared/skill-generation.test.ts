@@ -3,6 +3,7 @@ import {
   getSkillTemplates,
   getCommandTemplates,
   getCommandContents,
+  getEnterpriseCapabilitySkillTemplates,
   generateSkillContent,
 } from '../../../src/core/shared/skill-generation.js';
 
@@ -185,6 +186,33 @@ describe('skill-generation', () => {
       const all = getCommandContents();
       const noFilter = getCommandContents(undefined);
       expect(noFilter).toHaveLength(all.length);
+    });
+  });
+
+  describe('getEnterpriseCapabilitySkillTemplates', () => {
+    it('should return every bundled enterprise skill referenced by the enterprise workflow', () => {
+      const templates = getEnterpriseCapabilitySkillTemplates(['explore', 'apply', 'review', 'verify']);
+      const dirNames = templates.map((template) => template.dirName);
+
+      expect(dirNames).toEqual([
+        'brainstorming',
+        'executing-plans',
+        'test-driven-development',
+        'subagent-driven-development',
+        'requesting-code-review',
+        'receiving-code-review',
+        'verification-before-completion',
+      ]);
+    });
+
+    it('should return only the bundled skills needed for the selected stages', () => {
+      const templates = getEnterpriseCapabilitySkillTemplates(['explore', 'verify']);
+      const dirNames = templates.map((template) => template.dirName);
+
+      expect(dirNames).toEqual([
+        'brainstorming',
+        'verification-before-completion',
+      ]);
     });
   });
 

@@ -105,7 +105,7 @@ describe('config profile interactive flow', () => {
 
     const coreCommands = ['propose', 'explore', 'apply', 'archive'];
     for (const commandId of coreCommands) {
-      const commandPath = path.join(projectDir, '.claude', 'commands', 'opsx', `${commandId}.md`);
+      const commandPath = path.join(projectDir, '.claude', 'commands', 'dwsp', `${commandId}.md`);
       fs.mkdirSync(path.dirname(commandPath), { recursive: true });
       fs.writeFileSync(commandPath, `# ${commandId}\n`, 'utf-8');
     }
@@ -116,7 +116,7 @@ describe('config profile interactive flow', () => {
     fs.mkdirSync(path.dirname(syncSkillPath), { recursive: true });
     fs.writeFileSync(syncSkillPath, 'name: openspec-sync-specs\n', 'utf-8');
 
-    const syncCommandPath = path.join(projectDir, '.claude', 'commands', 'opsx', 'sync.md');
+    const syncCommandPath = path.join(projectDir, '.claude', 'commands', 'dwsp', 'sync.md');
     fs.mkdirSync(path.dirname(syncCommandPath), { recursive: true });
     fs.writeFileSync(syncCommandPath, '# sync\n', 'utf-8');
   }
@@ -403,7 +403,7 @@ describe('config profile interactive flow', () => {
     await runConfigCommand(['profile']);
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Interactive mode required. Use `openspec config profile` interactively or update config via file/flags.'
+      'Interactive mode required. Use `duowenspec config profile` interactively or update config via file/flags.'
     );
   });
 });
