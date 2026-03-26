@@ -143,28 +143,6 @@ program
     }
   });
 
-// Hidden alias: 'experimental' -> 'init' for backwards compatibility
-program
-  .command('experimental', { hidden: true })
-  .description('init 的兼容别名（已废弃）')
-  .option('--tool <tool-id>', '目标 AI 工具（映射到 --tools）')
-  .option('--no-interactive', '关闭交互提示')
-  .action(async (options?: { tool?: string; noInteractive?: boolean }) => {
-    try {
-      console.log('提示："openspec experimental" 已废弃，请改用 "dwsp init"。');
-      const { InitCommand } = await import('../core/init.js');
-      const initCommand = new InitCommand({
-        tools: options?.tool,
-        interactive: options?.noInteractive === true ? false : undefined,
-      });
-      await initCommand.execute('.');
-    } catch (error) {
-      console.log();
-      ora().fail(`错误：${(error as Error).message}`);
-      process.exit(1);
-    }
-  });
-
 program
   .command('update [path]')
   .description('刷新 OpenSpec 生成的说明文件')
@@ -222,7 +200,7 @@ const changeCmd = program
 
 // Deprecation notice for noun-based commands
 changeCmd.hook('preAction', () => {
-  console.error('警告："dwsp change ..." 已废弃，建议改用动词优先的命令（例如 "openspec list"、"dwsp validate --changes"）。');
+  console.error('警告："dwsp change ..." 已废弃，建议改用动词优先的命令（例如 "dwsp list"、"dwsp validate --changes"）。');
 });
 
 changeCmd
@@ -244,12 +222,12 @@ changeCmd
 
 changeCmd
   .command('list')
-  .description('列出所有进行中的变更（已废弃，请改用 "openspec list"）')
+  .description('列出所有进行中的变更（已废弃，请改用 "dwsp list"）')
   .option('--json', '以 JSON 输出')
   .option('--long', '显示编号、标题和数量')
   .action(async (options?: { json?: boolean; long?: boolean }) => {
     try {
-      console.error('警告："dwsp change list" 已废弃，请改用 "openspec list"。');
+      console.error('警告："dwsp change list" 已废弃，请改用 "dwsp list"。');
       const changeCommand = new ChangeCommand();
       await changeCommand.list(options);
     } catch (error) {
@@ -367,7 +345,7 @@ program
 // Completion command with subcommands
 const completionCmd = program
   .command('completion')
-  .description('管理 OpenSpec CLI 的 shell 补全');
+  .description('管理 DuowenSpec CLI 的 shell 补全');
 
 completionCmd
   .command('generate [shell]')

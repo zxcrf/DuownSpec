@@ -30,7 +30,8 @@ export class ZshInstaller {
    */
   async isOhMyZshInstalled(): Promise<boolean> {
     // First check for $ZSH environment variable (standard OMZ setup)
-    if (process.env.ZSH) {
+    const zshEnvPath = process.env.ZSH;
+    if (zshEnvPath && path.resolve(zshEnvPath) === path.join(this.homeDir, '.oh-my-zsh')) {
       return true;
     }
 
@@ -56,13 +57,13 @@ export class ZshInstaller {
     if (isOhMyZsh) {
       // Oh My Zsh custom completions directory
       return {
-        path: path.join(this.homeDir, '.oh-my-zsh', 'custom', 'completions', '_openspec'),
+        path: path.join(this.homeDir, '.oh-my-zsh', 'custom', 'completions', '_dwsp'),
         isOhMyZsh: true,
       };
     } else {
       // Standard Zsh completions directory
       return {
-        path: path.join(this.homeDir, '.zsh', 'completions', '_openspec'),
+        path: path.join(this.homeDir, '.zsh', 'completions', '_dwsp'),
         isOhMyZsh: false,
       };
     }
@@ -105,7 +106,7 @@ export class ZshInstaller {
    */
   private generateZshrcConfig(completionsDir: string): string {
     return [
-      '# OpenSpec shell completions configuration',
+      '# DuowenSpec shell completions configuration',
       `fpath=("${completionsDir}" $fpath)`,
       'autoload -Uz compinit',
       'compinit',
@@ -438,7 +439,7 @@ export class ZshInstaller {
         messages.push(`已从 ${targetPath} 移除补全脚本`);
       }
       if (zshrcCleaned && !isOhMyZsh) {
-        messages.push('已从 ~/.zshrc 移除 OpenSpec 配置');
+        messages.push('已从 ~/.zshrc 移除 DuowenSpec 配置');
       }
 
       return {

@@ -68,7 +68,7 @@ B-End Delivery Brief
 - 不要绕开模板，直接从存量业务页复制拼装
 - 不要在同一任务里混用多套视觉语言`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -127,7 +127,7 @@ Component Resolution
 - 不要在表格、分页、筛选区域混入另一套页面结构
 - 不要把临时演示数据和真实常量写死在 page.tsx 里`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -194,7 +194,7 @@ B-End Review
 - 如果结论是 \`pass\`，要明确说明你核对过哪些约束
 - 如果无法确认某项规则是否满足，不能假装通过，必须写成风险`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }

@@ -18,7 +18,7 @@ export function getVerifyChangeSkillTemplate(): SkillTemplate {
 
 1. **若未提供变更名，提示用户选择**
 
-   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
+   运行 \`dwsp list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
    展示包含实现任务的变更（存在 tasks 产物）。
    若可用，展示每个变更使用的 schema。
@@ -28,7 +28,7 @@ export function getVerifyChangeSkillTemplate(): SkillTemplate {
 
 2. **检查状态并识别 schema**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析 JSON 以了解：
    - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
@@ -37,7 +37,7 @@ export function getVerifyChangeSkillTemplate(): SkillTemplate {
 3. **获取变更目录并加载产物**
 
    \`\`\`bash
-   openspec instructions apply --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    该命令会返回变更目录与上下文文件。读取 \`contextFiles\` 中全部可用产物。
@@ -168,7 +168,7 @@ export function getVerifyChangeSkillTemplate(): SkillTemplate {
 - 建议必须具体、可执行
 - 避免“建议再看看”这类空泛表述`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -187,7 +187,7 @@ export function getOpsxVerifyCommandTemplate(): CommandTemplate {
 
 1. **若未提供变更名，提示用户选择**
 
-   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
+   运行 \`dwsp list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
    展示包含实现任务的变更（存在 tasks 产物）。
    若可用，展示每个变更使用的 schema。
@@ -197,7 +197,7 @@ export function getOpsxVerifyCommandTemplate(): CommandTemplate {
 
 2. **检查状态并识别 schema**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析 JSON 以了解：
    - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
@@ -206,7 +206,7 @@ export function getOpsxVerifyCommandTemplate(): CommandTemplate {
 3. **获取变更目录并加载产物**
 
    \`\`\`bash
-   openspec instructions apply --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    该命令会返回变更目录与上下文文件。读取 \`contextFiles\` 中全部可用产物。

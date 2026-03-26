@@ -1,5 +1,5 @@
 {
-  "name": "@duowen-ai/dwsp",
+  "name": "@duowen-ai/duowenspec",
   "version": "1.2.0",
   "description": "AI-native system for spec-driven development",
   "keywords": [
@@ -27,8 +27,7 @@
     }
   },
   "bin": {
-    "dwsp": "./bin/dwsp.js",
-    "opsx": "./bin/opsx.js"
+    "dwsp": "./bin/dwsp.js"
   },
   "files": [
     "dist",

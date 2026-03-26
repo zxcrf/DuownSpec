@@ -1,6 +1,6 @@
 # CLI Reference
 
-The OpenSpec CLI (`openspec`) provides terminal commands for project setup, validation, status inspection, and management. These commands complement the AI slash commands (like `/dwsp:propose`) documented in [Commands](commands.md).
+The DuowenSpec CLI (`dwsp`) provides terminal commands for project setup, validation, status inspection, and management. These commands complement the AI slash commands (like `/dwsp:propose`) documented in [Commands](commands.md).
 
 ## Summary
 
@@ -28,10 +28,10 @@ These commands are interactive and designed for terminal use:
 | Command | Purpose |
 |---------|---------|
 | `dwsp init` | Initialize project (interactive prompts) |
-| `openspec view` | Interactive dashboard |
+| `dwsp view` | Interactive dashboard |
 | `dwsp config edit` | Open config in editor |
-| `openspec feedback` | Submit feedback via GitHub |
-| `openspec completion install` | Install shell completions |
+| `dwsp feedback` | Submit feedback via GitHub |
+| `dwsp completion install` | Install shell completions |
 
 ### Agent-Compatible Commands
 
@@ -39,13 +39,13 @@ These commands support `--json` output for programmatic use by AI agents and scr
 
 | Command | Human Use | Agent Use |
 |---------|-----------|-----------|
-| `openspec list` | Browse changes/specs | `--json` for structured data |
-| `openspec show <item>` | Read content | `--json` for parsing |
-| `openspec validate` | Check for issues | `--all --json` for bulk validation |
-| `openspec status` | See artifact progress | `--json` for structured status |
-| `openspec instructions` | Get next steps | `--json` for agent instructions |
-| `openspec templates` | Find template paths | `--json` for path resolution |
-| `openspec schemas` | List available schemas | `--json` for schema discovery |
+| `dwsp list` | Browse changes/specs | `--json` for structured data |
+| `dwsp show <item>` | Read content | `--json` for parsing |
+| `dwsp validate` | Check for issues | `--all --json` for bulk validation |
+| `dwsp status` | See artifact progress | `--json` for structured status |
+| `dwsp instructions` | Get next steps | `--json` for agent instructions |
+| `dwsp templates` | Find template paths | `--json` for path resolution |
+| `dwsp schemas` | List available schemas | `--json` for schema discovery |
 
 ---
 
@@ -153,7 +153,7 @@ dwsp update [path] [options]
 
 ```bash
 # Update instruction files after npm upgrade
-npm update @fission-ai/openspec
+npm update @duowen-ai/duowenspec
 dwsp update
 ```
 
@@ -161,12 +161,12 @@ dwsp update
 
 ## Browsing Commands
 
-### `openspec list`
+### `dwsp list`
 
 List changes or specs in your project.
 
 ```
-openspec list [options]
+dwsp list [options]
 ```
 
 **Options:**
@@ -182,13 +182,13 @@ openspec list [options]
 
 ```bash
 # List all active changes
-openspec list
+dwsp list
 
 # List all specs
-openspec list --specs
+dwsp list --specs
 
 # JSON output for scripts
-openspec list --json
+dwsp list --json
 ```
 
 **Output (text):**
@@ -201,24 +201,24 @@ Active changes:
 
 ---
 
-### `openspec view`
+### `dwsp view`
 
 Display an interactive dashboard for exploring specs and changes.
 
 ```
-openspec view
+dwsp view
 ```
 
 Opens a terminal-based interface for navigating your project's specifications and changes.
 
 ---
 
-### `openspec show`
+### `dwsp show`
 
 Display details of a change or spec.
 
 ```
-openspec show [item-name] [options]
+dwsp show [item-name] [options]
 ```
 
 **Arguments:**
@@ -253,28 +253,28 @@ openspec show [item-name] [options]
 
 ```bash
 # Interactive selection
-openspec show
+dwsp show
 
 # Show a specific change
-openspec show add-dark-mode
+dwsp show add-dark-mode
 
 # Show a specific spec
-openspec show auth --type spec
+dwsp show auth --type spec
 
 # JSON output for parsing
-openspec show add-dark-mode --json
+dwsp show add-dark-mode --json
 ```
 
 ---
 
 ## Validation Commands
 
-### `openspec validate`
+### `dwsp validate`
 
 Validate changes and specs for structural issues.
 
 ```
-openspec validate [item-name] [options]
+dwsp validate [item-name] [options]
 ```
 
 **Arguments:**
@@ -300,19 +300,19 @@ openspec validate [item-name] [options]
 
 ```bash
 # Interactive validation
-openspec validate
+dwsp validate
 
 # Validate a specific change
-openspec validate add-dark-mode
+dwsp validate add-dark-mode
 
 # Validate all changes
-openspec validate --changes
+dwsp validate --changes
 
 # Validate everything with JSON output (for CI/scripts)
-openspec validate --all --json
+dwsp validate --all --json
 
 # Strict validation with increased parallelism
-openspec validate --all --strict --concurrency 12
+dwsp validate --all --strict --concurrency 12
 ```
 
 **Output (text):**
@@ -352,12 +352,12 @@ Validating add-dark-mode...
 
 ## Lifecycle Commands
 
-### `openspec archive`
+### `dwsp archive`
 
 Archive a completed change and merge delta specs into main specs.
 
 ```
-openspec archive [change-name] [options]
+dwsp archive [change-name] [options]
 ```
 
 **Arguments:**
@@ -378,16 +378,16 @@ openspec archive [change-name] [options]
 
 ```bash
 # Interactive archive
-openspec archive
+dwsp archive
 
 # Archive specific change
-openspec archive add-dark-mode
+dwsp archive add-dark-mode
 
 # Archive without prompts (CI/scripts)
-openspec archive add-dark-mode --yes
+dwsp archive add-dark-mode --yes
 
 # Archive a tooling change that doesn't affect specs
-openspec archive update-ci-config --skip-specs
+dwsp archive update-ci-config --skip-specs
 ```
 
 **What it does:**
@@ -403,12 +403,12 @@ openspec archive update-ci-config --skip-specs
 
 These commands support the artifact-driven OPSX workflow. They're useful for both humans checking progress and agents determining next steps.
 
-### `openspec status`
+### `dwsp status`
 
 Display artifact completion status for a change.
 
 ```
-openspec status [options]
+dwsp status [options]
 ```
 
 **Options:**
@@ -423,13 +423,13 @@ openspec status [options]
 
 ```bash
 # Interactive status check
-openspec status
+dwsp status
 
 # Status for specific change
-openspec status --change add-dark-mode
+dwsp status --change add-dark-mode
 
 # JSON for agent use
-openspec status --change add-dark-mode --json
+dwsp status --change add-dark-mode --json
 ```
 
 **Output (text):**
@@ -464,12 +464,12 @@ Progress: 2/4 artifacts complete
 
 ---
 
-### `openspec instructions`
+### `dwsp instructions`
 
 Get enriched instructions for creating an artifact or applying tasks. Used by AI agents to understand what to create next.
 
 ```
-openspec instructions [artifact] [options]
+dwsp instructions [artifact] [options]
 ```
 
 **Arguments:**
@@ -492,16 +492,16 @@ openspec instructions [artifact] [options]
 
 ```bash
 # Get instructions for next artifact
-openspec instructions --change add-dark-mode
+dwsp instructions --change add-dark-mode
 
 # Get specific artifact instructions
-openspec instructions design --change add-dark-mode
+dwsp instructions design --change add-dark-mode
 
 # Get apply/implementation instructions
-openspec instructions apply --change add-dark-mode
+dwsp instructions apply --change add-dark-mode
 
 # JSON for agent consumption
-openspec instructions design --change add-dark-mode --json
+dwsp instructions design --change add-dark-mode --json
 ```
 
 **Output includes:**
@@ -513,12 +513,12 @@ openspec instructions design --change add-dark-mode --json
 
 ---
 
-### `openspec templates`
+### `dwsp templates`
 
 Show resolved template paths for all artifacts in a schema.
 
 ```
-openspec templates [options]
+dwsp templates [options]
 ```
 
 **Options:**
@@ -532,13 +532,13 @@ openspec templates [options]
 
 ```bash
 # Show template paths for default schema
-openspec templates
+dwsp templates
 
 # Show templates for custom schema
-openspec templates --schema my-workflow
+dwsp templates --schema my-workflow
 
 # JSON for programmatic use
-openspec templates --json
+dwsp templates --json
 ```
 
 **Output (text):**
@@ -555,12 +555,12 @@ Templates:
 
 ---
 
-### `openspec schemas`
+### `dwsp schemas`
 
 List available workflow schemas with their descriptions and artifact flows.
 
 ```
-openspec schemas [options]
+dwsp schemas [options]
 ```
 
 **Options:**
@@ -572,7 +572,7 @@ openspec schemas [options]
 **Example:**
 
 ```bash
-openspec schemas
+dwsp schemas
 ```
 
 **Output:**
@@ -595,12 +595,12 @@ Available schemas:
 
 Commands for creating and managing custom workflow schemas.
 
-### `openspec schema init`
+### `dwsp schema init`
 
 Create a new project-local schema.
 
 ```
-openspec schema init <name> [options]
+dwsp schema init <name> [options]
 ```
 
 **Arguments:**
@@ -624,10 +624,10 @@ openspec schema init <name> [options]
 
 ```bash
 # Interactive schema creation
-openspec schema init research-first
+dwsp schema init research-first
 
 # Non-interactive with specific artifacts
-openspec schema init rapid \
+dwsp schema init rapid \
   --description "Rapid iteration workflow" \
   --artifacts "proposal,tasks" \
   --default
@@ -647,12 +647,12 @@ openspec/schemas/<name>/
 
 ---
 
-### `openspec schema fork`
+### `dwsp schema fork`
 
 Copy an existing schema to your project for customization.
 
 ```
-openspec schema fork <source> [name] [options]
+dwsp schema fork <source> [name] [options]
 ```
 
 **Arguments:**
@@ -673,17 +673,17 @@ openspec schema fork <source> [name] [options]
 
 ```bash
 # Fork the built-in spec-driven schema
-openspec schema fork spec-driven my-workflow
+dwsp schema fork spec-driven my-workflow
 ```
 
 ---
 
-### `openspec schema validate`
+### `dwsp schema validate`
 
 Validate a schema's structure and templates.
 
 ```
-openspec schema validate [name] [options]
+dwsp schema validate [name] [options]
 ```
 
 **Arguments:**
@@ -703,20 +703,20 @@ openspec schema validate [name] [options]
 
 ```bash
 # Validate a specific schema
-openspec schema validate my-workflow
+dwsp schema validate my-workflow
 
 # Validate all schemas
-openspec schema validate
+dwsp schema validate
 ```
 
 ---
 
-### `openspec schema which`
+### `dwsp schema which`
 
 Show where a schema resolves from (useful for debugging precedence).
 
 ```
-openspec schema which [name] [options]
+dwsp schema which [name] [options]
 ```
 
 **Arguments:**
@@ -736,14 +736,14 @@ openspec schema which [name] [options]
 
 ```bash
 # Check where a schema comes from
-openspec schema which spec-driven
+dwsp schema which spec-driven
 ```
 
 **Output:**
 
 ```
 spec-driven resolves from: package
-  Source: /usr/local/lib/node_modules/@fission-ai/openspec/schemas/spec-driven
+  Source: /usr/local/lib/node_modules/@duowen-ai/duowenspec/schemas/spec-driven
 ```
 
 **Schema precedence:**
@@ -840,12 +840,12 @@ dwsp config profile
 
 ## Utility Commands
 
-### `openspec feedback`
+### `dwsp feedback`
 
 Submit feedback about OpenSpec. Creates a GitHub issue.
 
 ```
-openspec feedback <message> [options]
+dwsp feedback <message> [options]
 ```
 
 **Arguments:**
@@ -865,18 +865,18 @@ openspec feedback <message> [options]
 **Example:**
 
 ```bash
-openspec feedback "Add support for custom artifact types" \
+dwsp feedback "Add support for custom artifact types" \
   --body "I'd like to define my own artifact types beyond the built-in ones."
 ```
 
 ---
 
-### `openspec completion`
+### `dwsp completion`
 
-Manage shell completions for the OpenSpec CLI.
+Manage shell completions for the DuowenSpec CLI.
 
 ```
-openspec completion <subcommand> [shell]
+dwsp completion <subcommand> [shell]
 ```
 
 **Subcommands:**
@@ -893,16 +893,16 @@ openspec completion <subcommand> [shell]
 
 ```bash
 # Install completions (auto-detects shell)
-openspec completion install
+dwsp completion install
 
 # Install for specific shell
-openspec completion install zsh
+dwsp completion install zsh
 
 # Generate script for manual installation
-openspec completion generate bash > ~/.bash_completion.d/openspec
+dwsp completion generate bash > ~/.bash_completion.d/openspec
 
 # Uninstall
-openspec completion uninstall
+dwsp completion uninstall
 ```
 
 ---

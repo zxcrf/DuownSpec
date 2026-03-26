@@ -28,13 +28,13 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
 
 2. **创建变更目录**
    \`\`\`bash
-   openspec new change "<name>"
+   dwsp new change "<name>"
    \`\`\`
    这会在 \`openspec/changes/<name>/\` 下创建变更骨架。
 
 3. **获取产物构建顺序**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析返回的 JSON，重点看：
    - \`applyRequires\`：开始实现前必须完成的产物 ID（例如 \`["tasks"]\`）
@@ -49,7 +49,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
    a. **针对每个 \`ready\` 状态的产物（依赖已满足）**：
       - 获取指令：
         \`\`\`bash
-        openspec instructions <artifact-id> --change "<name>" --json
+        dwsp instructions <artifact-id> --change "<name>" --json
         \`\`\`
       - 返回的 JSON 中重点字段有：
         - \`context\`：项目背景（给你的约束，不要直接输出）
@@ -64,7 +64,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
       - 简短反馈进度："✓ 已创建 <artifact-id>"
 
    b. **持续处理，直到 \`applyRequires\` 中的产物全部完成**
-      - 每创建完一份产物，都重新运行 \`openspec status --change "<name>" --json\`
+      - 每创建完一份产物，都重新运行 \`dwsp status --change "<name>" --json\`
       - 检查 \`applyRequires\` 中每个产物在 \`artifacts\` 里是否都已是 \`status: "done"\`
       - 全部完成后停止
 
@@ -74,7 +74,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
 
 5. **展示最终状态**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
 
 **输出**
@@ -87,7 +87,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
 
 **产物创建指引**
 
-- 每类产物都以 \`openspec instructions\` 返回的 \`instruction\` 为准
+- 每类产物都以 \`dwsp instructions\` 返回的 \`instruction\` 为准
 - schema 已经定义了每份产物该写什么，按它来
 - 创建新产物前先阅读依赖产物
 - 以 \`template\` 作为输出结构，把对应章节补完整
@@ -104,7 +104,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
 
 ${getModoBEndImplementationHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -132,13 +132,13 @@ export function getOpsxFfCommandTemplate(): CommandTemplate {
 
 2. **创建变更目录**
    \`\`\`bash
-   openspec new change "<name>"
+   dwsp new change "<name>"
    \`\`\`
    这会在 \`openspec/changes/<name>/\` 下创建变更骨架。
 
 3. **获取产物构建顺序**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析返回的 JSON，重点看：
    - \`applyRequires\`：开始实现前必须完成的产物 ID（例如 \`["tasks"]\`）
@@ -153,7 +153,7 @@ export function getOpsxFfCommandTemplate(): CommandTemplate {
    a. **针对每个 \`ready\` 状态的产物（依赖已满足）**：
       - 获取指令：
         \`\`\`bash
-        openspec instructions <artifact-id> --change "<name>" --json
+        dwsp instructions <artifact-id> --change "<name>" --json
         \`\`\`
       - 返回的 JSON 中重点字段有：
         - \`context\`：项目背景（给你的约束，不要直接输出）
@@ -168,7 +168,7 @@ export function getOpsxFfCommandTemplate(): CommandTemplate {
       - 简短反馈进度："✓ 已创建 <artifact-id>"
 
    b. **持续处理，直到 \`applyRequires\` 中的产物全部完成**
-      - 每创建完一份产物，都重新运行 \`openspec status --change "<name>" --json\`
+      - 每创建完一份产物，都重新运行 \`dwsp status --change "<name>" --json\`
       - 检查 \`applyRequires\` 中每个产物在 \`artifacts\` 里是否都已是 \`status: "done"\`
       - 全部完成后停止
 
@@ -178,7 +178,7 @@ export function getOpsxFfCommandTemplate(): CommandTemplate {
 
 5. **展示最终状态**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
 
 **输出**
@@ -191,7 +191,7 @@ export function getOpsxFfCommandTemplate(): CommandTemplate {
 
 **产物创建指引**
 
-- 每类产物都以 \`openspec instructions\` 返回的 \`instruction\` 为准
+- 每类产物都以 \`dwsp instructions\` 返回的 \`instruction\` 为准
 - schema 已经定义了每份产物该写什么，按它来
 - 创建新产物前先阅读依赖产物
 - 以 \`template\` 作为输出结构，把对应章节补完整

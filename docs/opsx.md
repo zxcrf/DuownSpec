@@ -59,13 +59,13 @@ You're "in planning phase", then "in implementation phase", then "done". But rea
 ## Setup
 
 ```bash
-# Make sure you have openspec installed — skills are automatically generated
-openspec init
+# Make sure you have dwsp installed — skills are automatically generated
+dwsp init
 ```
 
 This creates skills in `.claude/skills/` (or equivalent) that AI coding assistants auto-detect.
 
-By default, OpenSpec uses the `core` workflow profile (`propose`, `explore`, `apply`, `archive`). If you want the expanded workflow commands (`new`, `continue`, `ff`, `verify`, `sync`, `bulk-archive`, `onboard`), configure them with `openspec config profile` and apply with `openspec update`.
+By default, OpenSpec uses the `core` workflow profile (`propose`, `explore`, `apply`, `archive`). If you want the expanded workflow commands (`new`, `continue`, `ff`, `verify`, `sync`, `bulk-archive`, `onboard`), configure them with `dwsp config profile` and apply with `dwsp update`.
 
 During setup, you'll be prompted to create a **project config** (`openspec/config.yaml`). This is optional but recommended.
 
@@ -75,7 +75,7 @@ Project config lets you set defaults and inject project-specific context into al
 
 ### Creating Config
 
-Config is created during `openspec init`, or manually:
+Config is created during `dwsp init`, or manually:
 
 ```yaml
 # openspec/config.yaml
@@ -142,7 +142,7 @@ rules:
 
 **"Unknown artifact ID in rules: X"**
 - Check artifact IDs match your schema (see list above)
-- Run `openspec schemas --json` to see artifact IDs for each schema
+- Run `dwsp schemas --json` to see artifact IDs for each schema
 
 **Config not being applied:**
 - Ensure file is at `openspec/config.yaml` (not `.yml`)
@@ -490,7 +490,7 @@ Artifacts form a directed acyclic graph (DAG). Dependencies are **enablers**, no
   ┌──────────────────────────────────────────────────────────────────────────┐
   │  Step 1: Query current state                                             │
   │  ┌────────────────────────────────────────────────────────────────────┐  │
-  │  │  $ openspec status --change "add-auth" --json                      │  │
+  │  │  $ dwsp status --change "add-auth" --json                      │  │
   │  │                                                                    │  │
   │  │  {                                                                 │  │
   │  │    "artifacts": [                                                  │  │
@@ -504,7 +504,7 @@ Artifacts form a directed acyclic graph (DAG). Dependencies are **enablers**, no
   │                                                                          │
   │  Step 2: Get rich instructions for ready artifact                        │
   │  ┌────────────────────────────────────────────────────────────────────┐  │
-  │  │  $ openspec instructions specs --change "add-auth" --json          │  │
+  │  │  $ dwsp instructions specs --change "add-auth" --json          │  │
   │  │                                                                    │  │
   │  │  {                                                                 │  │
   │  │    "template": "# Specification\n\n## ADDED Requirements...",      │  │
@@ -564,16 +564,16 @@ Create custom workflows using the schema management commands:
 
 ```bash
 # Create a new schema from scratch (interactive)
-openspec schema init my-workflow
+dwsp schema init my-workflow
 
 # Or fork an existing schema as a starting point
-openspec schema fork spec-driven my-workflow
+dwsp schema fork spec-driven my-workflow
 
 # Validate your schema structure
-openspec schema validate my-workflow
+dwsp schema validate my-workflow
 
 # See where a schema resolves from (useful for debugging)
-openspec schema which my-workflow
+dwsp schema which my-workflow
 ```
 
 Schemas are stored in `openspec/schemas/` (project-local, version controlled) or `~/.local/share/openspec/schemas/` (user global).
@@ -629,19 +629,19 @@ Schemas define what artifacts exist and their dependencies. Currently available:
 
 ```bash
 # List available schemas
-openspec schemas
+dwsp schemas
 
 # See all schemas with their resolution sources
-openspec schema which --all
+dwsp schema which --all
 
 # Create a new schema interactively
-openspec schema init my-workflow
+dwsp schema init my-workflow
 
 # Fork an existing schema for customization
-openspec schema fork spec-driven my-workflow
+dwsp schema fork spec-driven my-workflow
 
 # Validate schema structure before use
-openspec schema validate my-workflow
+dwsp schema validate my-workflow
 ```
 
 ## Tips
@@ -650,7 +650,7 @@ openspec schema validate my-workflow
 - `/opsx:ff` when you know what you want, `/opsx:continue` when exploring
 - During `/opsx:apply`, if something's wrong — fix the artifact, then continue
 - Tasks track progress via checkboxes in `tasks.md`
-- Check status anytime: `openspec status --change "name"`
+- Check status anytime: `dwsp status --change "name"`
 
 ## Feedback
 

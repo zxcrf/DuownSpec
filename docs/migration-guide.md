@@ -82,17 +82,17 @@ Don't worry about getting it perfect. We're still learning what works best here,
 
 ## Running the Migration
 
-Both `openspec init` and `openspec update` detect legacy files and guide you through the same cleanup process. Use whichever fits your situation:
+Both `dwsp init` and `dwsp update` detect legacy files and guide you through the same cleanup process. Use whichever fits your situation:
 
 - New installs default to profile `core` (`propose`, `explore`, `apply`, `archive`).
 - Migrated installs preserve your previously installed workflows by writing a `custom` profile when needed.
 
-### Using `openspec init`
+### Using `dwsp init`
 
 Run this if you want to add new tools or reconfigure which tools are set up:
 
 ```bash
-openspec init
+dwsp init
 ```
 
 The init command detects legacy files and guides you through cleanup:
@@ -136,12 +136,12 @@ Needs your attention
 4. New skills are installed in `.claude/skills/`
 5. `openspec/config.yaml` is created with a default schema
 
-### Using `openspec update`
+### Using `dwsp update`
 
 Run this if you just want to migrate and refresh your existing tools to the latest version:
 
 ```bash
-openspec update
+dwsp update
 ```
 
 The update command also detects and cleans up legacy artifacts, then refreshes generated skills/commands to match your current profile and delivery settings.
@@ -151,7 +151,7 @@ The update command also detects and cleans up legacy artifacts, then refreshes g
 For scripted migrations:
 
 ```bash
-openspec init --force --tools claude
+dwsp init --force --tools claude
 ```
 
 The `--force` flag skips prompts and auto-accepts cleanup.
@@ -301,7 +301,7 @@ Command availability is profile-dependent:
 | `/opsx:bulk-archive` | Archive multiple changes at once |
 | `/opsx:onboard` | Guided end-to-end onboarding workflow |
 
-Enable expanded commands with `openspec config profile`, then run `openspec update`.
+Enable expanded commands with `dwsp config profile`, then run `dwsp update`.
 
 ### Command Mapping from Legacy
 
@@ -432,7 +432,7 @@ Shows what's ready to create based on what already exists.
 **Need to see status?**
 
 ```bash
-openspec status --change add-my-feature
+dwsp status --change add-my-feature
 ```
 
 ---
@@ -482,7 +482,7 @@ When determining which schema to use, OPSX checks in order:
 List all available schemas:
 
 ```bash
-openspec schemas
+dwsp schemas
 ```
 
 ### Custom Schemas
@@ -490,13 +490,13 @@ openspec schemas
 Create your own workflow:
 
 ```bash
-openspec schema init my-workflow
+dwsp schema init my-workflow
 ```
 
 Or fork an existing one:
 
 ```bash
-openspec schema fork spec-driven my-workflow
+dwsp schema fork spec-driven my-workflow
 ```
 
 See [Customization](customization.md) for details.
@@ -510,7 +510,7 @@ See [Customization](customization.md) for details.
 You're running in a CI or non-interactive environment. Use:
 
 ```bash
-openspec init --force
+dwsp init --force
 ```
 
 ### Commands not appearing after migration
@@ -526,7 +526,7 @@ Check that your `rules:` keys match your schema's artifact IDs:
 Run this to see valid artifact IDs:
 
 ```bash
-openspec schemas --json
+dwsp schemas --json
 ```
 
 ### Config not being applied

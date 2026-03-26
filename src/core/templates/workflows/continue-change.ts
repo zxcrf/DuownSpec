@@ -19,7 +19,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
 
 1. **如果没有提供变更名，先提示用户选择**
 
-   运行 \`openspec list --json\`，获取可用变更并按最近修改时间排序。然后使用 **AskUserQuestion tool** 让用户选择要继续哪个变更。
+   运行 \`dwsp list --json\`，获取可用变更并按最近修改时间排序。然后使用 **AskUserQuestion tool** 让用户选择要继续哪个变更。
 
    向用户展示最近 3-4 个变更，并说明：
    - 变更名
@@ -33,7 +33,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
 
 2. **检查当前状态**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析返回的 JSON，重点看这些字段：
    - \`schemaName\`：当前使用的工作流 schema（例如 "spec-driven"）
@@ -56,7 +56,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
    - 从状态输出中选择第一个 \`status: "ready"\` 的产物
    - 获取它的指令：
      \`\`\`bash
-     openspec instructions <artifact-id> --change "<name>" --json
+     dwsp instructions <artifact-id> --change "<name>" --json
      \`\`\`
    - 解析返回的 JSON，重点看这些字段：
      - \`context\`：项目背景（给你的约束，不要直接输出）
@@ -81,7 +81,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
 
 4. **创建完产物后，展示最新进度**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
 
 **输出**
@@ -95,7 +95,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
 
 **产物创建指引**
 
-不同 schema 下的产物类型和作用可能不同，应以 \`openspec instructions\` 返回的 \`instruction\` 为准。
+不同 schema 下的产物类型和作用可能不同，应以 \`dwsp instructions\` 返回的 \`instruction\` 为准。
 
 常见的 **spec-driven** schema 模式是：proposal → specs → design → tasks。
 
@@ -120,7 +120,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
 
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -139,7 +139,7 @@ export function getOpsxContinueCommandTemplate(): CommandTemplate {
 
 1. **如果没有提供变更名，先提示用户选择**
 
-   运行 \`openspec list --json\`，获取可用变更并按最近修改时间排序。然后使用 **AskUserQuestion tool** 让用户选择要继续哪个变更。
+   运行 \`dwsp list --json\`，获取可用变更并按最近修改时间排序。然后使用 **AskUserQuestion tool** 让用户选择要继续哪个变更。
 
    向用户展示最近 3-4 个变更，并说明：
    - 变更名
@@ -153,7 +153,7 @@ export function getOpsxContinueCommandTemplate(): CommandTemplate {
 
 2. **检查当前状态**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析返回的 JSON，重点看这些字段：
    - \`schemaName\`：当前使用的工作流 schema（例如 "spec-driven"）
@@ -176,7 +176,7 @@ export function getOpsxContinueCommandTemplate(): CommandTemplate {
    - 从状态输出中选择第一个 \`status: "ready"\` 的产物
    - 获取它的指令：
      \`\`\`bash
-     openspec instructions <artifact-id> --change "<name>" --json
+     dwsp instructions <artifact-id> --change "<name>" --json
      \`\`\`
    - 解析返回的 JSON，重点看这些字段：
      - \`context\`：项目背景（给你的约束，不要直接输出）
@@ -201,7 +201,7 @@ export function getOpsxContinueCommandTemplate(): CommandTemplate {
 
 4. **创建完产物后，展示最新进度**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
 
 **输出**
@@ -215,7 +215,7 @@ export function getOpsxContinueCommandTemplate(): CommandTemplate {
 
 **产物创建指引**
 
-不同 schema 下的产物类型和作用可能不同，应以 \`openspec instructions\` 返回的 \`instruction\` 为准。
+不同 schema 下的产物类型和作用可能不同，应以 \`dwsp instructions\` 返回的 \`instruction\` 为准。
 
 常见的 **spec-driven** schema 模式是：proposal → specs → design → tasks。
 

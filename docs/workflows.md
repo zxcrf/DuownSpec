@@ -49,8 +49,8 @@ Typical flow:
 If you want explicit scaffold-and-build commands (`/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/opsx:verify`, `/opsx:sync`, `/opsx:bulk-archive`, `/opsx:onboard`), enable them with:
 
 ```bash
-openspec config profile
-openspec update
+dwsp config profile
+dwsp update
 ```
 
 ## Workflow Patterns (Expanded Mode)
@@ -417,7 +417,7 @@ Catches mismatches before you close out the change.
 
 ### Name Changes Clearly
 
-Good names make `openspec list` useful:
+Good names make `dwsp list` useful:
 
 ```text
 Good:                          Avoid:

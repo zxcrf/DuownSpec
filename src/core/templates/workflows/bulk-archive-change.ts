@@ -12,7 +12,7 @@ export function getBulkArchiveChangeSkillTemplate(): SkillTemplate {
     description: '一次归档多个已完成变更。适用于并行变更统一收尾归档。',
     instructions: getBulkArchiveInstructions(),
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -28,7 +28,7 @@ function getBulkArchiveInstructions(): string {
 
 1. **获取当前活跃变更**
 
-   运行 \`openspec list --json\`，拿到全部活跃 change。
+   运行 \`dwsp list --json\`，拿到全部活跃 change。
 
    如果当前没有任何活跃 change，就告知用户并停止。
 
@@ -45,7 +45,7 @@ function getBulkArchiveInstructions(): string {
 
    针对每个选中的 change，收集以下信息：
 
-   a. **产物状态**：运行 \`openspec status --change "<name>" --json\`
+   a. **产物状态**：运行 \`dwsp status --change "<name>" --json\`
       - 解析 \`schemaName\` 和 \`artifacts\`
       - 记录哪些产物已是 \`done\`，哪些还没完成
 

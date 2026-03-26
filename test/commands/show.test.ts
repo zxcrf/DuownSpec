@@ -8,7 +8,7 @@ describe('top-level show command', () => {
   const testDir = path.join(projectRoot, 'test-show-command-tmp');
   const changesDir = path.join(testDir, 'openspec', 'changes');
   const specsDir = path.join(testDir, 'openspec', 'specs');
-  const openspecBin = path.join(projectRoot, 'bin', 'openspec.js');
+  const openspecBin = path.join(projectRoot, 'bin', 'dwsp.js');
 
 
   beforeEach(async () => {
@@ -41,10 +41,10 @@ describe('top-level show command', () => {
       expect(err).toBeDefined();
       expect(err.status).not.toBe(0);
       const stderr = err.stderr.toString();
-      expect(stderr).toContain('Nothing to show.');
-      expect(stderr).toContain('duowenspec show <item>');
-      expect(stderr).toContain('duowenspec change show');
-      expect(stderr).toContain('duowenspec spec show');
+      expect(stderr).toContain('当前没有可显示的内容');
+      expect(stderr).toContain('dwsp show <item>');
+      expect(stderr).toContain('dwsp change show');
+      expect(stderr).toContain('dwsp spec show');
     } finally {
       process.chdir(originalCwd);
       process.env = originalEnv;
@@ -94,7 +94,7 @@ describe('top-level show command', () => {
       expect(err).toBeDefined();
       expect(err.status).not.toBe(0);
       const stderr = err.stderr.toString();
-      expect(stderr).toContain('Ambiguous item');
+      expect(stderr).toContain("条目 'foo' 同时匹配 change 和 spec，存在歧义");
       expect(stderr).toContain('--type change|spec');
     } finally {
       process.chdir(originalCwd);
@@ -112,12 +112,10 @@ describe('top-level show command', () => {
       expect(err).toBeDefined();
       expect(err.status).not.toBe(0);
       const stderr = err.stderr.toString();
-      expect(stderr).toContain("Unknown item 'unknown-item'");
-      expect(stderr).toContain('Did you mean:');
+      expect(stderr).toContain("未知条目 'unknown-item'");
+      expect(stderr).toContain('你是不是想输入');
     } finally {
       process.chdir(originalCwd);
     }
   });
 });
-
-

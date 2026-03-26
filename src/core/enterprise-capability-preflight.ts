@@ -20,7 +20,7 @@ export function assertEnterpriseCapabilitiesAvailable(workflows: readonly string
 
   if (missingBundledSkills.length > 0) {
     throw new Error(
-      `opsx is missing bundled enterprise capability skills: ${missingBundledSkills.join(', ')}`
+      `duowenspec package is missing bundled enterprise capability skills: ${missingBundledSkills.join(', ')}`
     );
   }
 }

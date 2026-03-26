@@ -20,7 +20,7 @@ export function getSyncSpecsSkillTemplate(): SkillTemplate {
 
 1. **如果没有提供变更名，先提示用户选择**
 
-   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
+   运行 \`dwsp list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
    重点展示那些带有 delta specs（即存在 \`specs/\` 目录内容）的变更。
 
@@ -138,7 +138,7 @@ The system SHALL do something new.
 - 边改边说明你正在做什么
 - 这个操作应当具有幂等性：重复执行两次，结果应保持一致`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -159,7 +159,7 @@ export function getOpsxSyncCommandTemplate(): CommandTemplate {
 
 1. **如果没有提供变更名，先提示用户选择**
 
-   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
+   运行 \`dwsp list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
    重点展示那些带有 delta specs（即存在 \`specs/\` 目录内容）的变更。
 

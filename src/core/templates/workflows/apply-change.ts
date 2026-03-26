@@ -22,13 +22,13 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
    如果提供了变更名，直接使用；否则：
    - 从对话中判断用户是否已提到某个变更
    - 若只有一个活跃变更，可自动选择
-   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
+   - 若存在歧义，执行 \`dwsp list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
    始终明确说明："当前使用变更：<name>"，并告知如何覆盖（例如：\`/dwsp:apply <other>\`）。
 
 2. **检查状态并识别 schema**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析 JSON 以了解：
    - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
@@ -37,7 +37,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 3. **获取 apply 指令**
 
    \`\`\`bash
-   openspec instructions apply --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    返回内容包括：
@@ -164,7 +164,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 
 ${getModoBEndImplementationHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -186,13 +186,13 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
    如果提供了变更名，直接使用；否则：
    - 从对话中判断用户是否已提到某个变更
    - 若只有一个活跃变更，可自动选择
-   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
+   - 若存在歧义，执行 \`dwsp list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
    始终明确说明："当前使用变更：<name>"，并告知如何覆盖（例如：\`/dwsp:apply <other>\`）。
 
 2. **检查状态并识别 schema**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析 JSON 以了解：
    - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
@@ -201,7 +201,7 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
 3. **获取 apply 指令**
 
    \`\`\`bash
-   openspec instructions apply --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    返回内容包括：

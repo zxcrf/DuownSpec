@@ -114,7 +114,7 @@ export async function validateChangeExists(
   if (!changeName) {
     const available = await getAvailableChanges(projectRoot);
     if (available.length === 0) {
-      throw new Error('未找到任何 change。可使用：openspec new change <name>');
+      throw new Error('未找到任何 change。可使用：dwsp new change <name>');
     }
     throw new Error(
       `缺少必填参数 --change。可用 changes：\n  ${available.join('\n  ')}`
@@ -135,7 +135,7 @@ export async function validateChangeExists(
     const available = await getAvailableChanges(projectRoot);
     if (available.length === 0) {
       throw new Error(
-        `未找到 change '${changeName}'，当前也没有任何 change。可使用：openspec new change <name>`
+        `未找到 change '${changeName}'，当前也没有任何 change。可使用：dwsp new change <name>`
       );
     }
     throw new Error(

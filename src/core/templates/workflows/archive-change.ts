@@ -18,7 +18,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 
 1. **若未提供变更名，提示用户选择**
 
-   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
+   运行 \`dwsp list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
    仅展示活跃变更（未归档）。
    若可用，展示每个变更对应的 schema。
@@ -27,7 +27,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 
 2. **检查产物完成状态**
 
-   运行 \`openspec status --change "<name>" --json\` 检查产物完成情况。
+   运行 \`dwsp status --change "<name>" --json\` 检查产物完成情况。
 
    解析 JSON 以了解：
    - \`schemaName\`: 当前使用的工作流
@@ -107,14 +107,14 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 
 **约束**
 - 未提供变更名时，必须先让用户选择变更
-- 使用产物图（\`openspec status --json\`）检查完成状态
+- 使用产物图（\`dwsp status --json\`）检查完成状态
 - 对警告不强制阻断，但必须明确告知并取得确认
 - 移动目录时保留 .openspec.yaml（随目录一起移动）
 - 始终给出清晰的归档结果摘要
 - 若用户要求同步，使用 openspec-sync-specs 的智能体驱动方式
 - 若存在增量 specs，必须先完成同步评估并展示合并摘要，再询问用户`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -133,7 +133,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 1. **若未提供变更名，提示用户选择**
 
-   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
+   运行 \`dwsp list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
    仅展示活跃变更（未归档）。
    若可用，展示每个变更对应的 schema。
@@ -142,7 +142,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 2. **检查产物完成状态**
 
-   运行 \`openspec status --change "<name>" --json\` 检查产物完成情况。
+   运行 \`dwsp status --change "<name>" --json\` 检查产物完成情况。
 
    解析 JSON 以了解：
    - \`schemaName\`: 当前使用的工作流
@@ -269,7 +269,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 **约束**
 - 未提供变更名时，必须先让用户选择变更
-- 使用产物图（\`openspec status --json\`）检查完成状态
+- 使用产物图（\`dwsp status --json\`）检查完成状态
 - 对警告不强制阻断，但必须明确告知并取得确认
 - 移动目录时保留 .openspec.yaml（随目录一起移动）
 - 始终给出清晰的归档结果摘要

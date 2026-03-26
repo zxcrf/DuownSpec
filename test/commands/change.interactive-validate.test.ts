@@ -10,7 +10,7 @@ describe('change validate (interactive behavior)', () => {
   const projectRoot = process.cwd();
   const testDir = path.join(projectRoot, 'test-change-validate-tmp');
   const changesDir = path.join(testDir, 'openspec', 'changes');
-  const bin = path.join(projectRoot, 'bin', 'openspec.js');
+  const bin = path.join(projectRoot, 'bin', 'dwsp.js');
 
 
   beforeEach(async () => {
@@ -36,13 +36,11 @@ describe('change validate (interactive behavior)', () => {
       } catch (e) { err = e; }
       expect(err).toBeDefined();
       expect(err.status).not.toBe(0);
-      expect(err.stderr.toString()).toContain('Available IDs:');
-      expect(err.stderr.toString()).toContain('duowenspec change list');
+      expect(err.stderr.toString()).toContain('可用 ID：demo');
+      expect(err.stderr.toString()).toContain('dwsp change list');
     } finally {
       process.chdir(originalCwd);
       process.env = originalEnv;
     }
   });
 });
-
-

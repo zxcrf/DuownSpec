@@ -212,7 +212,7 @@ return `---
 name: ${template.name}
 description: ${template.description}
 license: ${template.license || 'MIT'}
-compatibility: ${template.compatibility || '需要安装 openspec CLI。'}
+compatibility: ${template.compatibility || '需要安装 dwsp CLI。'}
 metadata:
   author: ${template.metadata?.author || 'openspec'}
   version: "${template.metadata?.version || '1.0'}"

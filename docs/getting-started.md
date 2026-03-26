@@ -18,11 +18,11 @@ OpenSpec helps you and your AI coding assistant agree on what to build before an
 /opsx:new ──► /opsx:ff or /opsx:continue ──► /opsx:apply ──► /opsx:verify ──► /opsx:archive
 ```
 
-The default global profile is `core`, which includes `propose`, `explore`, `apply`, and `archive`. You can enable the expanded workflow commands with `openspec config profile` and then `openspec update`.
+The default global profile is `core`, which includes `propose`, `explore`, `apply`, and `archive`. You can enable the expanded workflow commands with `dwsp config profile` and then `dwsp update`.
 
 ## What OpenSpec Creates
 
-After running `openspec init`, your project has this structure:
+After running `dwsp init`, your project has this structure:
 
 ```
 openspec/
@@ -233,16 +233,16 @@ Use the CLI to check on your changes:
 
 ```bash
 # List active changes
-openspec list
+dwsp list
 
 # View change details
-openspec show add-dark-mode
+dwsp show add-dark-mode
 
 # Validate spec formatting
-openspec validate add-dark-mode
+dwsp validate add-dark-mode
 
 # Interactive dashboard
-openspec view
+dwsp view
 ```
 
 ## Next Steps

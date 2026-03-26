@@ -44,7 +44,7 @@ export class ChangeCommand {
         } else {
           console.error(`未指定 change。可用 ID：${changes.join(', ')}`);
         }
-        console.error('提示：可使用 "openspec change list" 查看可用 change。');
+        console.error('提示：可使用 "dwsp change list" 查看可用 change。');
         process.exitCode = 1;
         return;
       }
@@ -201,7 +201,7 @@ export class ChangeCommand {
         } else {
           console.error(`未指定 change。可用 ID：${changes.join(', ')}`);
         }
-        console.error('提示：可使用 "openspec change list" 查看可用 change。');
+        console.error('提示：可使用 "dwsp change list" 查看可用 change。');
         process.exitCode = 1;
         return;
       }
@@ -283,10 +283,10 @@ export class ChangeCommand {
 
   private printNextSteps(): void {
     const bullets: string[] = [];
-    bullets.push('- Ensure change has deltas in specs/: use headers ## ADDED/MODIFIED/REMOVED/RENAMED Requirements');
-    bullets.push('- Each requirement MUST include at least one #### Scenario: block');
-    bullets.push('- Debug parsed deltas: openspec change show <id> --json --deltas-only');
-    console.error('Next steps:');
+    bullets.push('- 确保 change 在 specs/ 中包含变更差异，使用 ## ADDED/MODIFIED/REMOVED/RENAMED Requirements 这些标题');
+    bullets.push('- 每个 requirement 至少要包含一个 #### Scenario: 区块');
+    bullets.push('- 如需调试解析结果，可运行：dwsp change show <id> --json --deltas-only');
+    console.error('下一步建议：');
     bullets.forEach(b => console.error(`  ${b}`));
   }
 }

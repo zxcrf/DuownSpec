@@ -32,20 +32,20 @@ export function getNewChangeSkillTemplate(): SkillTemplate {
 
    **只有在这些情况下才使用其它 schema：**
    - 用户点名某个 schema → 传入 \`--schema <name>\`
-   - 用户说“看看有哪些工作流 / schema” → 运行 \`openspec schemas --json\` 后再让用户选择
+   - 用户说“看看有哪些工作流 / schema” → 运行 \`dwsp schemas --json\` 后再让用户选择
 
    **否则**：直接省略 \`--schema\`，走默认流程。
 
 3. **创建变更目录**
    \`\`\`bash
-   openspec new change "<name>"
+   dwsp new change "<name>"
    \`\`\`
    只有当用户明确指定非默认工作流时才追加 \`--schema <name>\`。
    这会在 \`openspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
 
 4. **查看产物状态**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
    这会显示哪些产物还未创建，哪些产物已经就绪（依赖满足）。
 
@@ -53,7 +53,7 @@ export function getNewChangeSkillTemplate(): SkillTemplate {
    第一份产物取决于 schema（例如 spec-driven 通常先写 \`proposal\`）。
    从状态输出中找到第一个状态为 "ready" 的产物。
    \`\`\`bash
-   openspec instructions <first-artifact-id> --change "<name>"
+   dwsp instructions <first-artifact-id> --change "<name>"
    \`\`\`
    该命令会输出创建第一份产物所需的模板与上下文。
 
@@ -77,7 +77,7 @@ export function getNewChangeSkillTemplate(): SkillTemplate {
 
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -109,27 +109,27 @@ export function getOpsxNewCommandTemplate(): CommandTemplate {
 
    **只有在这些情况下才使用其它 schema：**
    - 用户点名某个 schema → 传入 \`--schema <name>\`
-   - 用户说“看看有哪些工作流 / schema” → 运行 \`openspec schemas --json\` 后再让用户选择
+   - 用户说“看看有哪些工作流 / schema” → 运行 \`dwsp schemas --json\` 后再让用户选择
 
    **否则**：直接省略 \`--schema\`，走默认流程。
 
 3. **创建变更目录**
    \`\`\`bash
-   openspec new change "<name>"
+   dwsp new change "<name>"
    \`\`\`
    只有当用户明确指定非默认工作流时才追加 \`--schema <name>\`。
    这会在 \`openspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
 
 4. **查看产物状态**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
    这会显示哪些产物还未创建，哪些产物已经就绪（依赖满足）。
 
 5. **获取第一份产物的指令**
    第一份产物取决于 schema。先从状态输出里找到第一个状态为 "ready" 的产物。
    \`\`\`bash
-   openspec instructions <first-artifact-id> --change "<name>"
+   dwsp instructions <first-artifact-id> --change "<name>"
    \`\`\`
    该命令会输出创建第一份产物所需的模板与上下文。
 

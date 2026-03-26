@@ -43,13 +43,13 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
 
 2. **创建变更目录**
    \`\`\`bash
-   openspec new change "<name>"
+   dwsp new change "<name>"
    \`\`\`
    该命令会在 \`openspec/changes/<name>/\` 下创建脚手架，并包含 \`.openspec.yaml\`。
 
 3. **获取产物生成顺序**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析 JSON，获取：
    - \`applyRequires\`: 实现前必须完成的产物 ID 列表（例如 \`["tasks"]\`）
@@ -64,7 +64,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
    a. **针对每个处于 \`ready\` 状态的产物（依赖已满足）**：
       - 获取生成指引：
         \`\`\`bash
-        openspec instructions <artifact-id> --change "<name>" --json
+        dwsp instructions <artifact-id> --change "<name>" --json
         \`\`\`
       - 指引 JSON 包含：
         - \`context\`: 项目背景（给你的约束，不要写入产物）
@@ -79,7 +79,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
       - 简短反馈进度："已创建 <artifact-id>"
 
    b. **持续处理，直到 \`applyRequires\` 全部完成**
-      - 每创建一个产物后，重新执行 \`openspec status --change "<name>" --json\`
+      - 每创建一个产物后，重新执行 \`dwsp status --change "<name>" --json\`
       - 检查 \`applyRequires\` 中每个产物是否在 \`artifacts\` 中为 \`status: "done"\`
       - 全部完成后停止
 
@@ -89,7 +89,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
 
 5. **展示最终状态**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
 
 **输出**
@@ -102,7 +102,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
 
 **产物创建指引**
 
-- 每类产物都以 \`openspec instructions\` 返回的 \`instruction\` 字段为准
+- 每类产物都以 \`dwsp instructions\` 返回的 \`instruction\` 字段为准
 - schema 定义了每个产物应包含的内容，必须遵循
 - 创建新产物前，先读取依赖产物获取上下文
 - 以 \`template\` 作为输出结构，并补全对应章节
@@ -119,7 +119,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
 
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -162,13 +162,13 @@ export function getOpsxProposeCommandTemplate(): CommandTemplate {
 
 2. **创建变更目录**
    \`\`\`bash
-   openspec new change "<name>"
+   dwsp new change "<name>"
    \`\`\`
    该命令会在 \`openspec/changes/<name>/\` 下创建脚手架，并包含 \`.openspec.yaml\`。
 
 3. **获取产物生成顺序**
    \`\`\`bash
-   openspec status --change "<name>" --json
+   dwsp status --change "<name>" --json
    \`\`\`
    解析 JSON，获取：
    - \`applyRequires\`: 实现前必须完成的产物 ID 列表（例如 \`["tasks"]\`）
@@ -183,7 +183,7 @@ export function getOpsxProposeCommandTemplate(): CommandTemplate {
    a. **针对每个处于 \`ready\` 状态的产物（依赖已满足）**：
       - 获取生成指引：
         \`\`\`bash
-        openspec instructions <artifact-id> --change "<name>" --json
+        dwsp instructions <artifact-id> --change "<name>" --json
         \`\`\`
       - 指引 JSON 包含：
         - \`context\`: 项目背景（给你的约束，不要写入产物）
@@ -198,7 +198,7 @@ export function getOpsxProposeCommandTemplate(): CommandTemplate {
       - 简短反馈进度："已创建 <artifact-id>"
 
    b. **持续处理，直到 \`applyRequires\` 全部完成**
-      - 每创建一个产物后，重新执行 \`openspec status --change "<name>" --json\`
+      - 每创建一个产物后，重新执行 \`dwsp status --change "<name>" --json\`
       - 检查 \`applyRequires\` 中每个产物是否在 \`artifacts\` 中为 \`status: "done"\`
       - 全部完成后停止
 
@@ -208,7 +208,7 @@ export function getOpsxProposeCommandTemplate(): CommandTemplate {
 
 5. **展示最终状态**
    \`\`\`bash
-   openspec status --change "<name>"
+   dwsp status --change "<name>"
    \`\`\`
 
 **输出**
@@ -221,7 +221,7 @@ export function getOpsxProposeCommandTemplate(): CommandTemplate {
 
 **产物创建指引**
 
-- 每类产物都以 \`openspec instructions\` 返回的 \`instruction\` 字段为准
+- 每类产物都以 \`dwsp instructions\` 返回的 \`instruction\` 字段为准
 - schema 定义了每个产物应包含的内容，必须遵循
 - 创建新产物前，先读取依赖产物获取上下文
 - 以 \`template\` 作为输出结构，并补全对应章节

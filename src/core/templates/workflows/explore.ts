@@ -87,7 +87,7 @@ OpenSpec 产物（proposal/design/specs/tasks）。
 
 开始时快速执行：
 \`\`\`bash
-openspec list --json
+dwsp list --json
 \`\`\`
 
 这能帮助你了解：
@@ -241,7 +241,7 @@ openspec list --json
 
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -322,7 +322,7 @@ export function getOpsxExploreCommandTemplate(): CommandTemplate {
 
 先执行：
 \`\`\`bash
-openspec list --json
+dwsp list --json
 \`\`\`
 
 若用户提到特定变更，请读取对应产物作为上下文。

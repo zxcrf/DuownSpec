@@ -472,10 +472,10 @@ Create custom schemas for your team's workflow:
 
 ```bash
 # Create from scratch
-openspec schema init research-first
+dwsp schema init research-first
 
 # Or fork an existing one
-openspec schema fork spec-driven research-first
+dwsp schema fork spec-driven research-first
 ```
 
 **Example custom schema:**

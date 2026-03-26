@@ -9,25 +9,25 @@
 ### npm
 
 ```bash
-npm install -g @duowen-ai/opsx@latest
+npm install -g @duowen-ai/duowenspec@latest
 ```
 
 ### pnpm
 
 ```bash
-pnpm add -g @duowen-ai/opsx@latest
+pnpm add -g @duowen-ai/duowenspec@latest
 ```
 
 ### yarn
 
 ```bash
-yarn global add @duowen-ai/opsx@latest
+yarn global add @duowen-ai/duowenspec@latest
 ```
 
 ### bun
 
 ```bash
-bun add -g @duowen-ai/opsx@latest
+bun add -g @duowen-ai/duowenspec@latest
 ```
 
 ## Nix
@@ -64,7 +64,7 @@ Or add to your development environment in `flake.nix`:
 ## Verify Installation
 
 ```bash
-opsx --version
+dwsp --version
 ```
 
 ## Next Steps
@@ -73,7 +73,7 @@ After installing, initialize OpenSpec in your project:
 
 ```bash
 cd your-project
-opsx init
+dwsp init
 ```
 
 See [Getting Started](getting-started.md) for a full walkthrough.

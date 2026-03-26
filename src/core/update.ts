@@ -94,7 +94,7 @@ export class UpdateCommand {
     const resolvedProjectPath = path.resolve(projectPath);
     const openspecPath = path.join(resolvedProjectPath, OPENSPEC_DIR_NAME);
 
-    // 1. Check openspec directory exists
+    // 1. Check dwsp directory exists
     if (!await FileSystemUtils.directoryExists(openspecPath)) {
       throw new Error("未找到 OpenSpec 目录。请先运行 'dwsp init'。");
     }

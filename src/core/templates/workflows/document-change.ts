@@ -19,13 +19,13 @@ export function getDocumentChangeSkillTemplate(): SkillTemplate {
    如果提供了变更名，直接使用；否则：
    - 从对话中判断用户是否已提到某个变更
    - 若只有一个活跃变更，可自动选择
-   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
+   - 若存在歧义，执行 \`dwsp list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
 2. **加载变更上下文**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   dwsp status --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    若存在 proposal、specs、design、tasks，全部读取。
@@ -57,7 +57,7 @@ export function getDocumentChangeSkillTemplate(): SkillTemplate {
 - 将文档视为发布门禁
 - 必要交付物仍缺失时，不得标记为 complete`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -83,13 +83,13 @@ export function getOpsxDocumentCommandTemplate(): CommandTemplate {
    如果提供了变更名，直接使用；否则：
    - 从对话中判断用户是否已提到某个变更
    - 若只有一个活跃变更，可自动选择
-   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
+   - 若存在歧义，执行 \`dwsp list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
 2. **加载变更上下文**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   dwsp status --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
 3. **检查文档完整性**

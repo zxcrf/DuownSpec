@@ -905,7 +905,7 @@ export function registerSchemaCommand(program: Command): void {
           console.log(`\n下一步：`);
           console.log(`  1. 编辑 ${schemaDir}/schema.yaml，自定义 artifacts`);
           console.log(`  2. 修改 schema 目录中的模板文件`);
-          console.log(`  3. 通过命令使用：openspec new --schema ${name}`);
+          console.log(`  3. 通过命令使用：dwsp new --schema ${name}`);
         }
       } catch (error) {
         if (spinner) spinner.fail('创建失败');

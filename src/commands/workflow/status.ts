@@ -49,7 +49,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
           console.log(JSON.stringify({ changes: [], message: '当前没有进行中的 change。' }, null, 2));
           return;
         }
-        console.log('当前没有进行中的 change。可使用：openspec new change <name>');
+        console.log('当前没有进行中的 change。可使用：dwsp new change <name>');
         return;
       }
       // Changes exist but --change not provided

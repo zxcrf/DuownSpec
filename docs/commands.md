@@ -27,7 +27,7 @@ For workflow patterns and when to use each command, see [Workflows](workflows.md
 | `/opsx:bulk-archive` | Archive multiple changes at once |
 | `/opsx:onboard` | Guided tutorial through the complete workflow |
 
-The default global profile is `core`. To enable expanded workflow commands, run `openspec config profile`, select workflows, then run `openspec update` in your project.
+The default global profile is `core`. To enable expanded workflow commands, run `dwsp config profile`, select workflows, then run `dwsp update` in your project.
 
 ---
 
@@ -654,7 +654,7 @@ The command couldn't identify which change to work on.
 
 **Solutions:**
 - Specify the change name explicitly: `/opsx:apply add-dark-mode`
-- Check that the change folder exists: `openspec list`
+- Check that the change folder exists: `dwsp list`
 - Verify you're in the right project directory
 
 ### "No artifacts ready"
@@ -662,7 +662,7 @@ The command couldn't identify which change to work on.
 All artifacts are either complete or blocked by missing dependencies.
 
 **Solutions:**
-- Run `openspec status --change <name>` to see what's blocking
+- Run `dwsp status --change <name>` to see what's blocking
 - Check if required artifacts exist
 - Create missing dependency artifacts first
 
@@ -671,17 +671,17 @@ All artifacts are either complete or blocked by missing dependencies.
 The specified schema doesn't exist.
 
 **Solutions:**
-- List available schemas: `openspec schemas`
+- List available schemas: `dwsp schemas`
 - Check spelling of schema name
-- Create the schema if it's custom: `openspec schema init <name>`
+- Create the schema if it's custom: `dwsp schema init <name>`
 
 ### Commands not recognized
 
 The AI tool doesn't recognize OpenSpec commands.
 
 **Solutions:**
-- Ensure OpenSpec is initialized: `openspec init`
-- Regenerate skills: `openspec update`
+- Ensure OpenSpec is initialized: `dwsp init`
+- Regenerate skills: `dwsp update`
 - Check that `.claude/skills/` directory exists (for Claude Code)
 - Restart your AI tool to pick up new skills
 

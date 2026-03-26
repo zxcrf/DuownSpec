@@ -31,12 +31,12 @@ describe('PowerShellGenerator', () => {
 
 			const script = generator.generate(commands);
 
-			expect(script).toContain('# PowerShell completion script for OpenSpec CLI');
-			expect(script).toContain('$openspecCompleter = {');
+			expect(script).toContain('# PowerShell completion script for DuowenSpec CLI');
+			expect(script).toContain('$dwspCompleter = {');
 			expect(script).toContain('Register-ArgumentCompleter');
 		});
 
-		it('should register argument completer for openspec command', () => {
+		it('should register argument completer for dwsp command', () => {
 			const commands: CommandDefinition[] = [
 				{
 					name: 'init',
@@ -47,8 +47,8 @@ describe('PowerShellGenerator', () => {
 
 			const script = generator.generate(commands);
 
-			expect(script).toContain('Register-ArgumentCompleter -CommandName openspec');
-			expect(script).toContain('-ScriptBlock $openspecCompleter');
+			expect(script).toContain('Register-ArgumentCompleter -CommandName dwsp');
+			expect(script).toContain('-ScriptBlock $dwspCompleter');
 		});
 
 		it('should include all commands with descriptions', () => {
@@ -367,7 +367,7 @@ describe('PowerShellGenerator', () => {
 			const script = generator.generate(commands);
 
 			expect(script).toContain('function Get-OpenSpecChanges');
-			expect(script).toContain('openspec __complete changes 2>$null');
+			expect(script).toContain('dwsp __complete changes 2>$null');
 			expect(script).toContain('-split');
 		});
 
@@ -385,7 +385,7 @@ describe('PowerShellGenerator', () => {
 			const script = generator.generate(commands);
 
 			expect(script).toContain('function Get-OpenSpecSpecs');
-			expect(script).toContain('openspec __complete specs 2>$null');
+			expect(script).toContain('dwsp __complete specs 2>$null');
 		});
 
 		it('should escape double quotes in descriptions', () => {
@@ -478,7 +478,7 @@ describe('PowerShellGenerator', () => {
 			const script = generator.generate(commands);
 
 			expect(script).toContain('# PowerShell completion script');
-			expect(script).toContain('$openspecCompleter = {');
+			expect(script).toContain('$dwspCompleter = {');
 			expect(script).toContain('Register-ArgumentCompleter');
 		});
 

@@ -24,8 +24,8 @@ committing to a proposal.
 - Do not replace proposal or design artifacts with free-form brainstorming
 - Keep the output grounded in the user's real constraints`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -54,8 +54,8 @@ losing scope discipline.
 - Do not silently expand scope
 - Prefer small, verifiable steps over broad speculative edits`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -81,8 +81,8 @@ locking behavior down with tests before or alongside production code changes.
 - Keep each test tied to a user-visible behavior or requirement
 - Do not stop at green tests if the delivered behavior still misses the plan`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -108,8 +108,8 @@ be decomposed into independent slices that can be carried in parallel.
 - Do not let parallel work create conflicting ownership
 - Keep the approved plan as the single source of truth`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -135,8 +135,8 @@ already collected.
 - Make the review target concrete and release-focused
 - Surface known uncertainty instead of hiding it`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -163,8 +163,8 @@ addressed.
 - Do not claim the review is resolved if blocking issues remain
 - Keep the resolution tied to the actual feedback received`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -191,7 +191,7 @@ and the release gate expectations.
 - Verify against promised behavior, not only implementation details
 - Fail clearly if evidence is missing or contradictory`,
     license: 'MIT',
-    compatibility: 'Requires opsx CLI.',
-    metadata: { author: 'opsx', version: '1.0' },
+    compatibility: 'Requires dwsp CLI.',
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }

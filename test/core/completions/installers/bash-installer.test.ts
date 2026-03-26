@@ -25,7 +25,7 @@ describe('BashInstaller', () => {
     it('should return standard bash-completion path', async () => {
       const result = await installer.getInstallationPath();
 
-      expect(result).toBe(path.join(testHomeDir, '.local', 'share', 'bash-completion', 'completions', 'openspec'));
+      expect(result).toBe(path.join(testHomeDir, '.local', 'share', 'bash-completion', 'completions', 'dwsp'));
     });
   });
 
@@ -62,13 +62,13 @@ describe('BashInstaller', () => {
   });
 
   describe('install', () => {
-    const testScript = '# Bash completion script for OpenSpec CLI\n_openspec_completion() {\n  echo "test"\n}\n';
+    const testScript = '# Bash completion script for OpenSpec CLI\n_dwsp_completion() {\n  echo "test"\n}\n';
 
     it('should install to bash-completion path', async () => {
       const result = await installer.install(testScript);
 
       expect(result.success).toBe(true);
-      expect(result.installedPath).toBe(path.join(testHomeDir, '.local', 'share', 'bash-completion', 'completions', 'openspec'));
+      expect(result.installedPath).toBe(path.join(testHomeDir, '.local', 'share', 'bash-completion', 'completions', 'dwsp'));
 
       // Verify file was created with correct content
       const content = await fs.readFile(result.installedPath!, 'utf-8');
@@ -87,7 +87,7 @@ describe('BashInstaller', () => {
     });
 
     it('should backup existing file before overwriting', async () => {
-      const targetPath = path.join(testHomeDir, '.local', 'share', 'bash-completion', 'completions', 'openspec');
+      const targetPath = path.join(testHomeDir, '.local', 'share', 'bash-completion', 'completions', 'dwsp');
       await fs.mkdir(path.dirname(targetPath), { recursive: true });
       await fs.writeFile(targetPath, 'old script');
 
@@ -117,7 +117,7 @@ describe('BashInstaller', () => {
 
       expect(content).toContain('# OPENSPEC:START');
       expect(content).toContain('# OPENSPEC:END');
-      expect(content).toContain('OpenSpec shell completions configuration');
+      expect(content).toContain('DuowenSpec shell completions configuration');
     });
 
     it('should include instructions when auto-config is disabled', async () => {
@@ -167,12 +167,12 @@ describe('BashInstaller', () => {
 
     it('should update completion when content differs', async () => {
       // First installation
-      const firstScript = '# Bash completion v1\n_openspec_completion() {\n  echo "version 1"\n}\n';
+      const firstScript = '# Bash completion v1\n_dwsp_completion() {\n  echo "version 1"\n}\n';
       const firstResult = await installer.install(firstScript);
       expect(firstResult.success).toBe(true);
 
       // Second installation with different script
-      const secondScript = '# Bash completion v2\n_openspec_completion() {\n  echo "version 2"\n}\n';
+      const secondScript = '# Bash completion v2\n_dwsp_completion() {\n  echo "version 2"\n}\n';
       const secondResult = await installer.install(secondScript);
 
       expect(secondResult.success).toBe(true);
@@ -216,7 +216,7 @@ describe('BashInstaller', () => {
   });
 
   describe('uninstall', () => {
-    const testScript = '# Bash completion script\n_openspec_completion() {}\n';
+    const testScript = '# Bash completion script\n_dwsp_completion() {}\n';
 
     it('should remove installed completion script', async () => {
       // Install first
@@ -273,7 +273,7 @@ describe('BashInstaller', () => {
 
       expect(content).toContain('# OPENSPEC:START');
       expect(content).toContain('# OPENSPEC:END');
-      expect(content).toContain('# OpenSpec shell completions configuration');
+      expect(content).toContain('# DuowenSpec shell completions configuration');
       expect(content).toContain(completionsDir);
     });
 
@@ -413,9 +413,9 @@ describe('BashInstaller', () => {
         '# My config',
         '',
         '# OPENSPEC:START',
-        '# OpenSpec shell completions configuration',
+        '# DuowenSpec shell completions configuration',
         'if [ -d ~/.local/share/bash-completion/completions ]; then',
-        '  . ~/.local/share/bash-completion/completions/openspec',
+        '  . ~/.local/share/bash-completion/completions/dwsp',
         'fi',
         '# OPENSPEC:END',
         '',
@@ -432,7 +432,7 @@ describe('BashInstaller', () => {
 
       expect(newContent).not.toContain('# OPENSPEC:START');
       expect(newContent).not.toContain('# OPENSPEC:END');
-      expect(newContent).not.toContain('OpenSpec shell completions configuration');
+      expect(newContent).not.toContain('DuowenSpec shell completions configuration');
       expect(newContent).toContain('# My config');
       expect(newContent).toContain('alias ll="ls -la"');
     });

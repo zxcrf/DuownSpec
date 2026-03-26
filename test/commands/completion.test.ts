@@ -12,7 +12,7 @@ vi.mock('../../src/core/completions/installers/zsh-installer.js', () => ({
   ZshInstaller: vi.fn().mockImplementation(() => ({
     install: vi.fn().mockResolvedValue({
       success: true,
-      installedPath: '/home/user/.oh-my-zsh/completions/_openspec',
+      installedPath: '/home/user/.oh-my-zsh/completions/_dwsp',
       isOhMyZsh: true,
       message: 'Completion script installed successfully for Oh My Zsh',
       instructions: [
@@ -23,7 +23,7 @@ vi.mock('../../src/core/completions/installers/zsh-installer.js', () => ({
     }),
     uninstall: vi.fn().mockResolvedValue({
       success: true,
-      message: 'Completion script removed from /home/user/.oh-my-zsh/completions/_openspec',
+      message: 'Completion script removed from /home/user/.oh-my-zsh/completions/_dwsp',
     }),
   })),
 }));
@@ -52,8 +52,8 @@ describe('CompletionCommand', () => {
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
-      expect(output).toContain('#compdef openspec');
-      expect(output).toContain('_openspec() {');
+      expect(output).toContain('#compdef dwsp');
+      expect(output).toContain('_dwsp() {');
     });
 
     it('should auto-detect Zsh shell when no shell specified', async () => {
@@ -63,7 +63,7 @@ describe('CompletionCommand', () => {
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
-      expect(output).toContain('#compdef openspec');
+      expect(output).toContain('#compdef dwsp');
     });
 
     it('should show error when shell cannot be auto-detected', async () => {
@@ -71,9 +71,9 @@ describe('CompletionCommand', () => {
 
       await command.generate({});
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error: Could not auto-detect shell. Please specify shell explicitly.'
-      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(1, '错误：无法自动识别当前 shell，请手动指定。');
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(2, '用法：dwsp completion generate [shell]');
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(3, '当前支持：zsh, bash, fish, powershell');
       expect(process.exitCode).toBe(1);
     });
 
@@ -81,7 +81,7 @@ describe('CompletionCommand', () => {
       await command.generate({ shell: 'tcsh' });
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error: Shell 'tcsh' is not supported yet. Currently supported: zsh, bash, fish, powershell"
+        "错误：暂不支持 shell 'tcsh'。当前支持：zsh, bash, fish, powershell"
       );
       expect(process.exitCode).toBe(1);
     });
@@ -91,7 +91,7 @@ describe('CompletionCommand', () => {
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
-      expect(output).toContain('#compdef openspec');
+      expect(output).toContain('#compdef dwsp');
     });
   });
 
@@ -109,7 +109,7 @@ describe('CompletionCommand', () => {
       await command.install({ shell: 'zsh', verbose: true });
 
       expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Installed to:')
+        expect.stringContaining('安装位置：')
       );
     });
 
@@ -128,9 +128,9 @@ describe('CompletionCommand', () => {
 
       await command.install({});
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error: Could not auto-detect shell. Please specify shell explicitly.'
-      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(1, '错误：无法自动识别当前 shell，请手动指定。');
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(2, '用法：dwsp completion install [shell]');
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(3, '当前支持：zsh, bash, fish, powershell');
       expect(process.exitCode).toBe(1);
     });
 
@@ -138,7 +138,7 @@ describe('CompletionCommand', () => {
       await command.install({ shell: 'tcsh' });
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error: Shell 'tcsh' is not supported yet. Currently supported: zsh, bash, fish, powershell"
+        "错误：暂不支持 shell 'tcsh'。当前支持：zsh, bash, fish, powershell"
       );
       expect(process.exitCode).toBe(1);
     });
@@ -177,9 +177,9 @@ describe('CompletionCommand', () => {
 
       await command.uninstall({ yes: true });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error: Could not auto-detect shell. Please specify shell explicitly.'
-      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(1, '错误：无法自动识别当前 shell，请手动指定。');
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(2, '用法：dwsp completion uninstall [shell]');
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(3, '当前支持：zsh, bash, fish, powershell');
       expect(process.exitCode).toBe(1);
     });
 
@@ -187,7 +187,7 @@ describe('CompletionCommand', () => {
       await command.uninstall({ shell: 'tcsh', yes: true });
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error: Shell 'tcsh' is not supported yet. Currently supported: zsh, bash, fish, powershell"
+        "错误：暂不支持 shell 'tcsh'。当前支持：zsh, bash, fish, powershell"
       );
       expect(process.exitCode).toBe(1);
     });
@@ -251,7 +251,7 @@ describe('CompletionCommand', () => {
       await command.generate({});
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error: Shell 'tcsh' is not supported yet. Currently supported: zsh, bash, fish, powershell"
+        "错误：暂不支持 shell 'tcsh'。当前支持：zsh, bash, fish, powershell"
       );
       expect(process.exitCode).toBe(1);
     });
@@ -263,7 +263,7 @@ describe('CompletionCommand', () => {
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
-      expect(output).toContain('#compdef openspec');
+      expect(output).toContain('#compdef dwsp');
     });
   });
 });

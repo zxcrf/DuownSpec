@@ -20,15 +20,15 @@ export function getReviewChangeSkillTemplate(): SkillTemplate {
    如果提供了变更名，直接使用；否则：
    - 从对话中判断用户是否已提到某个变更
    - 若只有一个活跃变更，可自动选择
-   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
+   - 若存在歧义，执行 \`dwsp list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
    始终明确说明："正在审查变更：<name>"，并提示如何覆盖（例如 \`/dwsp:review <other>\`）。
 
 2. **加载变更上下文**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   dwsp status --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    在审查前读取 apply 指令返回的全部上下文文件。
@@ -70,7 +70,7 @@ export function getReviewChangeSkillTemplate(): SkillTemplate {
 
 ${getModoBEndReviewHint()}`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
@@ -96,13 +96,13 @@ export function getOpsxReviewCommandTemplate(): CommandTemplate {
    如果提供了变更名，直接使用；否则：
    - 从对话中判断用户是否已提到某个变更
    - 若只有一个活跃变更，可自动选择
-   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
+   - 若存在歧义，执行 \`dwsp list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
 2. **加载变更上下文**
 
    \`\`\`bash
-   openspec status --change "<name>" --json
-   openspec instructions apply --change "<name>" --json
+   dwsp status --change "<name>" --json
+   dwsp instructions apply --change "<name>" --json
    \`\`\`
 
    在审查前读取 apply 指令返回的全部上下文文件。

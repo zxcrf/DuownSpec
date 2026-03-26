@@ -2,7 +2,7 @@
  * Init Command
  *
  * Sets up OpenSpec with Agent Skills and /opsx:* slash commands.
- * This is the unified setup command that replaces both the old init and experimental commands.
+ * This is the unified setup command for project bootstrap and tool setup.
  */
 
 import path from 'path';

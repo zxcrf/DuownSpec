@@ -12,7 +12,7 @@ describe('PowerShellInstaller', () => {
   let originalEnv: NodeJS.ProcessEnv;
 
   beforeEach(async () => {
-    testHomeDir = path.join(os.tmpdir(), `openspec-powershell-test-${randomUUID()}`);
+    testHomeDir = path.join(os.tmpdir(), `dwsp-powershell-test-${randomUUID()}`);
     await fs.mkdir(testHomeDir, { recursive: true });
     installer = new PowerShellInstaller(testHomeDir);
     originalPlatform = process.platform;
@@ -368,11 +368,11 @@ describe('PowerShellInstaller', () => {
 
   describe('install', () => {
     const mockCompletionScript = `# PowerShell completion script for OpenSpec
-$openspecCompleter = {
+$dwspCompleter = {
     param($wordToComplete, $commandAst, $cursorPosition)
     # Completion logic here
 }
-Register-ArgumentCompleter -CommandName openspec -ScriptBlock $openspecCompleter
+Register-ArgumentCompleter -CommandName dwsp -ScriptBlock $dwspCompleter
 `;
 
     it('should install completion script for the first time', async () => {
@@ -489,14 +489,14 @@ Register-ArgumentCompleter -CommandName openspec -ScriptBlock $openspecCompleter
     });
 
     it('should handle installation with paths containing spaces', async () => {
-      const spacedHomeDir = path.join(os.tmpdir(), `openspec powershell test ${randomUUID()}`);
+      const spacedHomeDir = path.join(os.tmpdir(), `dwsp powershell test ${randomUUID()}`);
       await fs.mkdir(spacedHomeDir, { recursive: true });
 
       const spacedInstaller = new PowerShellInstaller(spacedHomeDir);
       const result = await spacedInstaller.install(mockCompletionScript);
 
       expect(result.success).toBe(true);
-      expect(result.installedPath).toContain('openspec powershell test');
+      expect(result.installedPath).toContain('dwsp powershell test');
 
       // Cleanup
       await fs.rm(spacedHomeDir, { recursive: true, force: true });
@@ -546,8 +546,8 @@ Register-ArgumentCompleter -CommandName openspec -ScriptBlock $openspecCompleter
 
   describe('uninstall', () => {
     const mockCompletionScript = `# PowerShell completion script
-$openspecCompleter = {}
-Register-ArgumentCompleter -CommandName openspec -ScriptBlock $openspecCompleter
+$dwspCompleter = {}
+Register-ArgumentCompleter -CommandName dwsp -ScriptBlock $dwspCompleter
 `;
 
     it('should successfully uninstall when completion script exists', async () => {

@@ -45,8 +45,8 @@ export function getFeedbackSkillTemplate(): SkillTemplate {
    - 如果用户想改，就继续调整
 
 5. **在用户确认后提交**
-   - 使用 \`openspec feedback\` 命令提交
-   - 格式：\`openspec feedback "title" --body "body content"\`
+   - 使用 \`dwsp feedback\` 命令提交
+   - 格式：\`dwsp feedback "title" --body "body content"\`
    - 命令会自动附加版本、平台、时间戳等元信息
 
 **示例草稿**
@@ -109,7 +109,7 @@ Body:
 
 只有在用户明确确认后，才继续提交。`,
     license: 'MIT',
-    compatibility: '需要安装 openspec CLI。',
+    compatibility: '需要安装 dwsp CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
