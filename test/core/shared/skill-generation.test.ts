@@ -27,19 +27,19 @@ describe('skill-generation', () => {
       const templates = getSkillTemplates();
       const dirNames = templates.map(t => t.dirName);
 
-      expect(dirNames).toContain('openspec-explore');
-      expect(dirNames).toContain('openspec-new-change');
-      expect(dirNames).toContain('openspec-continue-change');
-      expect(dirNames).toContain('openspec-apply-change');
-      expect(dirNames).toContain('openspec-review-change');
-      expect(dirNames).toContain('openspec-ff-change');
-      expect(dirNames).toContain('openspec-sync-specs');
-      expect(dirNames).toContain('openspec-archive-change');
-      expect(dirNames).toContain('openspec-bulk-archive-change');
-      expect(dirNames).toContain('openspec-verify-change');
-      expect(dirNames).toContain('openspec-document-change');
-      expect(dirNames).toContain('openspec-onboard');
-      expect(dirNames).toContain('openspec-propose');
+      expect(dirNames).toContain('duowenspec-explore');
+      expect(dirNames).toContain('duowenspec-new-change');
+      expect(dirNames).toContain('duowenspec-continue-change');
+      expect(dirNames).toContain('duowenspec-apply-change');
+      expect(dirNames).toContain('duowenspec-review-change');
+      expect(dirNames).toContain('duowenspec-ff-change');
+      expect(dirNames).toContain('duowenspec-sync-specs');
+      expect(dirNames).toContain('duowenspec-archive-change');
+      expect(dirNames).toContain('duowenspec-bulk-archive-change');
+      expect(dirNames).toContain('duowenspec-verify-change');
+      expect(dirNames).toContain('duowenspec-document-change');
+      expect(dirNames).toContain('duowenspec-onboard');
+      expect(dirNames).toContain('duowenspec-propose');
     });
 
     it('should have valid template structure', () => {
@@ -88,7 +88,7 @@ describe('skill-generation', () => {
       const filtered = getSkillTemplates(['propose']);
       expect(filtered).toHaveLength(1);
       expect(filtered[0].workflowId).toBe('propose');
-      expect(filtered[0].dirName).toBe('openspec-propose');
+      expect(filtered[0].dirName).toBe('duowenspec-propose');
     });
   });
 
@@ -104,10 +104,10 @@ describe('skill-generation', () => {
     it('should include valid support template content', () => {
       const templates = getModoSupportSkillTemplates();
       for (const { template, dirName } of templates) {
-        expect(template.name).toContain('openspec-b-end-');
+        expect(template.name).toContain('duowenspec-b-end-');
         expect(template.description).toBeTruthy();
         expect(template.instructions).toBeTruthy();
-        expect(dirName).toContain('openspec-b-end-');
+        expect(dirName).toContain('duowenspec-b-end-');
       }
     });
   });
@@ -275,8 +275,8 @@ describe('skill-generation', () => {
       const content = generateSkillContent(template, '0.24.0');
 
       expect(content).toContain('license: MIT');
-      expect(content).toContain('compatibility: 需要安装 openspec CLI。');
-      expect(content).toContain('author: openspec');
+      expect(content).toContain('compatibility: 需要安装 dwsp CLI。');
+      expect(content).toContain('author: duowenspec');
       expect(content).toContain('version: "1.0"');
       expect(content).toContain('generatedBy: "0.24.0"');
     });
@@ -314,28 +314,28 @@ describe('skill-generation', () => {
       const template = {
         name: 'transform-test',
         description: 'Test transform callback',
-        instructions: 'Use /opsx:new to start and /opsx:apply to implement.',
+        instructions: 'Use /dwsp:new to start and /dwsp:apply to implement.',
       };
 
-      const transformer = (text: string) => text.replace(/\/opsx:/g, '/opsx-');
+      const transformer = (text: string) => text.replace(/\/dwsp:/g, '/dwsp-');
       const content = generateSkillContent(template, '0.23.0', transformer);
 
-      expect(content).toContain('/opsx-new');
-      expect(content).toContain('/opsx-apply');
-      expect(content).not.toContain('/opsx:new');
-      expect(content).not.toContain('/opsx:apply');
+      expect(content).toContain('/dwsp-new');
+      expect(content).toContain('/dwsp-apply');
+      expect(content).not.toContain('/dwsp:new');
+      expect(content).not.toContain('/dwsp:apply');
     });
 
     it('should not transform instructions when callback is undefined', () => {
       const template = {
         name: 'no-transform-test',
         description: 'Test without transform',
-        instructions: 'Use /opsx:new to start.',
+        instructions: 'Use /dwsp:new to start.',
       };
 
       const content = generateSkillContent(template, '0.23.0', undefined);
 
-      expect(content).toContain('/opsx:new');
+      expect(content).toContain('/dwsp:new');
     });
 
     it('should support custom transformInstructions logic', () => {

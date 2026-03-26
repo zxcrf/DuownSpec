@@ -26,7 +26,7 @@ async function isSymlink(filePath: string): Promise<boolean> {
 const tempRoots: string[] = [];
 
 async function prepareFixture(fixtureName: string): Promise<string> {
-  const base = await fs.mkdtemp(path.join(tmpdir(), 'openspec-cli-e2e-'));
+  const base = await fs.mkdtemp(path.join(tmpdir(), 'duowenspec-cli-e2e-'));
   tempRoots.push(base);
   const projectDir = path.join(base, 'project');
   await fs.mkdir(projectDir, { recursive: true });
@@ -53,14 +53,14 @@ async function createMockScaffoldSources(baseDir: string): Promise<{
   await fs.mkdir(path.join(bundledRoot, 'src', 'app'), { recursive: true });
   await fs.mkdir(path.join(bundledRoot, 'src', 'components', 'templates', 'login'), { recursive: true });
   await fs.mkdir(path.join(bundledRoot, 'src', 'components', 'biz', 'modo-button'), { recursive: true });
-  await fs.mkdir(path.join(bundledRoot, 'openspec', 'b-end'), { recursive: true });
+  await fs.mkdir(path.join(bundledRoot, 'duowenspec', 'b-end'), { recursive: true });
 
   await fs.writeFile(path.join(bundledRoot, 'src', 'theme', 'modo-algorithm.ts'), 'export const modoAlgorithm = [];\n');
   await fs.writeFile(path.join(bundledRoot, 'src', 'theme', 'antd-theme-token.tsx'), 'export const modoThemeToken = {};\n');
   await fs.writeFile(path.join(bundledRoot, 'src', 'app', 'globals.css'), '@import "tailwindcss";\n');
   await fs.writeFile(path.join(bundledRoot, 'src', 'components', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
   await fs.writeFile(path.join(bundledRoot, 'src', 'components', 'biz', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
-  await fs.writeFile(path.join(bundledRoot, 'openspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
+  await fs.writeFile(path.join(bundledRoot, 'duowenspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
 
   return { bundledRoot };
 }
@@ -69,7 +69,7 @@ afterAll(async () => {
   await Promise.all(tempRoots.map((dir) => fs.rm(dir, { recursive: true, force: true })));
 });
 
-describe('openspec CLI e2e basics', () => {
+describe('duowenspec CLI e2e basics', () => {
   it('shows help output', async () => {
     const result = await runCLI(['--help']);
     expect(result.exitCode).toBe(0);
@@ -132,8 +132,8 @@ describe('openspec CLI e2e basics', () => {
       expect(result.stdout).toContain('DuowenSpec 初始化完成');
 
       // Check that skills were created for multiple tools
-      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/openspec-explore/SKILL.md');
+      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/duowenspec-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/duowenspec-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
       expect(await fileExists(cursorSkillPath)).toBe(true);
     });
@@ -149,8 +149,8 @@ describe('openspec CLI e2e basics', () => {
       expect(result.stdout).toContain('Claude Code');
 
       // New init creates skills, not CLAUDE.md
-      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/openspec-explore/SKILL.md');
+      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/duowenspec-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/duowenspec-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
       expect(await fileExists(cursorSkillPath)).toBe(false); // Not selected
     });
@@ -165,8 +165,8 @@ describe('openspec CLI e2e basics', () => {
       expect(result.stdout).toContain('DuowenSpec 初始化完成');
 
       // With --tools none, no tool skills should be created
-      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/openspec-explore/SKILL.md');
+      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/duowenspec-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/duowenspec-explore/SKILL.md');
 
       expect(await fileExists(claudeSkillPath)).toBe(false);
       expect(await fileExists(cursorSkillPath)).toBe(false);
@@ -181,7 +181,7 @@ describe('openspec CLI e2e basics', () => {
       const result = await runCLI(['init', '--tools', 'none', '--scaffold'], {
         cwd: emptyProjectDir,
         env: {
-          OPENSPEC_MODO_SCAFFOLD_ASSET_ROOT: roots.bundledRoot,
+          DUOWENSPEC_MODO_SCAFFOLD_ASSET_ROOT: roots.bundledRoot,
         },
       });
 
@@ -196,7 +196,7 @@ describe('openspec CLI e2e basics', () => {
       expect(await isSymlink(claudePath)).toBe(true);
       expect(await fs.readlink(claudePath)).toBe('AGENTS.md');
       expect(await fileExists(path.join(emptyProjectDir, '.prd', 'main.md'))).toBe(false);
-      expect(await fileExists(path.join(emptyProjectDir, 'openspec', 'b-end', 'MANIFEST.md'))).toBe(true);
+      expect(await fileExists(path.join(emptyProjectDir, 'duowenspec', 'b-end', 'MANIFEST.md'))).toBe(true);
     });
 
     it('does not create CLAUDE.md when AGENTS.md already exists in scaffold init', async () => {
@@ -209,7 +209,7 @@ describe('openspec CLI e2e basics', () => {
       const result = await runCLI(['init', '--tools', 'none', '--scaffold'], {
         cwd: emptyProjectDir,
         env: {
-          OPENSPEC_MODO_SCAFFOLD_ASSET_ROOT: roots.bundledRoot,
+          DUOWENSPEC_MODO_SCAFFOLD_ASSET_ROOT: roots.bundledRoot,
         },
       });
 

@@ -11,7 +11,7 @@ describe('ZshInstaller', () => {
 
   beforeEach(async () => {
     // Create a temporary home directory for testing
-    testHomeDir = path.join(os.tmpdir(), `openspec-zsh-test-${randomUUID()}`);
+    testHomeDir = path.join(os.tmpdir(), `duowenspec-zsh-test-${randomUUID()}`);
     await fs.mkdir(testHomeDir, { recursive: true });
     installer = new ZshInstaller(testHomeDir);
   });
@@ -175,8 +175,8 @@ describe('ZshInstaller', () => {
     });
 
     it('should include fpath instructions for standard Zsh when auto-config is disabled', async () => {
-      const originalEnv = process.env.OPENSPEC_NO_AUTO_CONFIG;
-      process.env.OPENSPEC_NO_AUTO_CONFIG = '1';
+      const originalEnv = process.env.DUOWENSPEC_NO_AUTO_CONFIG;
+      process.env.DUOWENSPEC_NO_AUTO_CONFIG = '1';
 
       const result = await installer.install(testScript);
 
@@ -187,9 +187,9 @@ describe('ZshInstaller', () => {
 
       // Restore env
       if (originalEnv === undefined) {
-        delete process.env.OPENSPEC_NO_AUTO_CONFIG;
+        delete process.env.DUOWENSPEC_NO_AUTO_CONFIG;
       } else {
-        process.env.OPENSPEC_NO_AUTO_CONFIG = originalEnv;
+        process.env.DUOWENSPEC_NO_AUTO_CONFIG = originalEnv;
       }
     });
 
@@ -249,7 +249,7 @@ describe('ZshInstaller', () => {
 
     it('should handle paths with spaces in .zshrc config', async () => {
       // Create a test home directory with spaces
-      const testHomeDirWithSpaces = path.join(os.tmpdir(), `openspec zsh test ${randomUUID()}`);
+      const testHomeDirWithSpaces = path.join(os.tmpdir(), `duowenspec zsh test ${randomUUID()}`);
       await fs.mkdir(testHomeDirWithSpaces, { recursive: true });
       const installerWithSpaces = new ZshInstaller(testHomeDirWithSpaces);
 
@@ -401,8 +401,8 @@ describe('ZshInstaller', () => {
       const zshrcPath = path.join(testHomeDir, '.zshrc');
       const content = await fs.readFile(zshrcPath, 'utf-8');
 
-      expect(content).toContain('# OPENSPEC:START');
-      expect(content).toContain('# OPENSPEC:END');
+      expect(content).toContain('# DUOWENSPEC:START');
+      expect(content).toContain('# DUOWENSPEC:END');
       expect(content).toContain('# DuowenSpec shell completions configuration');
       expect(content).toContain(`fpath=("${completionsDir}" $fpath)`);
       expect(content).toContain('autoload -Uz compinit');
@@ -419,13 +419,13 @@ describe('ZshInstaller', () => {
 
       const content = await fs.readFile(zshrcPath, 'utf-8');
 
-      expect(content).toContain('# OPENSPEC:START');
-      expect(content).toContain('# OPENSPEC:END');
+      expect(content).toContain('# DUOWENSPEC:START');
+      expect(content).toContain('# DUOWENSPEC:END');
       expect(content).toContain('# My custom zsh config');
       expect(content).toContain('alias ll="ls -la"');
 
       // Config should be before existing content
-      const configIndex = content.indexOf('# OPENSPEC:START');
+      const configIndex = content.indexOf('# DUOWENSPEC:START');
       const aliasIndex = content.indexOf('alias ll');
       expect(configIndex).toBeLessThan(aliasIndex);
     });
@@ -433,10 +433,10 @@ describe('ZshInstaller', () => {
     it('should update config between markers when .zshrc has existing markers', async () => {
       const zshrcPath = path.join(testHomeDir, '.zshrc');
       const initialContent = [
-        '# OPENSPEC:START',
+        '# DUOWENSPEC:START',
         '# Old config',
         'fpath=(/old/path $fpath)',
-        '# OPENSPEC:END',
+        '# DUOWENSPEC:END',
         '',
         '# My custom config',
       ].join('\n');
@@ -449,8 +449,8 @@ describe('ZshInstaller', () => {
 
       const content = await fs.readFile(zshrcPath, 'utf-8');
 
-      expect(content).toContain('# OPENSPEC:START');
-      expect(content).toContain('# OPENSPEC:END');
+      expect(content).toContain('# DUOWENSPEC:START');
+      expect(content).toContain('# DUOWENSPEC:END');
       expect(content).toContain(`fpath=("${completionsDir}" $fpath)`);
       expect(content).not.toContain('# Old config');
       expect(content).not.toContain('/old/path');
@@ -463,9 +463,9 @@ describe('ZshInstaller', () => {
         '# My zsh config',
         'export PATH="/custom/path:$PATH"',
         '',
-        '# OPENSPEC:START',
-        '# Old OpenSpec config',
-        '# OPENSPEC:END',
+        '# DUOWENSPEC:START',
+        '# Old DuowenSpec config',
+        '# DUOWENSPEC:END',
         '',
         'alias ls="ls -G"',
       ].join('\n');
@@ -482,12 +482,12 @@ describe('ZshInstaller', () => {
       expect(content).toContain('export PATH="/custom/path:$PATH"');
       expect(content).toContain('alias ls="ls -G"');
       expect(content).toContain(`fpath=("${completionsDir}" $fpath)`);
-      expect(content).not.toContain('# Old OpenSpec config');
+      expect(content).not.toContain('# Old DuowenSpec config');
     });
 
-    it('should return false when OPENSPEC_NO_AUTO_CONFIG is set', async () => {
-      const originalEnv = process.env.OPENSPEC_NO_AUTO_CONFIG;
-      process.env.OPENSPEC_NO_AUTO_CONFIG = '1';
+    it('should return false when DUOWENSPEC_NO_AUTO_CONFIG is set', async () => {
+      const originalEnv = process.env.DUOWENSPEC_NO_AUTO_CONFIG;
+      process.env.DUOWENSPEC_NO_AUTO_CONFIG = '1';
 
       const result = await installer.configureZshrc(completionsDir);
 
@@ -499,9 +499,9 @@ describe('ZshInstaller', () => {
 
       // Restore env
       if (originalEnv === undefined) {
-        delete process.env.OPENSPEC_NO_AUTO_CONFIG;
+        delete process.env.DUOWENSPEC_NO_AUTO_CONFIG;
       } else {
-        process.env.OPENSPEC_NO_AUTO_CONFIG = originalEnv;
+        process.env.DUOWENSPEC_NO_AUTO_CONFIG = originalEnv;
       }
     });
 
@@ -543,12 +543,12 @@ describe('ZshInstaller', () => {
       const content = [
         '# My config',
         '',
-        '# OPENSPEC:START',
+        '# DUOWENSPEC:START',
         '# DuowenSpec shell completions configuration',
         'fpath=(~/.zsh/completions $fpath)',
         'autoload -Uz compinit',
         'compinit',
-        '# OPENSPEC:END',
+        '# DUOWENSPEC:END',
         '',
         'alias ll="ls -la"',
       ].join('\n');
@@ -561,9 +561,9 @@ describe('ZshInstaller', () => {
 
       const newContent = await fs.readFile(zshrcPath, 'utf-8');
 
-      expect(newContent).not.toContain('# OPENSPEC:START');
-      expect(newContent).not.toContain('# OPENSPEC:END');
-      expect(newContent).not.toContain('OpenSpec shell completions');
+      expect(newContent).not.toContain('# DUOWENSPEC:START');
+      expect(newContent).not.toContain('# DUOWENSPEC:END');
+      expect(newContent).not.toContain('DuowenSpec shell completions');
       expect(newContent).toContain('# My config');
       expect(newContent).toContain('alias ll="ls -la"');
     });
@@ -571,9 +571,9 @@ describe('ZshInstaller', () => {
     it('should remove leading empty lines when markers were at top', async () => {
       const zshrcPath = path.join(testHomeDir, '.zshrc');
       const content = [
-        '# OPENSPEC:START',
-        '# OpenSpec config',
-        '# OPENSPEC:END',
+        '# DUOWENSPEC:START',
+        '# DuowenSpec config',
+        '# DUOWENSPEC:END',
         '',
         '# User config below',
       ].join('\n');
@@ -594,7 +594,7 @@ describe('ZshInstaller', () => {
       const zshrcPath = path.join(testHomeDir, '.zshrc');
 
       // End marker before start marker
-      await fs.writeFile(zshrcPath, '# OPENSPEC:END\n# OPENSPEC:START\n');
+      await fs.writeFile(zshrcPath, '# DUOWENSPEC:END\n# DUOWENSPEC:START\n');
 
       const result = await installer.removeZshrcConfig();
 
@@ -603,7 +603,7 @@ describe('ZshInstaller', () => {
 
     it('should return true when only one marker is present', async () => {
       const zshrcPath = path.join(testHomeDir, '.zshrc');
-      await fs.writeFile(zshrcPath, '# OPENSPEC:START\nsome config\n');
+      await fs.writeFile(zshrcPath, '# DUOWENSPEC:START\nsome config\n');
 
       const result = await installer.removeZshrcConfig();
 
@@ -625,7 +625,7 @@ describe('ZshInstaller', () => {
       const zshrcPath = path.join(testHomeDir, '.zshrc');
       const content = await fs.readFile(zshrcPath, 'utf-8');
 
-      expect(content).toContain('# OPENSPEC:START');
+      expect(content).toContain('# DUOWENSPEC:START');
       expect(content).toContain('fpath=');
       expect(content).toContain('compinit');
     });
@@ -663,8 +663,8 @@ describe('ZshInstaller', () => {
     });
 
     it('should include instructions when .zshrc auto-config fails', async () => {
-      const originalEnv = process.env.OPENSPEC_NO_AUTO_CONFIG;
-      process.env.OPENSPEC_NO_AUTO_CONFIG = '1';
+      const originalEnv = process.env.DUOWENSPEC_NO_AUTO_CONFIG;
+      process.env.DUOWENSPEC_NO_AUTO_CONFIG = '1';
 
       const result = await installer.install(testScript);
 
@@ -675,9 +675,9 @@ describe('ZshInstaller', () => {
 
       // Restore env
       if (originalEnv === undefined) {
-        delete process.env.OPENSPEC_NO_AUTO_CONFIG;
+        delete process.env.DUOWENSPEC_NO_AUTO_CONFIG;
       } else {
-        process.env.OPENSPEC_NO_AUTO_CONFIG = originalEnv;
+        process.env.DUOWENSPEC_NO_AUTO_CONFIG = originalEnv;
       }
     });
 
@@ -699,7 +699,7 @@ describe('ZshInstaller', () => {
       // Verify .zshrc was configured
       const zshrcPath = path.join(testHomeDir, '.zshrc');
       let content = await fs.readFile(zshrcPath, 'utf-8');
-      expect(content).toContain('# OPENSPEC:START');
+      expect(content).toContain('# DUOWENSPEC:START');
 
       // Uninstall
       const result = await installer.uninstall();
@@ -709,7 +709,7 @@ describe('ZshInstaller', () => {
 
       // Verify .zshrc config was removed
       content = await fs.readFile(zshrcPath, 'utf-8');
-      expect(content).not.toContain('# OPENSPEC:START');
+      expect(content).not.toContain('# DUOWENSPEC:START');
     });
 
     it('should not remove .zshrc config for Oh My Zsh users', async () => {
@@ -727,7 +727,7 @@ describe('ZshInstaller', () => {
     it('should succeed even if only .zshrc config is removed', async () => {
       // Manually create .zshrc config without installing completion script
       const zshrcPath = path.join(testHomeDir, '.zshrc');
-      await fs.writeFile(zshrcPath, '# OPENSPEC:START\nconfig\n# OPENSPEC:END\n');
+      await fs.writeFile(zshrcPath, '# DUOWENSPEC:START\nconfig\n# DUOWENSPEC:END\n');
 
       const result = await installer.uninstall();
 

@@ -5,14 +5,14 @@ import { execSync } from 'child_process';
 
 const execOptions = {
   encoding: 'utf-8' as const,
-  env: { ...process.env, OPENSPEC_TELEMETRY: '0' },
+  env: { ...process.env, DUOWENSPEC_TELEMETRY: '0' },
 };
 
 describe('spec command', () => {
   const projectRoot = process.cwd();
   const testDir = path.join(projectRoot, 'test-spec-command-tmp');
-  const specsDir = path.join(testDir, 'openspec', 'specs');
-  const openspecBin = path.join(projectRoot, 'bin', 'dwsp.js');
+  const specsDir = path.join(testDir, 'duowenspec', 'specs');
+  const duowenspecBin = path.join(projectRoot, 'bin', 'dwsp.js');
   
   
   beforeEach(async () => {
@@ -64,7 +64,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec show auth`, execOptions);
         
         // Raw passthrough should match spec.md content
         const raw = await fs.readFile(path.join(specsDir, 'auth', 'spec.md'), 'utf-8');
@@ -78,14 +78,14 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec show auth --json`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.id).toBe('auth');
         expect(json.title).toBe('auth');
         expect(json.overview).toContain('test specification');
         expect(json.requirements).toHaveLength(2);
-        expect(json.metadata.format).toBe('openspec');
+        expect(json.metadata.format).toBe('duowenspec');
       } finally {
         process.chdir(originalCwd);
       }
@@ -95,7 +95,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json --requirements`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec show auth --json --requirements`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(2);
@@ -110,7 +110,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json --no-scenarios`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec show auth --json --no-scenarios`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(2);
@@ -124,7 +124,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json -r 1`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec show auth --json -r 1`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(1);
@@ -138,7 +138,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json --no-scenarios`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec show auth --json --no-scenarios`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(2);
@@ -154,7 +154,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec list`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec list`, execOptions);
         
         expect(output).toContain('auth');
         expect(output).toContain('payment');
@@ -169,7 +169,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec list --json`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec list --json`, execOptions);
         
         const json = JSON.parse(output);
         expect(json).toHaveLength(2);
@@ -187,7 +187,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec validate auth`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec validate auth`, execOptions);
         
         expect(output).toContain("spec 'auth' 校验通过");
       } finally {
@@ -199,7 +199,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec validate auth --json`, execOptions);
+        const output = execSync(`node ${duowenspecBin} spec validate auth --json`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.valid).toBeDefined();
@@ -216,7 +216,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec validate auth --strict --json`, {
+        const output = execSync(`node ${duowenspecBin} spec validate auth --strict --json`, {
           encoding: 'utf-8'
         });
         
@@ -244,7 +244,7 @@ This section has no actual requirements`;
         // This should exit with non-zero code
         let exitCode = 0;
         try {
-          execSync(`node ${openspecBin} spec validate invalid`, {
+          execSync(`node ${duowenspecBin} spec validate invalid`, {
             encoding: 'utf-8'
           });
         } catch (error: any) {
@@ -266,7 +266,7 @@ This section has no actual requirements`;
         
         let error: any;
         try {
-          execSync(`node ${openspecBin} spec show nonexistent`, {
+          execSync(`node ${duowenspecBin} spec show nonexistent`, {
             encoding: 'utf-8'
           });
         } catch (e) {
@@ -286,7 +286,7 @@ This section has no actual requirements`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec list`, { encoding: 'utf-8' });
+        const output = execSync(`node ${duowenspecBin} spec list`, { encoding: 'utf-8' });
         expect(output.trim()).toBe('未找到任何条目');
       } finally {
         process.chdir(originalCwd);
@@ -297,7 +297,7 @@ This section has no actual requirements`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} --no-color spec list --long`, { encoding: 'utf-8' });
+        const output = execSync(`node ${duowenspecBin} --no-color spec list --long`, { encoding: 'utf-8' });
         // Basic ANSI escape pattern
         const hasAnsi = /\u001b\[[0-9;]*m/.test(output);
         expect(hasAnsi).toBe(false);

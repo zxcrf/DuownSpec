@@ -13,7 +13,7 @@ describe('project instruction files', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `openspec-instruction-files-${randomUUID()}`);
+    testDir = path.join(os.tmpdir(), `duowenspec-instruction-files-${randomUUID()}`);
     await fs.mkdir(testDir, { recursive: true });
   });
 

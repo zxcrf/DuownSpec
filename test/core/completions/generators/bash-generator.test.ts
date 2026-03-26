@@ -24,7 +24,7 @@ describe('BashGenerator', () => {
       const commands: CommandDefinition[] = [
         {
           name: 'init',
-          description: 'Initialize OpenSpec',
+          description: 'Initialize DuowenSpec',
           flags: [],
         },
       ];
@@ -41,7 +41,7 @@ describe('BashGenerator', () => {
       const commands: CommandDefinition[] = [
         {
           name: 'init',
-          description: 'Initialize OpenSpec',
+          description: 'Initialize DuowenSpec',
           flags: [],
         },
         {
@@ -320,7 +320,7 @@ describe('BashGenerator', () => {
       const commands: CommandDefinition[] = [
         {
           name: 'init',
-          description: 'Initialize OpenSpec',
+          description: 'Initialize DuowenSpec',
           acceptsPositional: true,
           positionalType: 'path',
           flags: [],

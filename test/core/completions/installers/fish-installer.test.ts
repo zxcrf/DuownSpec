@@ -10,7 +10,7 @@ describe('FishInstaller', () => {
   let installer: FishInstaller;
 
   beforeEach(async () => {
-    testHomeDir = path.join(os.tmpdir(), `openspec-fish-test-${randomUUID()}`);
+    testHomeDir = path.join(os.tmpdir(), `duowenspec-fish-test-${randomUUID()}`);
     await fs.mkdir(testHomeDir, { recursive: true });
     installer = new FishInstaller(testHomeDir);
   });
@@ -75,12 +75,12 @@ describe('FishInstaller', () => {
   });
 
   describe('install', () => {
-    const mockCompletionScript = `# Fish completion script for OpenSpec CLI
+    const mockCompletionScript = `# Fish completion script for DuowenSpec CLI
 function __fish_dwsp
     echo "test"
 end
 
-complete -c dwsp -a 'init' -d 'Initialize OpenSpec'
+complete -c dwsp -a 'init' -d 'Initialize DuowenSpec'
 `;
 
     it('should install completion script for the first time', async () => {
@@ -130,12 +130,12 @@ complete -c dwsp -a 'init' -d 'Initialize OpenSpec'
       await installer.install(mockCompletionScript);
 
       // Update with different content
-      const updatedScript = `# Fish completion script for OpenSpec CLI
+      const updatedScript = `# Fish completion script for DuowenSpec CLI
 function __fish_dwsp_new
     echo "updated"
 end
 
-complete -c dwsp -a 'init' -d 'Initialize OpenSpec'
+complete -c dwsp -a 'init' -d 'Initialize DuowenSpec'
 complete -c dwsp -a 'validate' -d 'Validate specs'
 `;
 
@@ -179,14 +179,14 @@ complete -c dwsp -a 'validate' -d 'Validate specs'
     });
 
     it('should handle installation with paths containing spaces', async () => {
-      const spacedHomeDir = path.join(os.tmpdir(), `openspec fish test ${randomUUID()}`);
+      const spacedHomeDir = path.join(os.tmpdir(), `duowenspec fish test ${randomUUID()}`);
       await fs.mkdir(spacedHomeDir, { recursive: true });
 
       const spacedInstaller = new FishInstaller(spacedHomeDir);
       const result = await spacedInstaller.install(mockCompletionScript);
 
       expect(result.success).toBe(true);
-      expect(result.installedPath).toContain('openspec fish test');
+      expect(result.installedPath).toContain('duowenspec fish test');
 
       // Cleanup
       await fs.rm(spacedHomeDir, { recursive: true, force: true });

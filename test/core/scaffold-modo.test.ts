@@ -29,7 +29,7 @@ describe('modo scaffold helper', () => {
   let targetDir: string;
 
   beforeEach(async () => {
-    tempRoot = path.join(os.tmpdir(), `openspec-scaffold-${randomUUID()}`);
+    tempRoot = path.join(os.tmpdir(), `duowenspec-scaffold-${randomUUID()}`);
     targetDir = path.join(tempRoot, 'target');
 
     sourceRoots = {
@@ -58,7 +58,7 @@ describe('modo scaffold helper', () => {
     await writeFile(path.join(sourceRoots.bundledRoot, 'src', 'app', 'globals.css'), '@import "tailwindcss";\n');
     await writeFile(path.join(sourceRoots.bundledRoot, 'src', 'components', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
     await writeFile(path.join(sourceRoots.bundledRoot, 'src', 'components', 'biz', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
-    await writeFile(path.join(sourceRoots.bundledRoot, 'openspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
+    await writeFile(path.join(sourceRoots.bundledRoot, 'duowenspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
 
     const result = await assembleModoScaffold({
       targetDir,
@@ -69,7 +69,7 @@ describe('modo scaffold helper', () => {
     expect(await pathExists(path.join(targetDir, '.b-end-adapter'))).toBe(true);
     expect(await pathExists(path.join(targetDir, 'AGENTS.md'))).toBe(false);
     expect(await pathExists(path.join(targetDir, '.prd', 'main.md'))).toBe(false);
-    expect(await pathExists(path.join(targetDir, 'openspec', 'b-end', 'MANIFEST.md'))).toBe(true);
+    expect(await pathExists(path.join(targetDir, 'duowenspec', 'b-end', 'MANIFEST.md'))).toBe(true);
 
     expect(await pathExists(path.join(targetDir, 'src', 'theme', 'modo-algorithm.ts'))).toBe(true);
     expect(await pathExists(path.join(targetDir, 'src', 'theme', 'antd-theme-token.tsx'))).toBe(true);
@@ -162,7 +162,7 @@ describe('modo scaffold helper', () => {
     await writeFile(path.join(sourceRoots.bundledRoot, 'src', 'app', 'globals.css'), '@import "tailwindcss";\n');
     await writeFile(path.join(sourceRoots.bundledRoot, 'src', 'components', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
     await writeFile(path.join(sourceRoots.bundledRoot, 'src', 'components', 'biz', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
-    await writeFile(path.join(sourceRoots.bundledRoot, 'openspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
+    await writeFile(path.join(sourceRoots.bundledRoot, 'duowenspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
 
     await writeFile(path.join(targetDir, 'package.json'), '{"name":"existing"}\n');
 

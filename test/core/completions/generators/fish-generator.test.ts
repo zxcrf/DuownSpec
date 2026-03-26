@@ -24,7 +24,7 @@ describe('FishGenerator', () => {
       const commands: CommandDefinition[] = [
         {
           name: 'init',
-          description: 'Initialize OpenSpec',
+          description: 'Initialize DuowenSpec',
           flags: [],
         },
       ];
@@ -39,7 +39,7 @@ describe('FishGenerator', () => {
       const commands: CommandDefinition[] = [
         {
           name: 'init',
-          description: 'Initialize OpenSpec',
+          description: 'Initialize DuowenSpec',
           flags: [],
         },
       ];
@@ -55,7 +55,7 @@ describe('FishGenerator', () => {
       const commands: CommandDefinition[] = [
         {
           name: 'init',
-          description: 'Initialize OpenSpec',
+          description: 'Initialize DuowenSpec',
           flags: [],
         },
         {
@@ -74,7 +74,7 @@ describe('FishGenerator', () => {
 
       expect(script).toContain("complete -c dwsp");
       expect(script).toContain("-a 'init'");
-      expect(script).toContain("'Initialize OpenSpec'");
+      expect(script).toContain("'Initialize DuowenSpec'");
       expect(script).toContain("-a 'validate'");
       expect(script).toContain("'Validate specs'");
       expect(script).toContain("-a 'show'");
