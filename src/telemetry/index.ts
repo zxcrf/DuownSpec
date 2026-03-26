@@ -17,7 +17,7 @@ import { CLI_COMMAND } from '../core/app-info.js';
 // This is safe to embed as it only allows sending events, not reading data
 const POSTHOG_API_KEY = 'phc_Hthu8YvaIJ9QaFKyTG4TbVwkbd5ktcAFzVTKeMmoW2g';
 // Using reverse proxy to avoid ad blockers and keep traffic on our domain
-const POSTHOG_HOST = 'https://edge.duowenspec.dev';
+const POSTHOG_HOST = 'https://app.posthog.com';
 
 let posthogClient: PostHog | null = null;
 let anonymousId: string | null = null;
