@@ -304,7 +304,7 @@ export class UpdateCommand {
       console.log(`  /${CLI_COMMAND}:verify    进入发布前验证`);
       console.log(`  /${CLI_COMMAND}:document  完成交付文档检查`);
       console.log();
-      console.log(`了解更多：${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
+      console.log(`了解更多：${chalk.cyan('https://github.com/zxcrf/DuownSpec')}`);
     }
 
     const configuredAndNewTools = [...new Set([...configuredTools, ...newlyConfiguredTools])];

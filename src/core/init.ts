@@ -815,8 +815,8 @@ export class InitCommand {
 
     // Links
     console.log();
-    console.log(`了解更多：${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
-    console.log(`问题反馈：${chalk.cyan('https://github.com/Fission-AI/DuowenSpec/issues')}`);
+    console.log(`了解更多：${chalk.cyan('https://github.com/zxcrf/DuownSpec')}`);
+    console.log(`问题反馈：${chalk.cyan('https://github.com/zxcrf/DuownSpec')}`);
 
     // Restart instruction if any tools were configured
     if (results.createdTools.length > 0 || results.refreshedTools.length > 0) {

@@ -591,5 +591,5 @@ project/
 ## Getting Help
 
 - **Discord**: [discord.gg/YctCnvvshC](https://discord.gg/YctCnvvshC)
-- **GitHub Issues**: [github.com/Fission-AI/OpenSpec/issues](https://github.com/Fission-AI/OpenSpec/issues)
+- **GitHub Issues**: [github.com/zxcrf/DuownSpec](https://github.com/zxcrf/DuownSpec)
 - **Documentation**: [docs/opsx.md](opsx.md) for the full OPSX reference

@@ -522,4 +522,4 @@ Dynamic completion logic is centralized in `CompletionProvider`, making behavior
 - [Zsh Completion System](https://zsh.sourceforge.io/Doc/Release/Completion-System.html)
 - [Fish Completions](https://fishshell.com/docs/current/completions.html)
 - [PowerShell Argument Completers](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/register-argumentcompleter)
-- [Oh My Zsh Custom Completions](https://github.com/ohmyzsh/ohmyzsh/wiki/Customization#adding-custom-completions)
+- [Oh My Zsh Custom Completions](https://github.com/zxcrf/DuownSpec)

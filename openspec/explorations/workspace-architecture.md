@@ -670,7 +670,7 @@ These should be separate changes with separate explorations.
 ## References
 
 - [VSCode Settings Precedence](https://code.visualstudio.com/docs/configure/settings)
-- [ESLint Flat Config in Monorepos Discussion](https://github.com/eslint/eslint/discussions/16960)
+- [ESLint Flat Config in Monorepos Discussion](https://github.com/zxcrf/DuownSpec)
 - [Turborepo Package Configurations](https://turborepo.dev/docs/reference/package-configurations)
 - [pnpm Workspaces](https://pnpm.io/workspaces)
 - [Claude Code Settings](https://code.claude.com/docs/en/settings)

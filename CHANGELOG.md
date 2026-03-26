@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [#747](https://github.com/Fission-AI/OpenSpec/pull/747) [`1e94443`](https://github.com/Fission-AI/OpenSpec/commit/1e94443a3551b228eecbc89e95d96d3b9600a192) Thanks [@TabishB](https://github.com/TabishB)! - ### New Features
+- [#747](https://github.com/zxcrf/DuownSpec) [`1e94443`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### New Features
 
   - **Profile system** — Choose between `core` (4 essential workflows) and `custom` (pick any subset) profiles to control which skills get installed. Manage profiles with the new `openspec config profile` command
   - **Propose workflow** — New one-step workflow creates a complete change proposal with design, specs, and tasks from a single request — no need to run `new` then `ff` separately
@@ -24,7 +24,7 @@
 
 ### Patch Changes
 
-- [#627](https://github.com/Fission-AI/OpenSpec/pull/627) [`afb73cf`](https://github.com/Fission-AI/OpenSpec/commit/afb73cf9ec59c6f8b26d0c538c0218c203ba3c56) Thanks [@TabishB](https://github.com/TabishB)! - ### Bug Fixes
+- [#627](https://github.com/zxcrf/DuownSpec) [`afb73cf`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### Bug Fixes
 
   - **OpenCode command references** — Command references in generated files now use the correct `/opsx-` hyphen format instead of `/opsx:` colon format, ensuring commands work properly in OpenCode
 
@@ -32,7 +32,7 @@
 
 ### Minor Changes
 
-- [#625](https://github.com/Fission-AI/OpenSpec/pull/625) [`53081fb`](https://github.com/Fission-AI/OpenSpec/commit/53081fb2a26ec66d2950ae0474b9a56cbc5b5a76) Thanks [@TabishB](https://github.com/TabishB)! - ### Bug Fixes
+- [#625](https://github.com/zxcrf/DuownSpec) [`53081fb`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### Bug Fixes
 
   - **Codex global path support** — Codex adapter now resolves global paths correctly, fixing workflow file generation when run outside the project directory (#622)
   - **Archive operations on cross-device or restricted paths** — Archive now falls back to copy+remove when rename fails with EPERM or EXDEV errors, fixing failures on networked/external drives (#605)
@@ -41,7 +41,7 @@
 
 ### Patch Changes
 
-- [#550](https://github.com/Fission-AI/OpenSpec/pull/550) [`86d2e04`](https://github.com/Fission-AI/OpenSpec/commit/86d2e04cae76a999dbd1b4571f52fa720036be0c) Thanks [@jerome-benoit](https://github.com/jerome-benoit)! - ### Improvements
+- [#550](https://github.com/zxcrf/DuownSpec) [`86d2e04`](https://github.com/zxcrf/DuownSpec) Thanks [@jerome-benoit](https://github.com/zxcrf/DuownSpec)! - ### Improvements
 
   - **Nix flake maintenance** — Version now read dynamically from package.json, reducing manual sync issues
   - **Nix build optimization** — Source filtering excludes node_modules and artifacts, improving build times
@@ -55,7 +55,7 @@
 
 ### Patch Changes
 
-- [#596](https://github.com/Fission-AI/OpenSpec/pull/596) [`e91568d`](https://github.com/Fission-AI/OpenSpec/commit/e91568deb948073f3e9d9bb2d2ab5bf8080d6cf4) Thanks [@TabishB](https://github.com/TabishB)! - ### Bug Fixes
+- [#596](https://github.com/zxcrf/DuownSpec) [`e91568d`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### Bug Fixes
 
   - Clarified spec naming convention — Specs should be named after capabilities (`specs/<capability>/spec.md`), not changes
   - Fixed task checkbox format guidance — Tasks now clearly require `- [ ]` checkbox format for apply phase tracking
@@ -64,7 +64,7 @@
 
 ### Patch Changes
 
-- [#587](https://github.com/Fission-AI/OpenSpec/pull/587) [`943e0d4`](https://github.com/Fission-AI/OpenSpec/commit/943e0d41026d034de66b9442d1276c01b293eb2b) Thanks [@TabishB](https://github.com/TabishB)! - ### Bug Fixes
+- [#587](https://github.com/zxcrf/DuownSpec) [`943e0d4`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### Bug Fixes
 
   - Fixed incorrect archive path in onboarding documentation — the template now shows the correct path `openspec/changes/archive/YYYY-MM-DD-<name>/` instead of the incorrect `openspec/archive/YYYY-MM-DD--<name>/`
 
@@ -72,7 +72,7 @@
 
 ### Major Changes
 
-- [#578](https://github.com/Fission-AI/OpenSpec/pull/578) [`0cc9d90`](https://github.com/Fission-AI/OpenSpec/commit/0cc9d9025af367faa1688a7b2606a2549053cd3f) Thanks [@TabishB](https://github.com/TabishB)! - ## OpenSpec 1.0 — The OPSX Release
+- [#578](https://github.com/zxcrf/DuownSpec) [`0cc9d90`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ## OpenSpec 1.0 — The OPSX Release
 
   The workflow has been rebuilt from the ground up. OPSX replaces the old phase-locked `/openspec:*` commands with an action-based system where AI understands what artifacts exist, what's ready to create, and what each action unlocks.
 
@@ -158,7 +158,7 @@
 
 ### Minor Changes
 
-- [#540](https://github.com/Fission-AI/OpenSpec/pull/540) [`c4cfdc7`](https://github.com/Fission-AI/OpenSpec/commit/c4cfdc7c499daef30d8a218f5f59b8d9e5adb754) Thanks [@TabishB](https://github.com/TabishB)! - ### New Features
+- [#540](https://github.com/zxcrf/DuownSpec) [`c4cfdc7`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### New Features
 
   - **Bulk archive skill** — Archive multiple completed changes in a single operation with `/opsx:bulk-archive`. Includes batch validation, spec conflict detection, and consolidated confirmation
 
@@ -170,7 +170,7 @@
 
 ### Minor Changes
 
-- [#530](https://github.com/Fission-AI/OpenSpec/pull/530) [`33466b1`](https://github.com/Fission-AI/OpenSpec/commit/33466b1e2a6798bdd6d0e19149173585b0612e6f) Thanks [@TabishB](https://github.com/TabishB)! - Add project-level configuration, project-local schemas, and schema management commands
+- [#530](https://github.com/zxcrf/DuownSpec) [`33466b1`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - Add project-level configuration, project-local schemas, and schema management commands
 
   **New Features**
 
@@ -186,7 +186,7 @@
 
 ### Minor Changes
 
-- [#516](https://github.com/Fission-AI/OpenSpec/pull/516) [`b5a8847`](https://github.com/Fission-AI/OpenSpec/commit/b5a884748be6156a7bb140b4941cfec4f20a9fc8) Thanks [@TabishB](https://github.com/TabishB)! - Add feedback command and Nix flake support
+- [#516](https://github.com/zxcrf/DuownSpec) [`b5a8847`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - Add feedback command and Nix flake support
 
   **New Features**
 
@@ -206,7 +206,7 @@
 
 ### Minor Changes
 
-- [#502](https://github.com/Fission-AI/OpenSpec/pull/502) [`9db74aa`](https://github.com/Fission-AI/OpenSpec/commit/9db74aa5ac6547efadaed795217cfa17444f2004) Thanks [@TabishB](https://github.com/TabishB)! - Add `/opsx:verify` command and fix vitest process storms
+- [#502](https://github.com/zxcrf/DuownSpec) [`9db74aa`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - Add `/opsx:verify` command and fix vitest process storms
 
   **New Features**
 

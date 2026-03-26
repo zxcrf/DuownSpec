@@ -6,7 +6,7 @@ People who maintain and guide OpenSpec.
 
 | Name | GitHub | Role |
 |------|--------|------|
-| Tabish Bidiwale | [@TabishB](https://github.com/TabishB) | Lead maintainer |
+| Tabish Bidiwale | [@TabishB](https://github.com/zxcrf/DuownSpec) | Lead maintainer |
 
 ## Advisors
 
@@ -14,4 +14,4 @@ Advisors help shape technical direction and provide guidance to the project.
 
 | Name | GitHub | Focus |
 |------|--------|-------|
-| Hari Krishnan | [@harikrishnan83](https://github.com/harikrishnan83) | Technical direction |
+| Hari Krishnan | [@harikrishnan83](https://github.com/zxcrf/DuownSpec) | Technical direction |
