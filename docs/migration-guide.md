@@ -1,6 +1,6 @@
 # Migrating to OPSX
 
-This guide helps you transition from the legacy OpenSpec workflow to OPSX. The migration is designed to be smooth—your existing work is preserved, and the new system offers more flexibility.
+This guide helps you transition from the legacy DuowenSpec workflow to OPSX. The migration is designed to be smooth—your existing work is preserved, and the new system offers more flexibility.
 
 ## What's Changing?
 
@@ -8,11 +8,11 @@ OPSX replaces the old phase-locked workflow with a fluid, action-based approach.
 
 | Aspect | Legacy | OPSX |
 |--------|--------|------|
-| **Commands** | `/openspec:proposal`, `/openspec:apply`, `/openspec:archive` | Default: `/opsx:propose`, `/opsx:apply`, `/opsx:archive` (expanded workflow commands optional) |
+| **Commands** | `/duowenspec:proposal`, `/duowenspec:apply`, `/duowenspec:archive` | Default: `/dwsp:propose`, `/dwsp:apply`, `/dwsp:archive` (expanded workflow commands optional) |
 | **Workflow** | Create all artifacts at once | Create incrementally or all at once—your choice |
 | **Going back** | Awkward phase gates | Natural—update any artifact anytime |
 | **Customization** | Fixed structure | Schema-driven, fully hackable |
-| **Configuration** | `CLAUDE.md` with markers + `project.md` | Clean config in `openspec/config.yaml` |
+| **Configuration** | `CLAUDE.md` with markers + `project.md` | Clean config in `duowenspec/config.yaml` |
 
 **The philosophy change:** Work isn't linear. OPSX stops pretending it is.
 
@@ -24,50 +24,50 @@ OPSX replaces the old phase-locked workflow with a fluid, action-based approach.
 
 The migration process is designed with preservation in mind:
 
-- **Active changes in `openspec/changes/`** — Completely preserved. You can continue them with OPSX commands.
+- **Active changes in `duowenspec/changes/`** — Completely preserved. You can continue them with OPSX commands.
 - **Archived changes** — Untouched. Your history remains intact.
-- **Main specs in `openspec/specs/`** — Untouched. These are your source of truth.
-- **Your content in CLAUDE.md, AGENTS.md, etc.** — Preserved. Only the OpenSpec marker blocks are removed; everything you wrote stays.
+- **Main specs in `duowenspec/specs/`** — Untouched. These are your source of truth.
+- **Your content in CLAUDE.md, AGENTS.md, etc.** — Preserved. Only the DuowenSpec marker blocks are removed; everything you wrote stays.
 
 ### What Gets Removed
 
-Only OpenSpec-managed files that are being replaced:
+Only DuowenSpec-managed files that are being replaced:
 
 | What | Why |
 |------|-----|
 | Legacy slash command directories/files | Replaced by the new skills system |
-| `openspec/AGENTS.md` | Obsolete workflow trigger |
-| OpenSpec markers in `CLAUDE.md`, `AGENTS.md`, etc. | No longer needed |
+| `duowenspec/AGENTS.md` | Obsolete workflow trigger |
+| DuowenSpec markers in `CLAUDE.md`, `AGENTS.md`, etc. | No longer needed |
 
 **Legacy command locations by tool** (examples—your tool may vary):
 
-- Claude Code: `.claude/commands/openspec/`
-- Cursor: `.cursor/commands/openspec-*.md`
-- Windsurf: `.windsurf/workflows/openspec-*.md`
-- Cline: `.clinerules/workflows/openspec-*.md`
-- Roo: `.roo/commands/openspec-*.md`
-- GitHub Copilot: `.github/prompts/openspec-*.prompt.md` (IDE extensions only; not supported in Copilot CLI)
+- Claude Code: `.claude/commands/duowenspec/`
+- Cursor: `.cursor/commands/dwsp-*.md`
+- Windsurf: `.windsurf/workflows/dwsp-*.md`
+- Cline: `.clinerules/workflows/dwsp-*.md`
+- Roo: `.roo/commands/dwsp-*.md`
+- GitHub Copilot: `.github/prompts/dwsp-*.prompt.md` (IDE extensions only; not supported in Copilot CLI)
 - And others (Augment, Continue, Amazon Q, etc.)
 
 The migration detects whichever tools you have configured and cleans up their legacy files.
 
-The removal list may seem long, but these are all files that OpenSpec originally created. Your own content is never deleted.
+The removal list may seem long, but these are all files that DuowenSpec originally created. Your own content is never deleted.
 
 ### What Needs Your Attention
 
 One file requires manual migration:
 
-**`openspec/project.md`** — This file isn't deleted automatically because it may contain project context you've written. You'll need to:
+**`duowenspec/project.md`** — This file isn't deleted automatically because it may contain project context you've written. You'll need to:
 
 1. Review its contents
-2. Move useful context to `openspec/config.yaml` (see guidance below)
+2. Move useful context to `duowenspec/config.yaml` (see guidance below)
 3. Delete the file when ready
 
 **Why we made this change:**
 
 The old `project.md` was passive—agents might read it, might not, might forget what they read. We found reliability was inconsistent.
 
-The new `config.yaml` context is **actively injected into every OpenSpec planning request**. This means your project conventions, tech stack, and rules are always present when the AI is creating artifacts. Higher reliability.
+The new `config.yaml` context is **actively injected into every DuowenSpec planning request**. This means your project conventions, tech stack, and rules are always present when the AI is creating artifacts. Higher reliability.
 
 **The tradeoff:**
 
@@ -98,28 +98,28 @@ dwsp init
 The init command detects legacy files and guides you through cleanup:
 
 ```
-Upgrading to the new OpenSpec
+Upgrading to the new DuowenSpec
 
-OpenSpec now uses agent skills, the emerging standard across coding
+DuowenSpec now uses agent skills, the emerging standard across coding
 agents. This simplifies your setup while keeping everything working
 as before.
 
 Files to remove
 No user content to preserve:
-  • .claude/commands/openspec/
-  • openspec/AGENTS.md
+  • .claude/commands/duowenspec/
+  • duowenspec/AGENTS.md
 
 Files to update
-OpenSpec markers will be removed, your content preserved:
+DuowenSpec markers will be removed, your content preserved:
   • CLAUDE.md
   • AGENTS.md
 
 Needs your attention
-  • openspec/project.md
+  • duowenspec/project.md
     We won't delete this file. It may contain useful project context.
 
-    The new openspec/config.yaml has a "context:" section for planning
-    context. This is included in every OpenSpec request and works more
+    The new duowenspec/config.yaml has a "context:" section for planning
+    context. This is included in every DuowenSpec request and works more
     reliably than the old project.md approach.
 
     Review project.md, move any useful content to config.yaml's context
@@ -131,10 +131,10 @@ Needs your attention
 **What happens when you say yes:**
 
 1. Legacy slash command directories are removed
-2. OpenSpec markers are stripped from `CLAUDE.md`, `AGENTS.md`, etc. (your content stays)
-3. `openspec/AGENTS.md` is deleted
+2. DuowenSpec markers are stripped from `CLAUDE.md`, `AGENTS.md`, etc. (your content stays)
+3. `duowenspec/AGENTS.md` is deleted
 4. New skills are installed in `.claude/skills/`
-5. `openspec/config.yaml` is created with a default schema
+5. `duowenspec/config.yaml` is created with a default schema
 
 ### Using `dwsp update`
 
@@ -160,7 +160,7 @@ The `--force` flag skips prompts and auto-accepts cleanup.
 
 ## Migrating project.md to config.yaml
 
-The old `openspec/project.md` was a freeform markdown file for project context. The new `openspec/config.yaml` is structured and—critically—**injected into every planning request** so your conventions are always present when the AI works.
+The old `duowenspec/project.md` was a freeform markdown file for project context. The new `duowenspec/config.yaml` is structured and—critically—**injected into every planning request** so your conventions are always present when the AI works.
 
 ### Before (project.md)
 
@@ -260,7 +260,7 @@ When migrating, be selective. Ask yourself: "Does the AI need this for *every* p
 If you're unsure how to distill your project.md, ask your AI assistant:
 
 ```
-I'm migrating from OpenSpec's old project.md to the new config.yaml format.
+I'm migrating from DuowenSpec's old project.md to the new config.yaml format.
 
 Here's my current project.md:
 [paste your project.md content]
@@ -284,22 +284,22 @@ Command availability is profile-dependent:
 
 | Command | Purpose |
 |---------|---------|
-| `/opsx:propose` | Create a change and generate planning artifacts in one step |
-| `/opsx:explore` | Think through ideas with no structure |
-| `/opsx:apply` | Implement tasks from tasks.md |
-| `/opsx:archive` | Finalize and archive the change |
+| `/dwsp:propose` | Create a change and generate planning artifacts in one step |
+| `/dwsp:explore` | Think through ideas with no structure |
+| `/dwsp:apply` | Implement tasks from tasks.md |
+| `/dwsp:archive` | Finalize and archive the change |
 
 **Expanded workflow (custom selection):**
 
 | Command | Purpose |
 |---------|---------|
-| `/opsx:new` | Start a new change scaffold |
-| `/opsx:continue` | Create the next artifact (one at a time) |
-| `/opsx:ff` | Fast-forward—create planning artifacts at once |
-| `/opsx:verify` | Validate implementation matches specs |
-| `/opsx:sync` | Preview/spec-merge without archiving |
-| `/opsx:bulk-archive` | Archive multiple changes at once |
-| `/opsx:onboard` | Guided end-to-end onboarding workflow |
+| `/dwsp:new` | Start a new change scaffold |
+| `/dwsp:continue` | Create the next artifact (one at a time) |
+| `/dwsp:ff` | Fast-forward—create planning artifacts at once |
+| `/dwsp:verify` | Validate implementation matches specs |
+| `/dwsp:sync` | Preview/spec-merge without archiving |
+| `/dwsp:bulk-archive` | Archive multiple changes at once |
+| `/dwsp:onboard` | Guided end-to-end onboarding workflow |
 
 Enable expanded commands with `dwsp config profile`, then run `dwsp update`.
 
@@ -307,9 +307,9 @@ Enable expanded commands with `dwsp config profile`, then run `dwsp update`.
 
 | Legacy | OPSX Equivalent |
 |--------|-----------------|
-| `/openspec:proposal` | `/opsx:propose` (default) or `/opsx:new` then `/opsx:ff` (expanded) |
-| `/openspec:apply` | `/opsx:apply` |
-| `/openspec:archive` | `/opsx:archive` |
+| `/duowenspec:proposal` | `/dwsp:propose` (default) or `/dwsp:new` then `/dwsp:ff` (expanded) |
+| `/duowenspec:apply` | `/dwsp:apply` |
+| `/duowenspec:archive` | `/dwsp:archive` |
 
 ### New Capabilities
 
@@ -317,13 +317,13 @@ These capabilities are part of the expanded workflow command set.
 
 **Granular artifact creation:**
 ```
-/opsx:continue
+/dwsp:continue
 ```
 Creates one artifact at a time based on dependencies. Use this when you want to review each step.
 
 **Exploration mode:**
 ```
-/opsx:explore
+/dwsp:explore
 ```
 Think through ideas with a partner before committing to a change.
 
@@ -381,14 +381,14 @@ Artifacts form a directed graph. Dependencies are enablers, not gates:
                      specs, design)
 ```
 
-When you run `/opsx:continue`, it checks what's ready and offers the next artifact. You can also create multiple ready artifacts in any order.
+When you run `/dwsp:continue`, it checks what's ready and offers the next artifact. You can also create multiple ready artifacts in any order.
 
 ### Skills vs Commands
 
 The legacy system used tool-specific command files:
 
 ```
-.claude/commands/openspec/
+.claude/commands/duowenspec/
 ├── proposal.md
 ├── apply.md
 └── archive.md
@@ -398,10 +398,10 @@ OPSX uses the emerging **skills** standard:
 
 ```
 .claude/skills/
-├── openspec-explore/SKILL.md
-├── openspec-new-change/SKILL.md
-├── openspec-continue-change/SKILL.md
-├── openspec-apply-change/SKILL.md
+├── duowenspec-explore/SKILL.md
+├── duowenspec-new-change/SKILL.md
+├── duowenspec-continue-change/SKILL.md
+├── duowenspec-apply-change/SKILL.md
 └── ...
 ```
 
@@ -416,7 +416,7 @@ Your in-progress changes work seamlessly with OPSX commands.
 **Have an active change from the legacy workflow?**
 
 ```
-/opsx:apply add-my-feature
+/dwsp:apply add-my-feature
 ```
 
 OPSX reads the existing artifacts and continues from where you left off.
@@ -424,7 +424,7 @@ OPSX reads the existing artifacts and continues from where you left off.
 **Want to add more artifacts to an existing change?**
 
 ```
-/opsx:continue add-my-feature
+/dwsp:continue add-my-feature
 ```
 
 Shows what's ready to create based on what already exists.
@@ -469,8 +469,8 @@ rules:
 When determining which schema to use, OPSX checks in order:
 
 1. **CLI flag**: `--schema <name>` (highest priority)
-2. **Change metadata**: `.openspec.yaml` in the change directory
-3. **Project config**: `openspec/config.yaml`
+2. **Change metadata**: `.duowenspec.yaml` in the change directory
+3. **Project config**: `duowenspec/config.yaml`
 4. **Default**: `spec-driven`
 
 ### Available Schemas
@@ -531,7 +531,7 @@ dwsp schemas --json
 
 ### Config not being applied
 
-1. Ensure the file is at `openspec/config.yaml` (not `.yml`)
+1. Ensure the file is at `duowenspec/config.yaml` (not `.yml`)
 2. Validate YAML syntax
 3. Config changes take effect immediately—no restart needed
 
@@ -551,39 +551,39 @@ Run init and decline the cleanup prompt—you'll see the full detection summary 
 
 ```
 project/
-├── openspec/
+├── duowenspec/
 │   ├── specs/                    # Unchanged
 │   ├── changes/                  # Unchanged
 │   │   └── archive/              # Unchanged
 │   └── config.yaml               # NEW: Project configuration
 ├── .claude/
 │   └── skills/                   # NEW: OPSX skills
-│       ├── openspec-propose/     # default core profile
-│       ├── openspec-explore/
-│       ├── openspec-apply-change/
+│       ├── duowenspec-propose/     # default core profile
+│       ├── duowenspec-explore/
+│       ├── duowenspec-apply-change/
 │       └── ...                   # expanded profile adds new/continue/ff/etc.
-├── CLAUDE.md                     # OpenSpec markers removed, your content preserved
-└── AGENTS.md                     # OpenSpec markers removed, your content preserved
+├── CLAUDE.md                     # DuowenSpec markers removed, your content preserved
+└── AGENTS.md                     # DuowenSpec markers removed, your content preserved
 ```
 
 ### What's Gone
 
-- `.claude/commands/openspec/` — replaced by `.claude/skills/`
-- `openspec/AGENTS.md` — obsolete
-- `openspec/project.md` — migrate to `config.yaml`, then delete
-- OpenSpec marker blocks in `CLAUDE.md`, `AGENTS.md`, etc.
+- `.claude/commands/duowenspec/` — replaced by `.claude/skills/`
+- `duowenspec/AGENTS.md` — obsolete
+- `duowenspec/project.md` — migrate to `config.yaml`, then delete
+- DuowenSpec marker blocks in `CLAUDE.md`, `AGENTS.md`, etc.
 
 ### Command Cheatsheet
 
 ```text
-/opsx:propose      Start quickly (default core profile)
-/opsx:apply        Implement tasks
-/opsx:archive      Finish and archive
+/dwsp:propose      Start quickly (default core profile)
+/dwsp:apply        Implement tasks
+/dwsp:archive      Finish and archive
 
 # Expanded workflow (if enabled):
-/opsx:new          Scaffold a change
-/opsx:continue     Create next artifact
-/opsx:ff           Create planning artifacts
+/dwsp:new          Scaffold a change
+/dwsp:continue     Create next artifact
+/dwsp:ff           Create planning artifacts
 ```
 
 ---

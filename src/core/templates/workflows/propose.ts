@@ -9,7 +9,7 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getOpsxProposeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-propose',
+    name: 'duowenspec-propose',
     description: '一步生成完整变更提案。适用于用户快速描述目标并产出 proposal、design、specs、tasks。',
     instructions: `提出一个新变更：一步创建并生成全部产物。
 
@@ -45,7 +45,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
    \`\`\`bash
    dwsp new change "<name>"
    \`\`\`
-   该命令会在 \`openspec/changes/<name>/\` 下创建脚手架，并包含 \`.openspec.yaml\`。
+   该命令会在 \`duowenspec/changes/<name>/\` 下创建脚手架，并包含 \`.duowenspec.yaml\`。
 
 3. **获取产物生成顺序**
    \`\`\`bash
@@ -120,7 +120,7 @@ export function getOpsxProposeSkillTemplate(): SkillTemplate {
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -164,7 +164,7 @@ export function getOpsxProposeCommandTemplate(): CommandTemplate {
    \`\`\`bash
    dwsp new change "<name>"
    \`\`\`
-   该命令会在 \`openspec/changes/<name>/\` 下创建脚手架，并包含 \`.openspec.yaml\`。
+   该命令会在 \`duowenspec/changes/<name>/\` 下创建脚手架，并包含 \`.duowenspec.yaml\`。
 
 3. **获取产物生成顺序**
    \`\`\`bash

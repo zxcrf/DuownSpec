@@ -20,7 +20,7 @@ import {
   DEFAULT_CONFIG,
 } from '../core/config-schema.js';
 import { CORE_WORKFLOWS, ALL_WORKFLOWS, getProfileWorkflows } from '../core/profiles.js';
-import { OPENSPEC_DIR_NAME } from '../core/config.js';
+import { DUOWENSPEC_DIR_NAME } from '../core/config.js';
 import { hasProjectConfigDrift } from '../core/profile-sync-drift.js';
 
 type ProfileAction = 'both' | 'delivery' | 'workflows' | 'keep';
@@ -92,7 +92,7 @@ const WORKFLOW_PROMPT_META: Record<string, WorkflowPromptMeta> = {
   },
   onboard: {
     name: '上手引导',
-    description: 'OpenSpec 引导式上手流程',
+    description: 'DuowenSpec 引导式上手流程',
   },
 };
 
@@ -199,8 +199,8 @@ function maybeWarnConfigDrift(
   state: ProfileState,
   colorize: (message: string) => string
 ): void {
-  const openspecDir = path.join(projectDir, OPENSPEC_DIR_NAME);
-  if (!fs.existsSync(openspecDir)) {
+  const duowenspecDir = path.join(projectDir, DUOWENSPEC_DIR_NAME);
+  if (!fs.existsSync(duowenspecDir)) {
     return;
   }
   if (!hasProjectConfigDrift(projectDir, state.workflows, state.delivery)) {
@@ -217,7 +217,7 @@ function maybeWarnConfigDrift(
 export function registerConfigCommand(program: Command): void {
   const configCmd = program
     .command('config')
-    .description('查看和修改全局 OpenSpec 配置')
+    .description('查看和修改全局 DuowenSpec 配置')
     .option('--scope <scope>', '配置作用域（当前仅支持 "global"）')
     .hook('preAction', (thisCommand) => {
       const opts = thisCommand.opts();
@@ -619,10 +619,10 @@ export function registerConfigCommand(program: Command): void {
         config.workflows = nextState.workflows;
         saveGlobalConfig(config);
 
-        // Check if inside an OpenSpec project
+        // Check if inside an DuowenSpec project
         const projectDir = process.cwd();
-        const openspecDir = path.join(projectDir, OPENSPEC_DIR_NAME);
-        if (fs.existsSync(openspecDir)) {
+        const duowenspecDir = path.join(projectDir, DUOWENSPEC_DIR_NAME);
+        if (fs.existsSync(duowenspecDir)) {
           const applyNow = await confirm({
             message: '现在就把改动应用到当前项目吗？',
             default: true,

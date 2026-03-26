@@ -102,7 +102,7 @@ const toolsOptionDescription = `以非交互方式配置 AI 工具。可使用 "
 
 program
   .command('init [path]')
-  .description('在当前项目中初始化 OpenSpec')
+  .description('在当前项目中初始化 DuowenSpec')
   .option('--tools <tools>', toolsOptionDescription)
   .option('--force', '自动清理旧版遗留文件，不再提示确认')
   .option('--profile <profile>', '覆盖全局 profile（core 或 custom）')
@@ -145,7 +145,7 @@ program
 
 program
   .command('update [path]')
-  .description('刷新 OpenSpec 生成的说明文件')
+  .description('刷新 DuowenSpec 生成的说明文件')
   .option('--force', '即使已是最新状态也强制刷新')
   .action(async (targetPath = '.', options?: { force?: boolean }) => {
     try {
@@ -196,7 +196,7 @@ program
 // Change command with subcommands
 const changeCmd = program
   .command('change')
-  .description('管理 OpenSpec 变更提案');
+  .description('管理 DuowenSpec 变更提案');
 
 // Deprecation notice for noun-based commands
 changeCmd.hook('preAction', () => {
@@ -286,7 +286,7 @@ program
   .option('--type <type>', '当名称有歧义时指定类型：change|spec')
   .option('--strict', '启用严格校验模式')
   .option('--json', '以 JSON 输出校验结果')
-  .option('--concurrency <n>', '最大并发校验数（默认读取环境变量 OPENSPEC_CONCURRENCY 或使用 6）')
+  .option('--concurrency <n>', '最大并发校验数（默认读取环境变量 DUOWENSPEC_CONCURRENCY 或使用 6）')
   .option('--no-interactive', '关闭交互提示')
   .action(async (itemName?: string, options?: { all?: boolean; changes?: boolean; specs?: boolean; type?: string; strict?: boolean; json?: boolean; noInteractive?: boolean; concurrency?: string }) => {
     try {
@@ -329,7 +329,7 @@ program
 // Feedback command
 program
   .command('feedback <message>')
-  .description('提交 OpenSpec 反馈')
+  .description('提交 DuowenSpec 反馈')
   .option('--body <text>', '补充更详细的反馈内容')
   .action(async (message: string, options?: { body?: string }) => {
     try {

@@ -50,7 +50,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'MODO Scaffold',
-  description: 'OpenSpec generated MODO scaffold',
+  description: 'DuowenSpec generated MODO scaffold',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -81,7 +81,7 @@ export function resolveModoScaffoldSourceRoots(
 ): ModoScaffoldSourceRoots {
   return {
     bundledRoot: overrides.bundledRoot
-      ?? process.env.OPENSPEC_MODO_SCAFFOLD_ASSET_ROOT
+      ?? process.env.DUOWENSPEC_MODO_SCAFFOLD_ASSET_ROOT
       ?? DEFAULT_BUNDLED_ASSET_ROOT,
   };
 }
@@ -102,7 +102,7 @@ export function getDefaultModoScaffoldManifest(): ModoScaffoldManifest {
       { source: 'bundled', kind: 'file', from: 'src/app/globals.css', to: 'src/app/globals.css', required: true },
       { source: 'bundled', kind: 'directory', from: 'src/components/templates', to: 'src/components/templates', required: true },
       { source: 'bundled', kind: 'directory', from: 'src/components/biz', to: 'src/components/biz', required: true },
-      { source: 'bundled', kind: 'directory', from: 'openspec/b-end', to: 'openspec/b-end', required: true },
+      { source: 'bundled', kind: 'directory', from: 'duowenspec/b-end', to: 'duowenspec/b-end', required: true },
     ],
     generatedFiles: [
       { to: 'src/components/ModoThemeRegistry.tsx', content: MODO_THEME_REGISTRY_CONTENT },

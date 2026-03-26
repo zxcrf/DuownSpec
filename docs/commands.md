@@ -1,6 +1,6 @@
 # Commands
 
-This is the reference for OpenSpec's slash commands. These commands are invoked in your AI coding assistant's chat interface (e.g., Claude Code, Cursor, Windsurf).
+This is the reference for DuowenSpec's slash commands. These commands are invoked in your AI coding assistant's chat interface (e.g., Claude Code, Cursor, Windsurf).
 
 For workflow patterns and when to use each command, see [Workflows](workflows.md). For CLI commands, see [CLI](cli.md).
 
@@ -10,22 +10,22 @@ For workflow patterns and when to use each command, see [Workflows](workflows.md
 
 | Command | Purpose |
 |---------|---------|
-| `/opsx:propose` | Create a change and generate planning artifacts in one step |
-| `/opsx:explore` | Think through ideas before committing to a change |
-| `/opsx:apply` | Implement tasks from the change |
-| `/opsx:archive` | Archive a completed change |
+| `/dwsp:propose` | Create a change and generate planning artifacts in one step |
+| `/dwsp:explore` | Think through ideas before committing to a change |
+| `/dwsp:apply` | Implement tasks from the change |
+| `/dwsp:archive` | Archive a completed change |
 
 ### Expanded Workflow Commands (custom workflow selection)
 
 | Command | Purpose |
 |---------|---------|
-| `/opsx:new` | Start a new change scaffold |
-| `/opsx:continue` | Create the next artifact based on dependencies |
-| `/opsx:ff` | Fast-forward: create all planning artifacts at once |
-| `/opsx:verify` | Validate implementation matches artifacts |
-| `/opsx:sync` | Merge delta specs into main specs |
-| `/opsx:bulk-archive` | Archive multiple changes at once |
-| `/opsx:onboard` | Guided tutorial through the complete workflow |
+| `/dwsp:new` | Start a new change scaffold |
+| `/dwsp:continue` | Create the next artifact based on dependencies |
+| `/dwsp:ff` | Fast-forward: create all planning artifacts at once |
+| `/dwsp:verify` | Validate implementation matches artifacts |
+| `/dwsp:sync` | Merge delta specs into main specs |
+| `/dwsp:bulk-archive` | Archive multiple changes at once |
+| `/dwsp:onboard` | Guided tutorial through the complete workflow |
 
 The default global profile is `core`. To enable expanded workflow commands, run `dwsp config profile`, select workflows, then run `dwsp update` in your project.
 
@@ -33,13 +33,13 @@ The default global profile is `core`. To enable expanded workflow commands, run 
 
 ## Command Reference
 
-### `/opsx:propose`
+### `/dwsp:propose`
 
 Create a new change and generate planning artifacts in one step. This is the default start command in the `core` profile.
 
 **Syntax:**
 ```text
-/opsx:propose [change-name-or-description]
+/dwsp:propose [change-name-or-description]
 ```
 
 **Arguments:**
@@ -48,35 +48,35 @@ Create a new change and generate planning artifacts in one step. This is the def
 | `change-name-or-description` | No | Kebab-case name or plain-language change description |
 
 **What it does:**
-- Creates `openspec/changes/<change-name>/`
+- Creates `duowenspec/changes/<change-name>/`
 - Generates artifacts needed before implementation (for `spec-driven`: proposal, specs, design, tasks)
-- Stops when the change is ready for `/opsx:apply`
+- Stops when the change is ready for `/dwsp:apply`
 
 **Example:**
 ```text
-You: /opsx:propose add-dark-mode
+You: /dwsp:propose add-dark-mode
 
-AI:  Created openspec/changes/add-dark-mode/
+AI:  Created duowenspec/changes/add-dark-mode/
      ✓ proposal.md
      ✓ specs/ui/spec.md
      ✓ design.md
      ✓ tasks.md
-     Ready for implementation. Run /opsx:apply.
+     Ready for implementation. Run /dwsp:apply.
 ```
 
 **Tips:**
 - Use this for the fastest end-to-end path
-- If you want step-by-step artifact control, enable expanded workflows and use `/opsx:new` + `/opsx:continue`
+- If you want step-by-step artifact control, enable expanded workflows and use `/dwsp:new` + `/dwsp:continue`
 
 ---
 
-### `/opsx:explore`
+### `/dwsp:explore`
 
 Think through ideas, investigate problems, and clarify requirements before committing to a change.
 
 **Syntax:**
 ```
-/opsx:explore [topic]
+/dwsp:explore [topic]
 ```
 
 **Arguments:**
@@ -89,11 +89,11 @@ Think through ideas, investigate problems, and clarify requirements before commi
 - Investigates the codebase to answer questions
 - Compares options and approaches
 - Creates visual diagrams to clarify thinking
-- Can transition to `/opsx:propose` (default) or `/opsx:new` (expanded workflow) when insights crystallize
+- Can transition to `/dwsp:propose` (default) or `/dwsp:new` (expanded workflow) when insights crystallize
 
 **Example:**
 ```text
-You: /opsx:explore
+You: /dwsp:explore
 
 AI:  What would you like to explore?
 
@@ -113,7 +113,7 @@ AI:  Let me investigate your current auth setup...
 
 You: Let's go with JWT. Can we start a change for that?
 
-AI:  Ready when you are. Run /opsx:propose add-jwt-auth to begin.
+AI:  Ready when you are. Run /dwsp:propose add-jwt-auth to begin.
 ```
 
 **Tips:**
@@ -124,15 +124,15 @@ AI:  Ready when you are. Run /opsx:propose add-jwt-auth to begin.
 
 ---
 
-### `/opsx:new`
+### `/dwsp:new`
 
-Start a new change scaffold. Creates the change folder and waits for you to generate artifacts with `/opsx:continue` or `/opsx:ff`.
+Start a new change scaffold. Creates the change folder and waits for you to generate artifacts with `/dwsp:continue` or `/dwsp:ff`.
 
 This command is part of the expanded workflow set (not included in the default `core` profile).
 
 **Syntax:**
 ```
-/opsx:new [change-name] [--schema <schema-name>]
+/dwsp:new [change-name] [--schema <schema-name>]
 ```
 
 **Arguments:**
@@ -142,42 +142,42 @@ This command is part of the expanded workflow set (not included in the default `
 | `--schema` | No | Workflow schema to use (default: from config or `spec-driven`) |
 
 **What it does:**
-- Creates `openspec/changes/<change-name>/` directory
-- Creates `.openspec.yaml` metadata file in the change folder
+- Creates `duowenspec/changes/<change-name>/` directory
+- Creates `.duowenspec.yaml` metadata file in the change folder
 - Shows the first artifact template ready for creation
 - Prompts for change name and schema if not provided
 
 **What it creates:**
 ```
-openspec/changes/<change-name>/
-└── .openspec.yaml    # Change metadata (schema, created date)
+duowenspec/changes/<change-name>/
+└── .duowenspec.yaml    # Change metadata (schema, created date)
 ```
 
 **Example:**
 ```
-You: /opsx:new add-dark-mode
+You: /dwsp:new add-dark-mode
 
-AI:  Created openspec/changes/add-dark-mode/
+AI:  Created duowenspec/changes/add-dark-mode/
      Schema: spec-driven
 
      Ready to create: proposal
-     Use /opsx:continue to create it, or /opsx:ff to create all artifacts.
+     Use /dwsp:continue to create it, or /dwsp:ff to create all artifacts.
 ```
 
 **Tips:**
 - Use descriptive names: `add-feature`, `fix-bug`, `refactor-module`
 - Avoid generic names like `update`, `changes`, `wip`
-- Schema can also be set in project config (`openspec/config.yaml`)
+- Schema can also be set in project config (`duowenspec/config.yaml`)
 
 ---
 
-### `/opsx:continue`
+### `/dwsp:continue`
 
 Create the next artifact in the dependency chain. Creates one artifact at a time for incremental progress.
 
 **Syntax:**
 ```
-/opsx:continue [change-name]
+/dwsp:continue [change-name]
 ```
 
 **Arguments:**
@@ -194,7 +194,7 @@ Create the next artifact in the dependency chain. Creates one artifact at a time
 
 **Example:**
 ```
-You: /opsx:continue
+You: /dwsp:continue
 
 AI:  Change: add-dark-mode
 
@@ -208,10 +208,10 @@ AI:  Change: add-dark-mode
 
      [Reads proposal.md, creates specs based on requirements]
 
-     ✓ Created openspec/changes/add-dark-mode/specs/ui/spec.md
+     ✓ Created duowenspec/changes/add-dark-mode/specs/ui/spec.md
 
      Now available: tasks
-     Run /opsx:continue to create the next artifact.
+     Run /dwsp:continue to create the next artifact.
 ```
 
 **Tips:**
@@ -222,13 +222,13 @@ AI:  Change: add-dark-mode
 
 ---
 
-### `/opsx:ff`
+### `/dwsp:ff`
 
 Fast-forward through artifact creation. Creates all planning artifacts at once.
 
 **Syntax:**
 ```
-/opsx:ff [change-name]
+/dwsp:ff [change-name]
 ```
 
 **Arguments:**
@@ -244,7 +244,7 @@ Fast-forward through artifact creation. Creates all planning artifacts at once.
 
 **Example:**
 ```
-You: /opsx:ff add-dark-mode
+You: /dwsp:ff add-dark-mode
 
 AI:  Fast-forwarding add-dark-mode...
 
@@ -254,24 +254,24 @@ AI:  Fast-forwarding add-dark-mode...
      ✓ Creating tasks.md
 
      All planning artifacts complete!
-     Ready for implementation. Run /opsx:apply to begin.
+     Ready for implementation. Run /dwsp:apply to begin.
 ```
 
 **Tips:**
 - Use when you have a clear picture of what you're building
-- Faster than `/opsx:continue` for straightforward changes
+- Faster than `/dwsp:continue` for straightforward changes
 - You can still edit artifacts afterward
 - Good for small to medium features
 
 ---
 
-### `/opsx:apply`
+### `/dwsp:apply`
 
 Implement tasks from the change. Works through the task list, writing code and checking off items.
 
 **Syntax:**
 ```
-/opsx:apply [change-name]
+/dwsp:apply [change-name]
 ```
 
 **Arguments:**
@@ -287,7 +287,7 @@ Implement tasks from the change. Works through the task list, writing code and c
 
 **Example:**
 ```
-You: /opsx:apply
+You: /dwsp:apply
 
 AI:  Implementing add-dark-mode...
 
@@ -315,13 +315,13 @@ AI:  Implementing add-dark-mode...
 
 ---
 
-### `/opsx:verify`
+### `/dwsp:verify`
 
 Validate that implementation matches your change artifacts. Checks completeness, correctness, and coherence.
 
 **Syntax:**
 ```
-/opsx:verify [change-name]
+/dwsp:verify [change-name]
 ```
 
 **Arguments:**
@@ -345,7 +345,7 @@ Validate that implementation matches your change artifacts. Checks completeness,
 
 **Example:**
 ```
-You: /opsx:verify
+You: /dwsp:verify
 
 AI:  Verifying add-dark-mode...
 
@@ -383,13 +383,13 @@ AI:  Verifying add-dark-mode...
 
 ---
 
-### `/opsx:sync`
+### `/dwsp:sync`
 
 **Optional command.** Merge delta specs from a change into main specs. Archive will prompt to sync if needed, so you typically don't need to run this manually.
 
 **Syntax:**
 ```
-/opsx:sync [change-name]
+/dwsp:sync [change-name]
 ```
 
 **Arguments:**
@@ -400,27 +400,27 @@ AI:  Verifying add-dark-mode...
 **What it does:**
 - Reads delta specs from change folder
 - Parses ADDED/MODIFIED/REMOVED/RENAMED sections
-- Merges changes into main `openspec/specs/` directory
+- Merges changes into main `duowenspec/specs/` directory
 - Preserves existing content not mentioned in delta
 - Does not archive the change (remains active)
 
 **Example:**
 ```text
-You: /opsx:sync
+You: /dwsp:sync
 
 AI:  Syncing add-dark-mode delta specs...
 
-     Reading: openspec/changes/add-dark-mode/specs/ui/spec.md
-     Target:  openspec/specs/ui/spec.md
+     Reading: duowenspec/changes/add-dark-mode/specs/ui/spec.md
+     Target:  duowenspec/specs/ui/spec.md
 
      Changes to apply:
      ✓ ADDED: Theme Selection requirement (2 scenarios)
      ✓ ADDED: Accessibility requirement (1 scenario)
 
      Merging...
-     ✓ openspec/specs/ui/spec.md updated
+     ✓ duowenspec/specs/ui/spec.md updated
 
-     Change remains active. Run /opsx:archive when ready to complete.
+     Change remains active. Run /dwsp:archive when ready to complete.
 ```
 
 **When to use manually:**
@@ -440,13 +440,13 @@ AI:  Syncing add-dark-mode delta specs...
 
 ---
 
-### `/opsx:archive`
+### `/dwsp:archive`
 
 Archive a completed change. Finalizes the change and moves it to the archive folder.
 
 **Syntax:**
 ```
-/opsx:archive [change-name]
+/dwsp:archive [change-name]
 ```
 
 **Arguments:**
@@ -458,12 +458,12 @@ Archive a completed change. Finalizes the change and moves it to the archive fol
 - Checks artifact completion status
 - Checks task completion (warns if incomplete)
 - Offers to sync delta specs if not already synced
-- Moves change folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`
+- Moves change folder to `duowenspec/changes/archive/YYYY-MM-DD-<name>/`
 - Preserves all artifacts for audit trail
 
 **Example:**
 ```text
-You: /opsx:archive
+You: /dwsp:archive
 
 AI:  Archiving add-dark-mode...
 
@@ -478,8 +478,8 @@ AI:  Archiving add-dark-mode...
 
 You: Yes
 
-AI:  ✓ Synced specs to openspec/specs/ui/spec.md
-     ✓ Moved to openspec/changes/archive/2025-01-24-add-dark-mode/
+AI:  ✓ Synced specs to duowenspec/specs/ui/spec.md
+     ✓ Moved to duowenspec/changes/archive/2025-01-24-add-dark-mode/
 
      Change archived successfully.
 ```
@@ -488,17 +488,17 @@ AI:  ✓ Synced specs to openspec/specs/ui/spec.md
 - Archive won't block on incomplete tasks, but will warn
 - Delta specs can be synced during archive or beforehand
 - Archived changes are preserved for history
-- Use `/opsx:verify` first to catch issues
+- Use `/dwsp:verify` first to catch issues
 
 ---
 
-### `/opsx:bulk-archive`
+### `/dwsp:bulk-archive`
 
 Archive multiple completed changes at once. Handles spec conflicts between changes.
 
 **Syntax:**
 ```
-/opsx:bulk-archive [change-names...]
+/dwsp:bulk-archive [change-names...]
 ```
 
 **Arguments:**
@@ -515,7 +515,7 @@ Archive multiple completed changes at once. Handles spec conflicts between chang
 
 **Example:**
 ```
-You: /opsx:bulk-archive
+You: /dwsp:bulk-archive
 
 AI:  Found 3 completed changes:
      - add-dark-mode (8/8 tasks complete)
@@ -548,13 +548,13 @@ AI:  ✓ Archived add-dark-mode
 
 ---
 
-### `/opsx:onboard`
+### `/dwsp:onboard`
 
-Guided onboarding through the complete OpenSpec workflow. An interactive tutorial using your actual codebase.
+Guided onboarding through the complete DuowenSpec workflow. An interactive tutorial using your actual codebase.
 
 **Syntax:**
 ```
-/opsx:onboard
+/dwsp:onboard
 ```
 
 **What it does:**
@@ -568,21 +568,21 @@ Guided onboarding through the complete OpenSpec workflow. An interactive tutoria
 **Phases:**
 1. Welcome and codebase analysis
 2. Finding an improvement opportunity
-3. Creating a change (`/opsx:new`)
+3. Creating a change (`/dwsp:new`)
 4. Writing the proposal
 5. Creating specs
 6. Writing the design
 7. Creating tasks
-8. Implementing tasks (`/opsx:apply`)
+8. Implementing tasks (`/dwsp:apply`)
 9. Verifying implementation
 10. Archiving the change
 11. Summary and next steps
 
 **Example:**
 ```
-You: /opsx:onboard
+You: /dwsp:onboard
 
-AI:  Welcome to OpenSpec!
+AI:  Welcome to DuowenSpec!
 
      I'll walk you through the complete workflow using your actual codebase.
      We'll find something small to improve, create a proper change for it,
@@ -614,11 +614,11 @@ Different AI tools use slightly different command syntax. Use the format that ma
 
 | Tool | Syntax Example |
 |------|----------------|
-| Claude Code | `/opsx:propose`, `/opsx:apply` |
-| Cursor | `/opsx-propose`, `/opsx-apply` |
-| Windsurf | `/opsx-propose`, `/opsx-apply` |
-| Copilot (IDE) | `/opsx-propose`, `/opsx-apply` |
-| Trae | Skill-based invocations such as `/openspec-propose`, `/openspec-apply-change` (no generated `opsx-*` command files) |
+| Claude Code | `/dwsp:propose`, `/dwsp:apply` |
+| Cursor | `/dwsp-propose`, `/dwsp-apply` |
+| Windsurf | `/dwsp-propose`, `/dwsp-apply` |
+| Copilot (IDE) | `/dwsp-propose`, `/dwsp-apply` |
+| Trae | Skill-based invocations such as `/duowenspec-propose`, `/duowenspec-apply-change` (no generated `opsx-*` command files) |
 
 The intent is the same across tools, but how commands are surfaced can differ by integration.
 
@@ -632,9 +632,9 @@ These commands use the older "all-at-once" workflow. They still work but OPSX co
 
 | Command | What it does |
 |---------|--------------|
-| `/openspec:proposal` | Create all artifacts at once (proposal, specs, design, tasks) |
-| `/openspec:apply` | Implement the change |
-| `/openspec:archive` | Archive the change |
+| `/duowenspec:proposal` | Create all artifacts at once (proposal, specs, design, tasks) |
+| `/duowenspec:apply` | Implement the change |
+| `/duowenspec:archive` | Archive the change |
 
 **When to use legacy commands:**
 - Existing projects using the old workflow
@@ -653,7 +653,7 @@ Legacy changes can be continued with OPSX commands. The artifact structure is co
 The command couldn't identify which change to work on.
 
 **Solutions:**
-- Specify the change name explicitly: `/opsx:apply add-dark-mode`
+- Specify the change name explicitly: `/dwsp:apply add-dark-mode`
 - Check that the change folder exists: `dwsp list`
 - Verify you're in the right project directory
 
@@ -677,10 +677,10 @@ The specified schema doesn't exist.
 
 ### Commands not recognized
 
-The AI tool doesn't recognize OpenSpec commands.
+The AI tool doesn't recognize DuowenSpec commands.
 
 **Solutions:**
-- Ensure OpenSpec is initialized: `dwsp init`
+- Ensure DuowenSpec is initialized: `dwsp init`
 - Regenerate skills: `dwsp update`
 - Check that `.claude/skills/` directory exists (for Claude Code)
 - Restart your AI tool to pick up new skills
@@ -690,10 +690,10 @@ The AI tool doesn't recognize OpenSpec commands.
 The AI creates incomplete or incorrect artifacts.
 
 **Solutions:**
-- Add project context in `openspec/config.yaml`
+- Add project context in `duowenspec/config.yaml`
 - Add per-artifact rules for specific guidance
 - Provide more detail in your change description
-- Use `/opsx:continue` instead of `/opsx:ff` for more control
+- Use `/dwsp:continue` instead of `/dwsp:ff` for more control
 
 ---
 

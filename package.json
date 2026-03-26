@@ -15,7 +15,7 @@
     "url": "https://github.com/zxcrf/DuownSpec"
   },
   "license": "MIT",
-  "author": "OpenSpec Contributors",
+  "author": "DuowenSpec Contributors",
   "type": "module",
   "publishConfig": {
     "access": "public"

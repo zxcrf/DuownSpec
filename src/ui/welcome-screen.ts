@@ -17,7 +17,7 @@ const ART_COLUMN_WIDTH = 24;
  */
 function getWelcomeText(): string[] {
   return [
-    chalk.white.bold('欢迎使用 OpenSpec'),
+    chalk.white.bold('欢迎使用 DuowenSpec'),
     chalk.dim('一个轻量的规格驱动工作流'),
     '',
     chalk.white('这次初始化会为你配置：'),

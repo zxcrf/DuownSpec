@@ -32,16 +32,16 @@ bun add -g @duowen-ai/duowenspec@latest
 
 ## Nix
 
-Run OpenSpec directly without installation:
+Run DuowenSpec directly without installation:
 
 ```bash
-nix run github:Fission-AI/OpenSpec -- init
+nix run github:Fission-AI/DuowenSpec -- init
 ```
 
 Or install to your profile:
 
 ```bash
-nix profile install github:Fission-AI/OpenSpec
+nix profile install github:Fission-AI/DuowenSpec
 ```
 
 Or add to your development environment in `flake.nix`:
@@ -50,12 +50,12 @@ Or add to your development environment in `flake.nix`:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    openspec.url = "github:Fission-AI/OpenSpec";
+    duowenspec.url = "github:Fission-AI/DuowenSpec";
   };
 
-  outputs = { nixpkgs, openspec, ... }: {
+  outputs = { nixpkgs, duowenspec, ... }: {
     devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
-      buildInputs = [ openspec.packages.x86_64-linux.default ];
+      buildInputs = [ duowenspec.packages.x86_64-linux.default ];
     };
   };
 }
@@ -69,7 +69,7 @@ dwsp --version
 
 ## Next Steps
 
-After installing, initialize OpenSpec in your project:
+After installing, initialize DuowenSpec in your project:
 
 ```bash
 cd your-project

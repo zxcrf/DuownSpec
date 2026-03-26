@@ -66,9 +66,9 @@ export interface CommandTemplateEntry {
 }
 
 export const MODO_SUPPORT_SKILL_DIRS = [
-  'openspec-b-end-delivery',
-  'openspec-b-end-components',
-  'openspec-b-end-review',
+  'duowenspec-b-end-delivery',
+  'duowenspec-b-end-components',
+  'duowenspec-b-end-review',
 ] as const;
 
 /**
@@ -78,19 +78,19 @@ export const MODO_SUPPORT_SKILL_DIRS = [
  */
 export function getSkillTemplates(workflowFilter?: readonly string[]): SkillTemplateEntry[] {
   const all: SkillTemplateEntry[] = [
-    { template: getExploreSkillTemplate(), dirName: 'openspec-explore', workflowId: 'explore' },
-    { template: getNewChangeSkillTemplate(), dirName: 'openspec-new-change', workflowId: 'new' },
-    { template: getContinueChangeSkillTemplate(), dirName: 'openspec-continue-change', workflowId: 'continue' },
-    { template: getApplyChangeSkillTemplate(), dirName: 'openspec-apply-change', workflowId: 'apply' },
-    { template: getReviewChangeSkillTemplate(), dirName: 'openspec-review-change', workflowId: 'review' },
-    { template: getFfChangeSkillTemplate(), dirName: 'openspec-ff-change', workflowId: 'ff' },
-    { template: getSyncSpecsSkillTemplate(), dirName: 'openspec-sync-specs', workflowId: 'sync' },
-    { template: getArchiveChangeSkillTemplate(), dirName: 'openspec-archive-change', workflowId: 'archive' },
-    { template: getBulkArchiveChangeSkillTemplate(), dirName: 'openspec-bulk-archive-change', workflowId: 'bulk-archive' },
-    { template: getVerifyChangeSkillTemplate(), dirName: 'openspec-verify-change', workflowId: 'verify' },
-    { template: getDocumentChangeSkillTemplate(), dirName: 'openspec-document-change', workflowId: 'document' },
-    { template: getOnboardSkillTemplate(), dirName: 'openspec-onboard', workflowId: 'onboard' },
-    { template: getOpsxProposeSkillTemplate(), dirName: 'openspec-propose', workflowId: 'propose' },
+    { template: getExploreSkillTemplate(), dirName: 'duowenspec-explore', workflowId: 'explore' },
+    { template: getNewChangeSkillTemplate(), dirName: 'duowenspec-new-change', workflowId: 'new' },
+    { template: getContinueChangeSkillTemplate(), dirName: 'duowenspec-continue-change', workflowId: 'continue' },
+    { template: getApplyChangeSkillTemplate(), dirName: 'duowenspec-apply-change', workflowId: 'apply' },
+    { template: getReviewChangeSkillTemplate(), dirName: 'duowenspec-review-change', workflowId: 'review' },
+    { template: getFfChangeSkillTemplate(), dirName: 'duowenspec-ff-change', workflowId: 'ff' },
+    { template: getSyncSpecsSkillTemplate(), dirName: 'duowenspec-sync-specs', workflowId: 'sync' },
+    { template: getArchiveChangeSkillTemplate(), dirName: 'duowenspec-archive-change', workflowId: 'archive' },
+    { template: getBulkArchiveChangeSkillTemplate(), dirName: 'duowenspec-bulk-archive-change', workflowId: 'bulk-archive' },
+    { template: getVerifyChangeSkillTemplate(), dirName: 'duowenspec-verify-change', workflowId: 'verify' },
+    { template: getDocumentChangeSkillTemplate(), dirName: 'duowenspec-document-change', workflowId: 'document' },
+    { template: getOnboardSkillTemplate(), dirName: 'duowenspec-onboard', workflowId: 'onboard' },
+    { template: getOpsxProposeSkillTemplate(), dirName: 'duowenspec-propose', workflowId: 'propose' },
   ];
 
   if (!workflowFilter) return all;
@@ -103,17 +103,17 @@ export function getModoSupportSkillTemplates(): SkillTemplateEntry[] {
   return [
     {
       template: getBEndDeliverySkillTemplate(),
-      dirName: 'openspec-b-end-delivery',
+      dirName: 'duowenspec-b-end-delivery',
       workflowId: 'modo-support-delivery',
     },
     {
       template: getBEndComponentsSkillTemplate(),
-      dirName: 'openspec-b-end-components',
+      dirName: 'duowenspec-b-end-components',
       workflowId: 'modo-support-components',
     },
     {
       template: getBEndReviewSkillTemplate(),
-      dirName: 'openspec-b-end-review',
+      dirName: 'duowenspec-b-end-review',
       workflowId: 'modo-support-review',
     },
   ];
@@ -214,7 +214,7 @@ description: ${template.description}
 license: ${template.license || 'MIT'}
 compatibility: ${template.compatibility || '需要安装 dwsp CLI。'}
 metadata:
-  author: ${template.metadata?.author || 'openspec'}
+  author: ${template.metadata?.author || 'duowenspec'}
   version: "${template.metadata?.version || '1.0'}"
   generatedBy: "${generatedByVersion}"
 ---

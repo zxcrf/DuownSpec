@@ -12,19 +12,19 @@ import { AI_TOOLS } from '../config.js';
  * Names of skill directories created by duowenspec init.
  */
 export const SKILL_NAMES = [
-  'openspec-explore',
-  'openspec-new-change',
-  'openspec-continue-change',
-  'openspec-apply-change',
-  'openspec-review-change',
-  'openspec-ff-change',
-  'openspec-sync-specs',
-  'openspec-archive-change',
-  'openspec-bulk-archive-change',
-  'openspec-verify-change',
-  'openspec-document-change',
-  'openspec-onboard',
-  'openspec-propose',
+  'duowenspec-explore',
+  'duowenspec-new-change',
+  'duowenspec-continue-change',
+  'duowenspec-apply-change',
+  'duowenspec-review-change',
+  'duowenspec-ff-change',
+  'duowenspec-sync-specs',
+  'duowenspec-archive-change',
+  'duowenspec-bulk-archive-change',
+  'duowenspec-verify-change',
+  'duowenspec-document-change',
+  'duowenspec-onboard',
+  'duowenspec-propose',
   'brainstorming',
   'executing-plans',
   'test-driven-development',
@@ -149,7 +149,7 @@ export function extractGeneratedByVersion(skillFilePath: string): string | null 
     // ---
     // ...
     // metadata:
-    //   author: openspec
+    //   author: duowenspec
     //   version: "1.0"
     //   generatedBy: "0.23.0"
     // ---

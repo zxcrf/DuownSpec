@@ -1,31 +1,31 @@
 # Getting Started
 
-This guide explains how OpenSpec works after you've installed and initialized it. For installation instructions, see the [main README](../README.md#quick-start).
+This guide explains how DuowenSpec works after you've installed and initialized it. For installation instructions, see the [main README](../README.md#quick-start).
 
 ## How It Works
 
-OpenSpec helps you and your AI coding assistant agree on what to build before any code is written.
+DuowenSpec helps you and your AI coding assistant agree on what to build before any code is written.
 
 **Default quick path (core profile):**
 
 ```text
-/opsx:propose ──► /opsx:apply ──► /opsx:archive
+/dwsp:propose ──► /dwsp:apply ──► /dwsp:archive
 ```
 
 **Expanded path (custom workflow selection):**
 
 ```text
-/opsx:new ──► /opsx:ff or /opsx:continue ──► /opsx:apply ──► /opsx:verify ──► /opsx:archive
+/dwsp:new ──► /dwsp:ff or /dwsp:continue ──► /dwsp:apply ──► /dwsp:verify ──► /dwsp:archive
 ```
 
 The default global profile is `core`, which includes `propose`, `explore`, `apply`, and `archive`. You can enable the expanded workflow commands with `dwsp config profile` and then `dwsp update`.
 
-## What OpenSpec Creates
+## What DuowenSpec Creates
 
 After running `dwsp init`, your project has this structure:
 
 ```
-openspec/
+duowenspec/
 ├── specs/              # Source of truth (your system's behavior)
 │   └── <domain>/
 │       └── spec.md
@@ -70,7 +70,7 @@ You can always go back and refine earlier artifacts as you learn more during imp
 
 ## How Delta Specs Work
 
-Delta specs are the key concept in OpenSpec. They show what's changing relative to your current specs.
+Delta specs are the key concept in DuowenSpec. They show what's changing relative to your current specs.
 
 ### The Format
 
@@ -114,7 +114,7 @@ When you archive a change:
 2. **MODIFIED** requirements replace the existing version
 3. **REMOVED** requirements are deleted from the main spec
 
-The change folder moves to `openspec/changes/archive/` for audit history.
+The change folder moves to `duowenspec/changes/archive/` for audit history.
 
 ## Example: Your First Change
 
@@ -123,9 +123,9 @@ Let's walk through adding dark mode to an application.
 ### 1. Start the Change (Default)
 
 ```text
-You: /opsx:propose add-dark-mode
+You: /dwsp:propose add-dark-mode
 
-AI:  Created openspec/changes/add-dark-mode/
+AI:  Created duowenspec/changes/add-dark-mode/
      ✓ proposal.md — why we're doing this, what's changing
      ✓ specs/       — requirements and scenarios
      ✓ design.md    — technical approach
@@ -133,7 +133,7 @@ AI:  Created openspec/changes/add-dark-mode/
      Ready for implementation!
 ```
 
-If you've enabled the expanded workflow profile, you can also do this as two steps: `/opsx:new` then `/opsx:ff` (or `/opsx:continue` incrementally).
+If you've enabled the expanded workflow profile, you can also do this as two steps: `/dwsp:new` then `/dwsp:ff` (or `/dwsp:continue` incrementally).
 
 ### 2. What Gets Created
 
@@ -201,7 +201,7 @@ The system SHALL allow users to choose between light and dark themes.
 ### 3. Implement
 
 ```
-You: /opsx:apply
+You: /dwsp:apply
 
 AI:  Working through tasks...
      ✓ 1.1 Created ThemeContext with light/dark state
@@ -217,11 +217,11 @@ During implementation, if you discover the design needs adjustment, just update 
 ### 4. Archive
 
 ```
-You: /opsx:archive
+You: /dwsp:archive
 
 AI:  Archiving add-dark-mode...
-     ✓ Merged specs into openspec/specs/ui/spec.md
-     ✓ Moved to openspec/changes/archive/2025-01-24-add-dark-mode/
+     ✓ Merged specs into duowenspec/specs/ui/spec.md
+     ✓ Moved to duowenspec/changes/archive/2025-01-24-add-dark-mode/
      Done! Ready for the next feature.
 ```
 
@@ -250,4 +250,4 @@ dwsp view
 - [Workflows](workflows.md) - Common patterns and when to use each command
 - [Commands](commands.md) - Full reference for all slash commands
 - [Concepts](concepts.md) - Deeper understanding of specs, changes, and schemas
-- [Customization](customization.md) - Make OpenSpec work your way
+- [Customization](customization.md) - Make DuowenSpec work your way

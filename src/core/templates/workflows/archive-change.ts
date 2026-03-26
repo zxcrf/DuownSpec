@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getArchiveChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-archive-change',
+    name: 'duowenspec-archive-change',
     description: '在实验工作流中归档已完成的变更。适用于实现完成后进行收尾归档。',
     instructions: `在实验工作流中归档已完成变更。
 
@@ -53,10 +53,10 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 
 4. **评估增量规格同步状态**
 
-   检查 \`openspec/changes/<name>/specs/\` 下是否存在增量 specs。若不存在，跳过同步提示。
+   检查 \`duowenspec/changes/<name>/specs/\` 下是否存在增量 specs。若不存在，跳过同步提示。
 
    **若存在增量 specs：**
-   - 将每个增量 spec 与对应主 spec（\`openspec/specs/<capability>/spec.md\`）进行比较
+   - 将每个增量 spec 与对应主 spec（\`duowenspec/specs/<capability>/spec.md\`）进行比较
    - 判断将应用的变更类型（新增、修改、删除、重命名）
    - 在询问前先给出合并后的差异摘要
 
@@ -64,13 +64,13 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
    - 若有差异："立即同步（推荐）"、"不同步直接归档"
    - 若看起来已同步："直接归档"、"仍然同步"、"取消"
 
-   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 openspec-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
+   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 duowenspec-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
 
 5. **执行归档**
 
    如果归档目录不存在，先创建：
    \`\`\`bash
-   mkdir -p openspec/changes/archive
+   mkdir -p duowenspec/changes/archive
    \`\`\`
 
    使用当天日期生成目标目录名：\`YYYY-MM-DD-<change-name>\`
@@ -80,7 +80,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
    - 若不存在：将变更目录移动到归档目录
 
    \`\`\`bash
-   mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+   mv duowenspec/changes/<name> duowenspec/changes/archive/YYYY-MM-DD-<name>
    \`\`\`
 
 6. **展示摘要**
@@ -99,7 +99,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 
 **变更:** <change-name>
 **工作流:** <schema-name>
-**归档位置:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**归档位置:** duowenspec/changes/archive/YYYY-MM-DD-<name>/
 **规格同步:** ✓ 已同步到主 specs（或“无增量 specs”或“已跳过同步”）
 
 全部产物完成。全部任务完成。
@@ -109,13 +109,13 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 - 未提供变更名时，必须先让用户选择变更
 - 使用产物图（\`dwsp status --json\`）检查完成状态
 - 对警告不强制阻断，但必须明确告知并取得确认
-- 移动目录时保留 .openspec.yaml（随目录一起移动）
+- 移动目录时保留 .duowenspec.yaml（随目录一起移动）
 - 始终给出清晰的归档结果摘要
-- 若用户要求同步，使用 openspec-sync-specs 的智能体驱动方式
+- 若用户要求同步，使用 duowenspec-sync-specs 的智能体驱动方式
 - 若存在增量 specs，必须先完成同步评估并展示合并摘要，再询问用户`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -168,10 +168,10 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 4. **评估增量规格同步状态**
 
-   检查 \`openspec/changes/<name>/specs/\` 下是否存在增量 specs。若不存在，跳过同步提示。
+   检查 \`duowenspec/changes/<name>/specs/\` 下是否存在增量 specs。若不存在，跳过同步提示。
 
    **若存在增量 specs：**
-   - 将每个增量 spec 与对应主 spec（\`openspec/specs/<capability>/spec.md\`）进行比较
+   - 将每个增量 spec 与对应主 spec（\`duowenspec/specs/<capability>/spec.md\`）进行比较
    - 判断将应用的变更类型（新增、修改、删除、重命名）
    - 在询问前先给出合并后的差异摘要
 
@@ -179,13 +179,13 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
    - 若有差异："立即同步（推荐）"、"不同步直接归档"
    - 若看起来已同步："直接归档"、"仍然同步"、"取消"
 
-   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 openspec-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
+   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 duowenspec-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
 
 5. **执行归档**
 
    如果归档目录不存在，先创建：
    \`\`\`bash
-   mkdir -p openspec/changes/archive
+   mkdir -p duowenspec/changes/archive
    \`\`\`
 
    使用当天日期生成目标目录名：\`YYYY-MM-DD-<change-name>\`
@@ -195,7 +195,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
    - 若不存在：将变更目录移动到归档目录
 
    \`\`\`bash
-   mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+   mv duowenspec/changes/<name> duowenspec/changes/archive/YYYY-MM-DD-<name>
    \`\`\`
 
 6. **展示摘要**
@@ -214,7 +214,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 **变更:** <change-name>
 **工作流:** <schema-name>
-**归档位置:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**归档位置:** duowenspec/changes/archive/YYYY-MM-DD-<name>/
 **规格同步:** ✓ 已同步到主 specs
 
 全部产物完成。全部任务完成。
@@ -227,7 +227,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 **变更:** <change-name>
 **工作流:** <schema-name>
-**归档位置:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**归档位置:** duowenspec/changes/archive/YYYY-MM-DD-<name>/
 **规格同步:** 无增量 specs
 
 全部产物完成。全部任务完成。
@@ -240,7 +240,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 
 **变更:** <change-name>
 **工作流:** <schema-name>
-**归档位置:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**归档位置:** duowenspec/changes/archive/YYYY-MM-DD-<name>/
 **规格同步:** 已跳过同步（用户选择跳过）
 
 **警告:**
@@ -257,7 +257,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 ## 归档失败
 
 **变更:** <change-name>
-**目标路径:** openspec/changes/archive/YYYY-MM-DD-<name>/
+**目标路径:** duowenspec/changes/archive/YYYY-MM-DD-<name>/
 
 目标归档目录已存在。
 
@@ -271,9 +271,9 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 - 未提供变更名时，必须先让用户选择变更
 - 使用产物图（\`dwsp status --json\`）检查完成状态
 - 对警告不强制阻断，但必须明确告知并取得确认
-- 移动目录时保留 .openspec.yaml（随目录一起移动）
+- 移动目录时保留 .duowenspec.yaml（随目录一起移动）
 - 始终给出清晰的归档结果摘要
-- 若用户要求同步，使用 Skill tool 调用 \`openspec-sync-specs\`（智能体驱动）
+- 若用户要求同步，使用 Skill tool 调用 \`duowenspec-sync-specs\`（智能体驱动）
 - 若存在增量 specs，必须先完成同步评估并展示合并摘要，再询问用户`
   };
 }

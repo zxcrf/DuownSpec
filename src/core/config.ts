@@ -1,11 +1,11 @@
-export const OPENSPEC_DIR_NAME = 'openspec';
+export const DUOWENSPEC_DIR_NAME = 'duowenspec';
 
-export const OPENSPEC_MARKERS = {
-  start: '<!-- OPENSPEC:START -->',
-  end: '<!-- OPENSPEC:END -->'
+export const DUOWENSPEC_MARKERS = {
+  start: '<!-- DUOWENSPEC:START -->',
+  end: '<!-- DUOWENSPEC:END -->'
 };
 
-export interface OpenSpecConfig {
+export interface DuowenSpecConfig {
   aiTools: string[];
 }
 

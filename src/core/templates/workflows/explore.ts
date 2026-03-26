@@ -9,11 +9,11 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getExploreSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-explore',
+    name: 'duowenspec-explore',
     description: '进入探索模式：用于梳理想法、调查问题、澄清需求，适用于变更前或变更中的思考阶段。',
     instructions: `进入探索模式。以思考为主，自然推进，充分可视化。
 
-**重要：探索模式用于思考，不用于实现。** 你可以读文件、查代码、调查现状，但不能编写业务代码或直接实现功能。若用户要求直接动手实现，先提醒其退出探索模式并先创建变更提案。若用户要求整理 OpenSpec 产物（proposal/design/specs/tasks），可以执行，因为这属于沉淀思考，不是实现。
+**重要：探索模式用于思考，不用于实现。** 你可以读文件、查代码、调查现状，但不能编写业务代码或直接实现功能。若用户要求直接动手实现，先提醒其退出探索模式并先创建变更提案。若用户要求整理 DuowenSpec 产物（proposal/design/specs/tasks），可以执行，因为这属于沉淀思考，不是实现。
 
 **这是一种工作姿态，不是固定流程。** 没有必须遵循的步骤、顺序或强制输出。你是用户的思考搭档。
 
@@ -75,13 +75,13 @@ export function getExploreSkillTemplate(): SkillTemplate {
 
 ---
 
-## OpenSpec 上下文意识
+## DuowenSpec 上下文意识
 
-你拥有 OpenSpec 全局上下文，请自然使用，不要生硬套用。
+你拥有 DuowenSpec 全局上下文，请自然使用，不要生硬套用。
 
-OpenSpec 负责工作流阶段管理。若当前问题描述或上下文不足，你可以建议
+DuowenSpec 负责工作流阶段管理。若当前问题描述或上下文不足，你可以建议
 \`superpowers:brainstorming\` 来拓宽选项或比较方案；但最终结论仍应沉淀回
-OpenSpec 产物（proposal/design/specs/tasks）。
+DuowenSpec 产物（proposal/design/specs/tasks）。
 
 ### 先检查上下文
 
@@ -106,9 +106,9 @@ dwsp list --json
 若用户提到某个变更，或你判断某个变更相关：
 
 1. **先读取已有产物**
-   - \`openspec/changes/<name>/proposal.md\`
-   - \`openspec/changes/<name>/design.md\`
-   - \`openspec/changes/<name>/tasks.md\`
+   - \`duowenspec/changes/<name>/proposal.md\`
+   - \`duowenspec/changes/<name>/design.md\`
+   - \`duowenspec/changes/<name>/tasks.md\`
    - 以及其他相关产物
 
 2. **在对话中自然引用**
@@ -242,7 +242,7 @@ dwsp list --json
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -254,7 +254,7 @@ export function getOpsxExploreCommandTemplate(): CommandTemplate {
     tags: ['workflow', 'explore', 'experimental', 'thinking'],
     content: `进入探索模式。以思考为主，自然推进，充分可视化。
 
-**重要：探索模式用于思考，不用于实现。** 你可以读文件、查代码、调查现状，但不能编写业务代码或直接实现功能。若用户要求直接动手实现，先提醒其退出探索模式并先创建变更提案。若用户要求整理 OpenSpec 产物（proposal/design/specs/tasks），可以执行，因为这属于沉淀思考，不是实现。
+**重要：探索模式用于思考，不用于实现。** 你可以读文件、查代码、调查现状，但不能编写业务代码或直接实现功能。若用户要求直接动手实现，先提醒其退出探索模式并先创建变更提案。若用户要求整理 DuowenSpec 产物（proposal/design/specs/tasks），可以执行，因为这属于沉淀思考，不是实现。
 
 **这是一种工作姿态，不是固定流程。** 没有必须遵循的步骤、顺序或强制输出。你是用户的思考搭档。
 
@@ -318,7 +318,7 @@ export function getOpsxExploreCommandTemplate(): CommandTemplate {
 
 ---
 
-## OpenSpec 上下文意识
+## DuowenSpec 上下文意识
 
 先执行：
 \`\`\`bash
@@ -335,9 +335,9 @@ dwsp list --json
 ### 当存在活跃变更
 
 1. **读取已有产物**
-   - \`openspec/changes/<name>/proposal.md\`
-   - \`openspec/changes/<name>/design.md\`
-   - \`openspec/changes/<name>/tasks.md\`
+   - \`duowenspec/changes/<name>/proposal.md\`
+   - \`duowenspec/changes/<name>/design.md\`
+   - \`duowenspec/changes/<name>/tasks.md\`
    - 以及其他相关产物
 
 2. **自然引用现有信息**

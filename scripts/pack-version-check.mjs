@@ -67,7 +67,7 @@ function main() {
     tgzPath = path.resolve(filename);
     log(`Created: ${tgzPath}`);
 
-    work = mkdtempSync(path.join(tmpdir(), 'openspec-pack-check-'));
+    work = mkdtempSync(path.join(tmpdir(), 'duowenspec-pack-check-'));
     log(`Temp dir: ${work}`);
 
     // Make a tiny project

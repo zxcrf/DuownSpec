@@ -9,9 +9,9 @@ import { getModoBEndImplementationHint } from './shared-b-end.js';
 
 export function getApplyChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-apply-change',
-    description: '执行 OpenSpec 变更中的任务。适用于开始实现、继续实现或逐项完成任务。',
-    instructions: `执行 OpenSpec 变更中的任务。
+    name: 'duowenspec-apply-change',
+    description: '执行 DuowenSpec 变更中的任务。适用于开始实现、继续实现或逐项完成任务。',
+    instructions: `执行 DuowenSpec 变更中的任务。
 
 **输入**: 可选传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
@@ -47,7 +47,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
    - 基于当前状态生成的动态指引
 
    **状态处理：**
-   - 若 \`state: "blocked"\`（缺少前置产物）：提示受阻，并建议使用 openspec-continue-change
+   - 若 \`state: "blocked"\`（缺少前置产物）：提示受阻，并建议使用 duowenspec-continue-change
    - 若 \`state: "all_done"\`：提示已全部完成，并建议归档
    - 其他情况：进入实现流程
 
@@ -70,7 +70,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 
    在这个企业优先分支中，\`superpowers:executing-plans\` 是此阶段默认的实现增强能力；
    \`superpowers:test-driven-development\` 和 \`superpowers:subagent-driven-development\`
-   也可在合适时使用。OpenSpec 仍是任务完成状态与阶段推进的唯一依据。
+   也可在合适时使用。DuowenSpec 仍是任务完成状态与阶段推进的唯一依据。
 
    对每个待完成任务：
    - 说明当前正在处理的任务
@@ -165,17 +165,17 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 ${getModoBEndImplementationHint()}`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
 export function getOpsxApplyCommandTemplate(): CommandTemplate {
   return {
     name: 'OPSX: Apply',
-    description: '执行 OpenSpec 变更任务（实验工作流）',
+    description: '执行 DuowenSpec 变更任务（实验工作流）',
     category: '工作流',
     tags: ['workflow', 'artifacts', 'experimental'],
-    content: `执行 OpenSpec 变更中的任务。
+    content: `执行 DuowenSpec 变更中的任务。
 
 **输入**: 可选传入变更名（例如 \`/dwsp:apply add-auth\`）。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
@@ -234,7 +234,7 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
 
    在这个企业优先分支中，\`superpowers:executing-plans\` 是此阶段默认的实现增强能力；
    \`superpowers:test-driven-development\` 和 \`superpowers:subagent-driven-development\`
-   也可在合适时使用。OpenSpec 仍是任务完成状态与阶段推进的唯一依据。
+   也可在合适时使用。DuowenSpec 仍是任务完成状态与阶段推进的唯一依据。
 
    对每个待完成任务：
    - 说明当前正在处理的任务

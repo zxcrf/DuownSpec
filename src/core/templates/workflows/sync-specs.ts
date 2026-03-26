@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getSyncSpecsSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-sync-specs',
+    name: 'duowenspec-sync-specs',
     description: '将变更中的 delta specs 同步回主 specs。适用于不归档变更、只同步规格内容时使用。',
     instructions: `将某个变更里的 delta specs 同步回主 specs。
 
@@ -28,7 +28,7 @@ export function getSyncSpecsSkillTemplate(): SkillTemplate {
 
 2. **找到 delta specs**
 
-   查找 \`openspec/changes/<name>/specs/*/spec.md\` 下的 delta spec 文件。
+   查找 \`duowenspec/changes/<name>/specs/*/spec.md\` 下的 delta spec 文件。
 
    每个 delta spec 通常包含这些段落：
    - \`## ADDED Requirements\`：要新增的 requirement
@@ -40,11 +40,11 @@ export function getSyncSpecsSkillTemplate(): SkillTemplate {
 
 3. **针对每份 delta spec，把变更应用到主 specs**
 
-   对于 \`openspec/changes/<name>/specs/<capability>/spec.md\` 下的每个 delta spec：
+   对于 \`duowenspec/changes/<name>/specs/<capability>/spec.md\` 下的每个 delta spec：
 
    a. **先阅读 delta spec**，理解它想表达的变更意图
 
-   b. **再阅读主 spec**：\`openspec/specs/<capability>/spec.md\`（这个文件可能还不存在）
+   b. **再阅读主 spec**：\`duowenspec/specs/<capability>/spec.md\`（这个文件可能还不存在）
 
    c. **智能应用这些变更**：
 
@@ -67,7 +67,7 @@ export function getSyncSpecsSkillTemplate(): SkillTemplate {
       - 找到 FROM 指向的 requirement，并重命名为 TO
 
    d. **如果 capability 的主 spec 还不存在，就新建主 spec**：
-      - 创建 \`openspec/specs/<capability>/spec.md\`
+      - 创建 \`duowenspec/specs/<capability>/spec.md\`
       - 添加 Purpose 段（可以简短，必要时先标记为 TBD）
       - 再写入新增的 requirements
 
@@ -139,7 +139,7 @@ The system SHALL do something new.
 - 这个操作应当具有幂等性：重复执行两次，结果应保持一致`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -167,7 +167,7 @@ export function getOpsxSyncCommandTemplate(): CommandTemplate {
 
 2. **找到 delta specs**
 
-   查找 \`openspec/changes/<name>/specs/*/spec.md\` 下的 delta spec 文件。
+   查找 \`duowenspec/changes/<name>/specs/*/spec.md\` 下的 delta spec 文件。
 
    每个 delta spec 通常包含这些段落：
    - \`## ADDED Requirements\`：要新增的 requirement
@@ -179,11 +179,11 @@ export function getOpsxSyncCommandTemplate(): CommandTemplate {
 
 3. **针对每份 delta spec，把变更应用到主 specs**
 
-   对于 \`openspec/changes/<name>/specs/<capability>/spec.md\` 下的每个 delta spec：
+   对于 \`duowenspec/changes/<name>/specs/<capability>/spec.md\` 下的每个 delta spec：
 
    a. **先阅读 delta spec**，理解它想表达的变更意图
 
-   b. **再阅读主 spec**：\`openspec/specs/<capability>/spec.md\`（这个文件可能还不存在）
+   b. **再阅读主 spec**：\`duowenspec/specs/<capability>/spec.md\`（这个文件可能还不存在）
 
    c. **智能应用这些变更**：
 
@@ -206,7 +206,7 @@ export function getOpsxSyncCommandTemplate(): CommandTemplate {
       - 找到 FROM 指向的 requirement，并重命名为 TO
 
    d. **如果 capability 的主 spec 还不存在，就新建主 spec**：
-      - 创建 \`openspec/specs/<capability>/spec.md\`
+      - 创建 \`duowenspec/specs/<capability>/spec.md\`
       - 添加 Purpose 段（可以简短，必要时先标记为 TBD）
       - 再写入新增的 requirements
 

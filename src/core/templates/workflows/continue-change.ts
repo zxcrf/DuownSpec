@@ -9,8 +9,8 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getContinueChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-continue-change',
-    description: '继续推进 OpenSpec 变更，生成下一份产物。适用于用户想继续当前工作流或补齐下一步产物。',
+    name: 'duowenspec-continue-change',
+    description: '继续推进 DuowenSpec 变更，生成下一份产物。适用于用户想继续当前工作流或补齐下一步产物。',
     instructions: `通过创建下一份产物来继续推进一个变更。
 
 **输入**：可以选择性提供变更名。如果没有提供，就从对话上下文中判断；如果仍然模糊或有歧义，必须提示用户从现有变更里选择。
@@ -121,7 +121,7 @@ export function getContinueChangeSkillTemplate(): SkillTemplate {
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 

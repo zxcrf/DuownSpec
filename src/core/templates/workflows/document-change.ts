@@ -2,12 +2,12 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getDocumentChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-document-change',
+    name: 'duowenspec-document-change',
     description: '在发布与归档前记录交付文档已完成。适用于确认文档与实际交付一致。',
     instructions: `在发布和归档前记录变更的最终交付状态。
 
 这是企业流程中的必经检查点。此处需要完成交付文档这一流程门禁；
-但发布是否就绪、是否可归档，仍以 OpenSpec 作为唯一依据。
+但发布是否就绪、是否可归档，仍以 DuowenSpec 作为唯一依据。
 不要假设 superpowers 一定提供了可直接替代此步骤的内置文档能力。
 
 **输入**: 可选传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
@@ -58,7 +58,7 @@ export function getDocumentChangeSkillTemplate(): SkillTemplate {
 - 必要交付物仍缺失时，不得标记为 complete`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -71,7 +71,7 @@ export function getOpsxDocumentCommandTemplate(): CommandTemplate {
     content: `在发布和归档前记录变更的最终交付状态。
 
 这是企业流程中的必经检查点。此处需要完成交付文档这一流程门禁；
-但发布是否就绪、是否可归档，仍以 OpenSpec 作为唯一依据。
+但发布是否就绪、是否可归档，仍以 DuowenSpec 作为唯一依据。
 不要假设 superpowers 一定提供了可直接替代此步骤的内置文档能力。
 
 **输入**: 可选在 \`/dwsp:document\` 后传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。

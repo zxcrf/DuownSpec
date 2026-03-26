@@ -9,8 +9,8 @@ import type { SkillTemplate } from '../types.js';
 export function getFeedbackSkillTemplate(): SkillTemplate {
   return {
     name: 'feedback',
-    description: '收集并提交关于 OpenSpec 的用户反馈，附带上下文补充与匿名化处理。',
-    instructions: `帮助用户提交关于 OpenSpec 的反馈。
+    description: '收集并提交关于 DuowenSpec 的用户反馈，附带上下文补充与匿名化处理。',
+    instructions: `帮助用户提交关于 DuowenSpec 的反馈。
 
 **目标**：在保护隐私的前提下，引导用户收集、补充并提交反馈内容。
 
@@ -110,6 +110,6 @@ Body:
 只有在用户明确确认后，才继续提交。`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }

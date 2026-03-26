@@ -15,8 +15,8 @@ export class PowerShellInstaller {
    * Markers for PowerShell profile configuration management
    */
   private readonly PROFILE_MARKERS = {
-    start: '# OPENSPEC:START',
-    end: '# OPENSPEC:END',
+    start: '# DUOWENSPEC:START',
+    end: '# DUOWENSPEC:END',
   };
 
   constructor(homeDir: string = os.homedir()) {
@@ -77,7 +77,7 @@ export class PowerShellInstaller {
   getInstallationPath(): string {
     const profilePath = this.getProfilePath();
     const profileDir = path.dirname(profilePath);
-    return path.join(profileDir, 'OpenSpecCompletion.ps1');
+    return path.join(profileDir, 'DuowenSpecCompletion.ps1');
   }
 
   /**
@@ -145,15 +145,15 @@ export class PowerShellInstaller {
         }
 
         // Add DuowenSpec completion configuration with markers
-        const openspecBlock = [
+        const duowenspecBlock = [
           '',
-          '# OPENSPEC:START - DuowenSpec completion (managed block, do not edit manually)',
+          '# DUOWENSPEC:START - DuowenSpec completion (managed block, do not edit manually)',
           scriptLine,
-          '# OPENSPEC:END',
+          '# DUOWENSPEC:END',
           '',
         ].join('\n');
 
-        const newContent = profileContent + openspecBlock;
+        const newContent = profileContent + duowenspecBlock;
         await fs.writeFile(profilePath, newContent, 'utf-8');
         anyConfigured = true;
       } catch (error) {
@@ -185,9 +185,9 @@ export class PowerShellInstaller {
           continue; // Profile doesn't exist, nothing to remove
         }
 
-        // Remove OPENSPEC:START -> OPENSPEC:END block
-        const startMarker = '# OPENSPEC:START';
-        const endMarker = '# OPENSPEC:END';
+        // Remove DUOWENSPEC:START -> DUOWENSPEC:END block
+        const startMarker = '# DUOWENSPEC:START';
+        const endMarker = '# DUOWENSPEC:END';
         const startIndex = profileContent.indexOf(startMarker);
 
         if (startIndex === -1) {

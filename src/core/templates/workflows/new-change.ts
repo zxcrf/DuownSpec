@@ -9,8 +9,8 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getNewChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-new-change',
-    description: '使用实验产物工作流发起新的 OpenSpec 变更。适用于按步骤创建功能、修复或修改。',
+    name: 'duowenspec-new-change',
+    description: '使用实验产物工作流发起新的 DuowenSpec 变更。适用于按步骤创建功能、修复或修改。',
     instructions: `使用实验产物驱动方式发起一个新变更。
 
 **输入**：用户的请求应当包含一个变更名（kebab-case），或者描述想要构建/修复的内容。
@@ -41,7 +41,7 @@ export function getNewChangeSkillTemplate(): SkillTemplate {
    dwsp new change "<name>"
    \`\`\`
    只有当用户明确指定非默认工作流时才追加 \`--schema <name>\`。
-   这会在 \`openspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
+   这会在 \`duowenspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
 
 4. **查看产物状态**
    \`\`\`bash
@@ -78,7 +78,7 @@ export function getNewChangeSkillTemplate(): SkillTemplate {
 ${getModoBEndPlanningHint()}`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -118,7 +118,7 @@ export function getOpsxNewCommandTemplate(): CommandTemplate {
    dwsp new change "<name>"
    \`\`\`
    只有当用户明确指定非默认工作流时才追加 \`--schema <name>\`。
-   这会在 \`openspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
+   这会在 \`duowenspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
 
 4. **查看产物状态**
    \`\`\`bash

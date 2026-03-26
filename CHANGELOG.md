@@ -1,4 +1,4 @@
-# @fission-ai/openspec
+# @fission-ai/duowenspec
 
 ## 1.2.0
 
@@ -6,13 +6,13 @@
 
 - [#747](https://github.com/zxcrf/DuownSpec) [`1e94443`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### New Features
 
-  - **Profile system** — Choose between `core` (4 essential workflows) and `custom` (pick any subset) profiles to control which skills get installed. Manage profiles with the new `openspec config profile` command
+  - **Profile system** — Choose between `core` (4 essential workflows) and `custom` (pick any subset) profiles to control which skills get installed. Manage profiles with the new `duowenspec config profile` command
   - **Propose workflow** — New one-step workflow creates a complete change proposal with design, specs, and tasks from a single request — no need to run `new` then `ff` separately
-  - **AI tool auto-detection** — `openspec init` now scans your project for existing tool directories (`.claude/`, `.cursor/`, etc.) and pre-selects detected tools
+  - **AI tool auto-detection** — `duowenspec init` now scans your project for existing tool directories (`.claude/`, `.cursor/`, etc.) and pre-selects detected tools
   - **Pi (pi.dev) support** — Pi coding agent is now a supported tool with prompt and skill generation
   - **Kiro support** — AWS Kiro IDE is now a supported tool with prompt and skill generation
-  - **Sync prunes deselected workflows** — `openspec update` now removes command files and skill directories for workflows you've deselected, keeping your project clean
-  - **Config drift warning** — `openspec config list` warns when global config is out of sync with the current project
+  - **Sync prunes deselected workflows** — `duowenspec update` now removes command files and skill directories for workflows you've deselected, keeping your project clean
+  - **Config drift warning** — `duowenspec config list` warns when global config is out of sync with the current project
 
   ### Bug Fixes
 
@@ -26,7 +26,7 @@
 
 - [#627](https://github.com/zxcrf/DuownSpec) [`afb73cf`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### Bug Fixes
 
-  - **OpenCode command references** — Command references in generated files now use the correct `/opsx-` hyphen format instead of `/opsx:` colon format, ensuring commands work properly in OpenCode
+  - **OpenCode command references** — Command references in generated files now use the correct `/dwsp-` hyphen format instead of `/dwsp:` colon format, ensuring commands work properly in OpenCode
 
 ## 1.1.0
 
@@ -66,21 +66,21 @@
 
 - [#587](https://github.com/zxcrf/DuownSpec) [`943e0d4`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### Bug Fixes
 
-  - Fixed incorrect archive path in onboarding documentation — the template now shows the correct path `openspec/changes/archive/YYYY-MM-DD-<name>/` instead of the incorrect `openspec/archive/YYYY-MM-DD--<name>/`
+  - Fixed incorrect archive path in onboarding documentation — the template now shows the correct path `duowenspec/changes/archive/YYYY-MM-DD-<name>/` instead of the incorrect `duowenspec/archive/YYYY-MM-DD--<name>/`
 
 ## 1.0.0
 
 ### Major Changes
 
-- [#578](https://github.com/zxcrf/DuownSpec) [`0cc9d90`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ## OpenSpec 1.0 — The OPSX Release
+- [#578](https://github.com/zxcrf/DuownSpec) [`0cc9d90`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ## DuowenSpec 1.0 — The OPSX Release
 
-  The workflow has been rebuilt from the ground up. OPSX replaces the old phase-locked `/openspec:*` commands with an action-based system where AI understands what artifacts exist, what's ready to create, and what each action unlocks.
+  The workflow has been rebuilt from the ground up. OPSX replaces the old phase-locked `/duowenspec:*` commands with an action-based system where AI understands what artifacts exist, what's ready to create, and what each action unlocks.
 
   ### Breaking Changes
 
-  - **Old commands removed** — `/openspec:proposal`, `/openspec:apply`, and `/openspec:archive` no longer exist
+  - **Old commands removed** — `/duowenspec:proposal`, `/duowenspec:apply`, and `/duowenspec:archive` no longer exist
   - **Config files removed** — Tool-specific instruction files (`CLAUDE.md`, `.cursorrules`, `AGENTS.md`, `project.md`) are no longer generated
-  - **Migration** — Run `openspec init` to upgrade. Legacy artifacts are detected and cleaned up with confirmation.
+  - **Migration** — Run `duowenspec init` to upgrade. Legacy artifacts are detected and cleaned up with confirmation.
 
   ### From Static Prompts to Dynamic Instructions
 
@@ -102,16 +102,16 @@
 
   | Command              | What it does                                         |
   | -------------------- | ---------------------------------------------------- |
-  | `/opsx:explore`      | Think through ideas before committing to a change    |
-  | `/opsx:new`          | Start a new change                                   |
-  | `/opsx:continue`     | Create one artifact at a time (step-through)         |
-  | `/opsx:ff`           | Create all planning artifacts at once (fast-forward) |
-  | `/opsx:apply`        | Implement tasks                                      |
-  | `/opsx:verify`       | Validate implementation matches artifacts            |
-  | `/opsx:sync`         | Sync delta specs to main specs                       |
-  | `/opsx:archive`      | Archive completed change                             |
-  | `/opsx:bulk-archive` | Archive multiple changes with conflict detection     |
-  | `/opsx:onboard`      | Guided 15-minute walkthrough of complete workflow    |
+  | `/dwsp:explore`      | Think through ideas before committing to a change    |
+  | `/dwsp:new`          | Start a new change                                   |
+  | `/dwsp:continue`     | Create one artifact at a time (step-through)         |
+  | `/dwsp:ff`           | Create all planning artifacts at once (fast-forward) |
+  | `/dwsp:apply`        | Implement tasks                                      |
+  | `/dwsp:verify`       | Validate implementation matches artifacts            |
+  | `/dwsp:sync`         | Sync delta specs to main specs                       |
+  | `/dwsp:archive`      | Archive completed change                             |
+  | `/dwsp:bulk-archive` | Archive multiple changes with conflict detection     |
+  | `/dwsp:onboard`      | Guided 15-minute walkthrough of complete workflow    |
 
   ### From Text Merging to Semantic Spec Syncing
 
@@ -134,13 +134,13 @@
 
   ### New Features
 
-  - **Onboarding skill** — `/opsx:onboard` walks new users through their first complete change with codebase-aware task suggestions and step-by-step narration (11 phases, ~15 minutes)
+  - **Onboarding skill** — `/dwsp:onboard` walks new users through their first complete change with codebase-aware task suggestions and step-by-step narration (11 phases, ~15 minutes)
 
   - **21 AI tools supported** — Claude Code, Cursor, Windsurf, Continue, Gemini CLI, GitHub Copilot, Amazon Q, Cline, RooCode, Kilo Code, Auggie, CodeBuddy, Qoder, Qwen, CoStrict, Crush, Factory, OpenCode, Antigravity, iFlow, and Codex
 
-  - **Interactive setup** — `openspec init` shows animated welcome screen and searchable multi-select for choosing tools. Pre-selects already-configured tools for easy refresh.
+  - **Interactive setup** — `duowenspec init` shows animated welcome screen and searchable multi-select for choosing tools. Pre-selects already-configured tools for easy refresh.
 
-  - **Customizable schemas** — Define custom artifact workflows in `openspec/schemas/` without touching package code. Teams can share workflows via version control.
+  - **Customizable schemas** — Define custom artifact workflows in `duowenspec/schemas/` without touching package code. Teams can share workflows via version control.
 
   ### Bug Fixes
 
@@ -160,7 +160,7 @@
 
 - [#540](https://github.com/zxcrf/DuownSpec) [`c4cfdc7`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - ### New Features
 
-  - **Bulk archive skill** — Archive multiple completed changes in a single operation with `/opsx:bulk-archive`. Includes batch validation, spec conflict detection, and consolidated confirmation
+  - **Bulk archive skill** — Archive multiple completed changes in a single operation with `/dwsp:bulk-archive`. Includes batch validation, spec conflict detection, and consolidated confirmation
 
   ### Other
 
@@ -174,9 +174,9 @@
 
   **New Features**
 
-  - **Project-level configuration** — Configure OpenSpec behavior per-project via `openspec/config.yaml`, including custom rules injection, context files, and schema resolution settings
-  - **Project-local schemas** — Define custom artifact schemas within your project's `openspec/schemas/` directory for project-specific workflows
-  - **Schema management commands** — New `openspec schema` commands (`list`, `show`, `export`, `validate`) for inspecting and managing artifact schemas (experimental)
+  - **Project-level configuration** — Configure DuowenSpec behavior per-project via `duowenspec/config.yaml`, including custom rules injection, context files, and schema resolution settings
+  - **Project-local schemas** — Define custom artifact schemas within your project's `duowenspec/schemas/` directory for project-specific workflows
+  - **Schema management commands** — New `duowenspec schema` commands (`list`, `show`, `export`, `validate`) for inspecting and managing artifact schemas (experimental)
 
   **Bug Fixes**
 
@@ -190,8 +190,8 @@
 
   **New Features**
 
-  - **Feedback command** — Submit feedback directly from the CLI with `openspec feedback`, which creates GitHub Issues with automatic metadata inclusion and graceful fallback for manual submission
-  - **Nix flake support** — Install and develop openspec using Nix with the new `flake.nix`, including automated flake maintenance and CI validation
+  - **Feedback command** — Submit feedback directly from the CLI with `duowenspec feedback`, which creates GitHub Issues with automatic metadata inclusion and graceful fallback for manual submission
+  - **Nix flake support** — Install and develop duowenspec using Nix with the new `flake.nix`, including automated flake maintenance and CI validation
 
   **Bug Fixes**
 
@@ -206,11 +206,11 @@
 
 ### Minor Changes
 
-- [#502](https://github.com/zxcrf/DuownSpec) [`9db74aa`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - Add `/opsx:verify` command and fix vitest process storms
+- [#502](https://github.com/zxcrf/DuownSpec) [`9db74aa`](https://github.com/zxcrf/DuownSpec) Thanks [@TabishB](https://github.com/zxcrf/DuownSpec)! - Add `/dwsp:verify` command and fix vitest process storms
 
   **New Features**
 
-  - **`/opsx:verify` command** — Validate that change implementations match their specifications
+  - **`/dwsp:verify` command** — Validate that change implementations match their specifications
 
   **Bug Fixes**
 
@@ -222,13 +222,13 @@
 
 ### Minor Changes
 
-- eb152eb: Add Continue IDE support, shell completions, and `/opsx:explore` command
+- eb152eb: Add Continue IDE support, shell completions, and `/dwsp:explore` command
 
   **New Features**
 
-  - **Continue IDE support** – OpenSpec now generates slash commands for [Continue](https://continue.dev/), expanding editor integration options alongside Cursor, Windsurf, Claude Code, and others
-  - **Shell completions for Bash, Fish, and PowerShell** – Run `openspec completion install` to set up tab completion in your preferred shell
-  - **`/opsx:explore` command** – A new thinking partner mode for exploring ideas and investigating problems before committing to changes
+  - **Continue IDE support** – DuowenSpec now generates slash commands for [Continue](https://continue.dev/), expanding editor integration options alongside Cursor, Windsurf, Claude Code, and others
+  - **Shell completions for Bash, Fish, and PowerShell** – Run `duowenspec completion install` to set up tab completion in your preferred shell
+  - **`/dwsp:explore` command** – A new thinking partner mode for exploring ideas and investigating problems before committing to changes
   - **Codebuddy slash command improvements** – Updated frontmatter format for better compatibility
 
   **Bug Fixes**
@@ -238,7 +238,7 @@
 
   **Other**
 
-  - Added optional anonymous usage statistics to help understand how OpenSpec is used. This is **opt-out** by default – set `OPENSPEC_TELEMETRY=0` or `DO_NOT_TRACK=1` to disable. Only command names and version are collected; no arguments, file paths, or content. Automatically disabled in CI environments.
+  - Added optional anonymous usage statistics to help understand how DuowenSpec is used. This is **opt-out** by default – set `DUOWENSPEC_TELEMETRY=0` or `DO_NOT_TRACK=1` to disable. Only command names and version are collected; no arguments, file paths, or content. Automatically disabled in CI environments.
 
 ## 0.18.0
 
@@ -248,15 +248,15 @@
 
   **New Commands:**
 
-  - `/opsx:ff` - Fast-forward through artifact creation, generating all needed artifacts in one go
-  - `/opsx:sync` - Sync delta specs from a change to main specs
-  - `/opsx:archive` - Archive completed changes with smart sync check
+  - `/dwsp:ff` - Fast-forward through artifact creation, generating all needed artifacts in one go
+  - `/dwsp:sync` - Sync delta specs from a change to main specs
+  - `/dwsp:archive` - Archive completed changes with smart sync check
 
   **Artifact Workflow Enhancements:**
 
   - Schema-aware apply instructions with inline guidance and XML output
   - Agent schema selection for experimental artifact workflow
-  - Per-change schema metadata via `.openspec.yaml` files
+  - Per-change schema metadata via `.duowenspec.yaml` files
   - Agent Skills for experimental artifact workflow
   - Instruction loader for template loading and change context
   - Restructured schemas as directories with templates
@@ -291,11 +291,11 @@
 
 ### Minor Changes
 
-- 2e71835: Add `openspec config` command and Oh-my-zsh completions
+- 2e71835: Add `duowenspec config` command and Oh-my-zsh completions
 
   **New Features**
 
-  - Add `openspec config` command for managing global configuration settings
+  - Add `duowenspec config` command for managing global configuration settings
   - Implement global config directory with XDG Base Directory specification support
   - Add Oh-my-zsh shell completions support for enhanced CLI experience
 
@@ -328,9 +328,9 @@
 
 ### Minor Changes
 
-- Add Continue slash command support so `openspec init` can generate `.continue/prompts/openspec-*.prompt` files with MARKDOWN frontmatter and `$ARGUMENTS` placeholder, and refresh them on `openspec update`.
+- Add Continue slash command support so `duowenspec init` can generate `.continue/prompts/duowenspec-*.prompt` files with MARKDOWN frontmatter and `$ARGUMENTS` placeholder, and refresh them on `duowenspec update`.
 
-- Add Antigravity slash command support so `openspec init` can generate `.agent/workflows/openspec-*.md` files with description-only frontmatter and `openspec update` refreshes existing workflows alongside Windsurf.
+- Add Antigravity slash command support so `duowenspec init` can generate `.agent/workflows/duowenspec-*.md` files with description-only frontmatter and `duowenspec update` refreshes existing workflows alongside Windsurf.
 
 ## 0.15.0
 
@@ -338,7 +338,7 @@
 
 - 4758c5c: Add support for new AI tools with native slash command integration
 
-  - **Gemini CLI**: Add native TOML-based slash command support for Gemini CLI with `.gemini/commands/openspec/` integration
+  - **Gemini CLI**: Add native TOML-based slash command support for Gemini CLI with `.gemini/commands/duowenspec/` integration
   - **RooCode**: Add RooCode integration with configurator, slash commands, and templates
   - **Cline**: Fix Cline to use workflows instead of rules for slash commands (`.clinerules/workflows/` paths)
   - **Documentation**: Update documentation to reflect new integrations and workflow changes
@@ -353,7 +353,7 @@
   - feat: add $ARGUMENTS support to apply slash command for dynamic variable passing
   - feat: add Qoder CLI support to configuration and documentation
   - feat: add CoStrict AI assistant support
-  - fix: recreate missing openspec template files in extend mode
+  - fix: recreate missing duowenspec template files in extend mode
   - fix: prevent false 'already configured' detection for tools
   - fix: use change-id as fallback title instead of "Untitled Change"
   - docs: add guidance for populating project-level context
@@ -397,13 +397,13 @@
   This release includes two new features:
 
   - **Factory function support for slash commands**: Slash commands can now be defined as functions that return command objects, enabling dynamic command configuration
-  - **Non-interactive init options**: Added `--tools`, `--all-tools`, and `--skip-tools` CLI flags to `openspec init` for automated initialization in CI/CD pipelines while maintaining backward compatibility with interactive mode
+  - **Non-interactive init options**: Added `--tools`, `--all-tools`, and `--skip-tools` CLI flags to `duowenspec init` for automated initialization in CI/CD pipelines while maintaining backward compatibility with interactive mode
 
 ## 0.11.0
 
 ### Minor Changes
 
-- 312e1d6: Add Amazon Q Developer CLI integration. OpenSpec now supports Amazon Q Developer with automatic prompt generation in `.amazonq/prompts/` directory, allowing you to use OpenSpec slash commands with Amazon Q's @-syntax.
+- 312e1d6: Add Amazon Q Developer CLI integration. DuowenSpec now supports Amazon Q Developer with automatic prompt generation in `.amazonq/prompts/` directory, allowing you to use DuowenSpec slash commands with Amazon Q's @-syntax.
 
 ## 0.10.0
 
@@ -415,13 +415,13 @@
 
 ### Patch Changes
 
-- 2ae0484: Fix cross-platform path handling issues. This release includes fixes for joinPath behavior and slash command path resolution to ensure OpenSpec works correctly across all platforms.
+- 2ae0484: Fix cross-platform path handling issues. This release includes fixes for joinPath behavior and slash command path resolution to ensure DuowenSpec works correctly across all platforms.
 
 ## 0.9.1
 
 ### Patch Changes
 
-- 8210970: Fix OpenSpec not working on Windows when Codex integration is selected. This release includes fixes for cross-platform path handling and normalization to ensure OpenSpec works correctly on Windows systems.
+- 8210970: Fix DuowenSpec not working on Windows when Codex integration is selected. This release includes fixes for cross-platform path handling and normalization to ensure DuowenSpec works correctly on Windows systems.
 
 ## 0.9.0
 
@@ -433,26 +433,26 @@
 
 ### Minor Changes
 
-- Add GitHub Copilot slash command support. OpenSpec now writes prompts to `.github/prompts/openspec-{proposal,apply,archive}.prompt.md` with YAML frontmatter and `$ARGUMENTS` placeholder, and refreshes them on `openspec update`.
+- Add GitHub Copilot slash command support. DuowenSpec now writes prompts to `.github/prompts/duowenspec-{proposal,apply,archive}.prompt.md` with YAML frontmatter and `$ARGUMENTS` placeholder, and refreshes them on `duowenspec update`.
 
 ## 0.8.1
 
 ### Patch Changes
 
-- d070d08: Fix CLI version mismatch and add a release guard that validates the packed tarball prints the same version as package.json via `openspec --version`.
+- d070d08: Fix CLI version mismatch and add a release guard that validates the packed tarball prints the same version as package.json via `duowenspec --version`.
 
 ## 0.8.0
 
 ### Minor Changes
 
 - c29b06d: Add Windsurf support.
-- Add Codex slash command support. OpenSpec now writes prompts directly to Codex's global directory (`~/.codex/prompts` or `$CODEX_HOME/prompts`) and refreshes them on `openspec update`.
+- Add Codex slash command support. DuowenSpec now writes prompts directly to Codex's global directory (`~/.codex/prompts` or `$CODEX_HOME/prompts`) and refreshes them on `duowenspec update`.
 
 ## 0.7.0
 
 ### Minor Changes
 
-- Add native Kilo Code workflow integration so `openspec init` and `openspec update` manage `.kilocode/workflows/openspec-*.md` files.
+- Add native Kilo Code workflow integration so `duowenspec init` and `duowenspec update` manage `.kilocode/workflows/duowenspec-*.md` files.
 - Always scaffold the managed root `AGENTS.md` hand-off stub and regroup the AI tool prompts during init/update to keep instructions consistent.
 
 ## 0.6.0
@@ -489,7 +489,7 @@
 
 ### Minor Changes
 
-- Add OpenSpec change proposals for CLI improvements and enhanced user experience
+- Add DuowenSpec change proposals for CLI improvements and enhanced user experience
 - Add Opencode slash commands support for AI-driven development workflows
 
 ### Patch Changes
@@ -501,15 +501,15 @@
 
 ### Minor Changes
 
-- Enhance `openspec init` with extend mode, multi-tool selection, and an interactive `AGENTS.md` configurator.
+- Enhance `duowenspec init` with extend mode, multi-tool selection, and an interactive `AGENTS.md` configurator.
 
 ## 0.2.0
 
 ### Minor Changes
 
-- ce5cead: - Add an `openspec view` dashboard that rolls up spec counts and change progress at a glance
-  - Generate and update AI slash commands alongside the renamed `openspec/AGENTS.md` instructions file
-  - Remove the deprecated `openspec diff` command and direct users to `openspec show`
+- ce5cead: - Add an `duowenspec view` dashboard that rolls up spec counts and change progress at a glance
+  - Generate and update AI slash commands alongside the renamed `duowenspec/AGENTS.md` instructions file
+  - Remove the deprecated `duowenspec diff` command and direct users to `duowenspec show`
 
 ## 0.1.0
 

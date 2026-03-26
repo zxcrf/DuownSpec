@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getVerifyChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-verify-change',
+    name: 'duowenspec-verify-change',
     description: '验证实现是否与变更产物一致。适用于归档前确认完整性、正确性与一致性。',
     instructions: `验证实现是否与变更产物（specs、tasks、design）一致。
 
@@ -62,7 +62,7 @@ export function getVerifyChangeSkillTemplate(): SkillTemplate {
      - 建议写法："完成任务：<description>" 或 "若已实现请更新为完成状态"
 
    **需求覆盖检查**:
-   - 若 \`openspec/changes/<name>/specs/\` 中存在增量 specs：
+   - 若 \`duowenspec/changes/<name>/specs/\` 中存在增量 specs：
      - 提取全部 requirement（标记为 "### Requirement:"）
      - 对每条 requirement：
        - 在代码库中搜索相关关键词
@@ -169,7 +169,7 @@ export function getVerifyChangeSkillTemplate(): SkillTemplate {
 - 避免“建议再看看”这类空泛表述`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -231,7 +231,7 @@ export function getOpsxVerifyCommandTemplate(): CommandTemplate {
      - 建议写法："完成任务：<description>" 或 "若已实现请更新为完成状态"
 
    **需求覆盖检查**:
-   - 若 \`openspec/changes/<name>/specs/\` 中存在增量 specs：
+   - 若 \`duowenspec/changes/<name>/specs/\` 中存在增量 specs：
      - 提取全部 requirement（标记为 "### Requirement:"）
      - 对每条 requirement：
        - 在代码库中搜索相关关键词

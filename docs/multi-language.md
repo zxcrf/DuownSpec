@@ -1,10 +1,10 @@
 # Multi-Language Guide
 
-Configure OpenSpec to generate artifacts in languages other than English.
+Configure DuowenSpec to generate artifacts in languages other than English.
 
 ## Quick Setup
 
-Add a language instruction to your `openspec/config.yaml`:
+Add a language instruction to your `duowenspec/config.yaml`:
 
 ```yaml
 schema: spec-driven

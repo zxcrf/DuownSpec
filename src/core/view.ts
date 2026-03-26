@@ -6,19 +6,19 @@ import { MarkdownParser } from './parsers/markdown-parser.js';
 
 export class ViewCommand {
   async execute(targetPath: string = '.'): Promise<void> {
-    const openspecDir = path.join(targetPath, 'openspec');
+    const duowenspecDir = path.join(targetPath, 'duowenspec');
     
-    if (!fs.existsSync(openspecDir)) {
+    if (!fs.existsSync(duowenspecDir)) {
       console.error(chalk.red('No duowenspec directory found'));
       process.exit(1);
     }
 
-    console.log(chalk.bold('\nOpenSpec Dashboard\n'));
+    console.log(chalk.bold('\nDuowenSpec Dashboard\n'));
     console.log('═'.repeat(60));
 
     // Get changes and specs data
-    const changesData = await this.getChangesData(openspecDir);
-    const specsData = await this.getSpecsData(openspecDir);
+    const changesData = await this.getChangesData(duowenspecDir);
+    const specsData = await this.getSpecsData(duowenspecDir);
 
     // Display summary metrics
     this.displaySummary(changesData, specsData);
@@ -78,12 +78,12 @@ export class ViewCommand {
     console.log(chalk.dim(`\nUse ${chalk.white('duowenspec list --changes')} or ${chalk.white('duowenspec list --specs')} for detailed views`));
   }
 
-  private async getChangesData(openspecDir: string): Promise<{
+  private async getChangesData(duowenspecDir: string): Promise<{
     draft: Array<{ name: string }>;
     active: Array<{ name: string; progress: { total: number; completed: number } }>;
     completed: Array<{ name: string }>;
   }> {
-    const changesDir = path.join(openspecDir, 'changes');
+    const changesDir = path.join(duowenspecDir, 'changes');
 
     if (!fs.existsSync(changesDir)) {
       return { draft: [], active: [], completed: [] };
@@ -129,8 +129,8 @@ export class ViewCommand {
     return { draft, active, completed };
   }
 
-  private async getSpecsData(openspecDir: string): Promise<Array<{ name: string; requirementCount: number }>> {
-    const specsDir = path.join(openspecDir, 'specs');
+  private async getSpecsData(duowenspecDir: string): Promise<Array<{ name: string; requirementCount: number }>> {
+    const specsDir = path.join(duowenspecDir, 'specs');
     
     if (!fs.existsSync(specsDir)) {
       return [];

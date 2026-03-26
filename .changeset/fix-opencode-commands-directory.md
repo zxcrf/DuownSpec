@@ -1,5 +1,5 @@
 ---
-"@fission-ai/openspec": patch
+"@fission-ai/duowenspec": patch
 ---
 
 fix: OpenCode adapter now uses `.opencode/commands/` (plural) to match OpenCode's official directory convention. Fixes #748.

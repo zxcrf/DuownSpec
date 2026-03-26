@@ -15,8 +15,8 @@ export class ZshInstaller {
    * Markers for .zshrc configuration management
    */
   private readonly ZSHRC_MARKERS = {
-    start: '# OPENSPEC:START',
-    end: '# OPENSPEC:END',
+    start: '# DUOWENSPEC:START',
+    end: '# DUOWENSPEC:END',
   };
 
   constructor(homeDir: string = os.homedir()) {
@@ -122,7 +122,7 @@ export class ZshInstaller {
    */
   async configureZshrc(completionsDir: string): Promise<boolean> {
     // Check if auto-configuration is disabled
-    if (process.env.OPENSPEC_NO_AUTO_CONFIG === '1') {
+    if (process.env.DUOWENSPEC_NO_AUTO_CONFIG === '1') {
       return false;
     }
 
@@ -153,7 +153,7 @@ export class ZshInstaller {
   }
 
   /**
-   * Check if .zshrc has OpenSpec configuration markers
+   * Check if .zshrc has DuowenSpec configuration markers
    *
    * @returns true if .zshrc exists and has markers
    */

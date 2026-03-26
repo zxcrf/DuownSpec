@@ -6,7 +6,7 @@ The DuowenSpec CLI (`dwsp`) provides terminal commands for project setup, valida
 
 | Category | Commands | Purpose |
 |----------|----------|---------|
-| **Setup** | `init`, `update` | Initialize and update OpenSpec in your project |
+| **Setup** | `init`, `update` | Initialize and update DuowenSpec in your project |
 | **Browsing** | `list`, `view`, `show` | Explore changes and specs |
 | **Validation** | `validate` | Check changes and specs for issues |
 | **Lifecycle** | `archive` | Finalize completed changes |
@@ -65,7 +65,7 @@ These options work with all commands:
 
 ### `dwsp init`
 
-Initialize OpenSpec in your project. Creates the folder structure and configures AI tool integrations.
+Initialize DuowenSpec in your project. Creates the folder structure and configures AI tool integrations.
 
 Default behavior uses global config defaults: profile `core`, delivery `both`, workflows `propose, explore, apply, archive`.
 
@@ -116,7 +116,7 @@ dwsp init --force
 **What it creates:**
 
 ```
-openspec/
+duowenspec/
 ├── specs/              # Your specifications (source of truth)
 ├── changes/            # Proposed changes
 └── config.yaml         # Project configuration
@@ -131,7 +131,7 @@ openspec/
 
 ### `dwsp update`
 
-Update OpenSpec instruction files after upgrading the CLI. Re-generates AI tool configuration files using your current global profile, selected workflows, and delivery mode.
+Update DuowenSpec instruction files after upgrading the CLI. Re-generates AI tool configuration files using your current global profile, selected workflows, and delivery mode.
 
 ```
 dwsp update [path] [options]
@@ -293,7 +293,7 @@ dwsp validate [item-name] [options]
 | `--type <type>` | Specify type when name is ambiguous: `change` or `spec` |
 | `--strict` | Enable strict validation mode |
 | `--json` | Output as JSON |
-| `--concurrency <n>` | Max parallel validations (default: 6, or `OPENSPEC_CONCURRENCY` env) |
+| `--concurrency <n>` | Max parallel validations (default: 6, or `DUOWENSPEC_CONCURRENCY` env) |
 | `--no-interactive` | Disable prompts |
 
 **Examples:**
@@ -394,8 +394,8 @@ dwsp archive update-ci-config --skip-specs
 
 1. Validates the change (unless `--no-validate`)
 2. Prompts for confirmation (unless `--yes`)
-3. Merges delta specs into `openspec/specs/`
-4. Moves change folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`
+3. Merges delta specs into `duowenspec/specs/`
+4. Moves change folder to `duowenspec/changes/archive/YYYY-MM-DD-<name>/`
 
 ---
 
@@ -547,10 +547,10 @@ dwsp templates --json
 Schema: spec-driven
 
 Templates:
-  proposal  → ~/.openspec/schemas/spec-driven/templates/proposal.md
-  specs     → ~/.openspec/schemas/spec-driven/templates/specs.md
-  design    → ~/.openspec/schemas/spec-driven/templates/design.md
-  tasks     → ~/.openspec/schemas/spec-driven/templates/tasks.md
+  proposal  → ~/.duowenspec/schemas/spec-driven/templates/proposal.md
+  specs     → ~/.duowenspec/schemas/spec-driven/templates/specs.md
+  design    → ~/.duowenspec/schemas/spec-driven/templates/design.md
+  tasks     → ~/.duowenspec/schemas/spec-driven/templates/tasks.md
 ```
 
 ---
@@ -636,7 +636,7 @@ dwsp schema init rapid \
 **What it creates:**
 
 ```
-openspec/schemas/<name>/
+duowenspec/schemas/<name>/
 ├── schema.yaml           # Schema definition
 └── templates/
     ├── proposal.md       # Template for each artifact
@@ -748,8 +748,8 @@ spec-driven resolves from: package
 
 **Schema precedence:**
 
-1. Project: `openspec/schemas/<name>/`
-2. User: `~/.local/share/openspec/schemas/<name>/`
+1. Project: `duowenspec/schemas/<name>/`
+2. User: `~/.local/share/duowenspec/schemas/<name>/`
 3. Package: Built-in schemas
 
 ---
@@ -758,7 +758,7 @@ spec-driven resolves from: package
 
 ### `dwsp config`
 
-View and modify global OpenSpec configuration.
+View and modify global DuowenSpec configuration.
 
 ```
 dwsp config <subcommand> [options]
@@ -818,7 +818,7 @@ dwsp config profile core
 - Keep current settings (exit)
 
 If you keep current settings, no changes are written and no update prompt is shown.
-If there are no config changes but the current project files are out of sync with your global profile/delivery, OpenSpec will show a warning and suggest running `dwsp update`.
+If there are no config changes but the current project files are out of sync with your global profile/delivery, DuowenSpec will show a warning and suggest running `dwsp update`.
 Pressing `Ctrl+C` also cancels the flow cleanly (no stack trace) and exits with code `130`.
 In the workflow checklist, `[x]` means the workflow is selected in global config. To apply those selections to project files, run `dwsp update` (or choose `Apply changes to this project now?` when prompted inside a project).
 
@@ -842,7 +842,7 @@ dwsp config profile
 
 ### `dwsp feedback`
 
-Submit feedback about OpenSpec. Creates a GitHub issue.
+Submit feedback about DuowenSpec. Creates a GitHub issue.
 
 ```
 dwsp feedback <message> [options]
@@ -899,7 +899,7 @@ dwsp completion install
 dwsp completion install zsh
 
 # Generate script for manual installation
-dwsp completion generate bash > ~/.bash_completion.d/openspec
+dwsp completion generate bash > ~/.bash_completion.d/duowenspec
 
 # Uninstall
 dwsp completion uninstall
@@ -920,7 +920,7 @@ dwsp completion uninstall
 
 | Variable | Description |
 |----------|-------------|
-| `OPENSPEC_CONCURRENCY` | Default concurrency for bulk validation (default: 6) |
+| `DUOWENSPEC_CONCURRENCY` | Default concurrency for bulk validation (default: 6) |
 | `EDITOR` or `VISUAL` | Editor for `dwsp config edit` |
 | `NO_COLOR` | Disable color output when set |
 

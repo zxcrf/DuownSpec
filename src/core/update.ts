@@ -1,7 +1,7 @@
 /**
  * Update Command
  *
- * Refreshes OpenSpec skills and commands for configured tools.
+ * Refreshes DuowenSpec skills and commands for configured tools.
  * Supports profile-aware updates, delivery changes, migration, and smart update detection.
  */
 
@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import { createRequire } from 'module';
 import { FileSystemUtils } from '../utils/file-system.js';
 import { transformToHyphenCommands } from '../utils/command-references.js';
-import { AI_TOOLS, OPENSPEC_DIR_NAME } from './config.js';
+import { AI_TOOLS, DUOWENSPEC_DIR_NAME } from './config.js';
 import {
   generateCommands,
   CommandAdapterRegistry,
@@ -60,7 +60,7 @@ import {
 import { isModoScaffoldProject, readModoAgentsTemplate } from './scaffold/index.js';
 
 const require = createRequire(import.meta.url);
-const { version: OPENSPEC_VERSION } = require('../../package.json');
+const { version: DUOWENSPEC_VERSION } = require('../../package.json');
 
 /**
  * Options for the update command.
@@ -92,11 +92,11 @@ export class UpdateCommand {
 
   async execute(projectPath: string): Promise<void> {
     const resolvedProjectPath = path.resolve(projectPath);
-    const openspecPath = path.join(resolvedProjectPath, OPENSPEC_DIR_NAME);
+    const duowenspecPath = path.join(resolvedProjectPath, DUOWENSPEC_DIR_NAME);
 
     // 1. Check dwsp directory exists
-    if (!await FileSystemUtils.directoryExists(openspecPath)) {
-      throw new Error("未找到 OpenSpec 目录。请先运行 'dwsp init'。");
+    if (!await FileSystemUtils.directoryExists(duowenspecPath)) {
+      throw new Error("未找到 DuowenSpec 目录。请先运行 'dwsp init'。");
     }
 
     // 2. Perform one-time migration if needed before any legacy upgrade generation.
@@ -138,7 +138,7 @@ export class UpdateCommand {
     const commandConfiguredTools = getCommandConfiguredTools(resolvedProjectPath);
     const commandConfiguredSet = new Set(commandConfiguredTools);
     const toolStatuses = configuredTools.map((toolId) => {
-      const status = getToolVersionStatus(resolvedProjectPath, toolId, OPENSPEC_VERSION);
+      const status = getToolVersionStatus(resolvedProjectPath, toolId, DUOWENSPEC_VERSION);
       if (!status.configured && commandConfiguredSet.has(toolId)) {
         return { ...status, configured: true };
       }
@@ -219,7 +219,7 @@ export class UpdateCommand {
 
             // Use hyphen-based command references for OpenCode
             const transformer = tool.value === 'opencode' ? transformToHyphenCommands : undefined;
-            const skillContent = generateSkillContent(template, OPENSPEC_VERSION, transformer);
+            const skillContent = generateSkillContent(template, DUOWENSPEC_VERSION, transformer);
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
 
@@ -275,7 +275,7 @@ export class UpdateCommand {
     // 11. Summary
     console.log();
     if (updatedTools.length > 0) {
-      console.log(chalk.green(`✓ 已更新：${updatedTools.join(', ')}（v${OPENSPEC_VERSION}）`));
+      console.log(chalk.green(`✓ 已更新：${updatedTools.join(', ')}（v${DUOWENSPEC_VERSION}）`));
     }
     if (failedTools.length > 0) {
       console.log(chalk.red(`✗ 失败：${failedTools.map(f => `${f.name}（${f.error}）`).join(', ')}`));
@@ -330,7 +330,7 @@ export class UpdateCommand {
    */
   private displayUpToDateMessage(toolStatuses: ToolVersionStatus[]): void {
     const toolNames = toolStatuses.map((s) => s.toolId);
-    console.log(chalk.green(`✓ ${toolStatuses.length} 个工具都已是最新状态（v${OPENSPEC_VERSION}）`));
+    console.log(chalk.green(`✓ ${toolStatuses.length} 个工具都已是最新状态（v${DUOWENSPEC_VERSION}）`));
     console.log(chalk.dim(`  工具：${toolNames.join(', ')}`));
     console.log();
     console.log(chalk.dim('如需强制重写文件，可使用 --force。'));
@@ -348,7 +348,7 @@ export class UpdateCommand {
       const status = statusByTool.get(toolId);
       if (status?.needsUpdate) {
         const fromVersion = status.generatedByVersion ?? 'unknown';
-        return `${status.toolId} (${fromVersion} → ${OPENSPEC_VERSION})`;
+        return `${status.toolId} (${fromVersion} → ${DUOWENSPEC_VERSION})`;
       }
       return `${toolId}（配置同步）`;
     });
@@ -563,7 +563,7 @@ export class UpdateCommand {
   }
 
   /**
-   * Detect and handle legacy OpenSpec artifacts.
+   * Detect and handle legacy DuowenSpec artifacts.
    * Unlike init, update warns but continues if legacy files found in non-interactive mode.
    * Returns array of tool IDs that were newly configured during legacy upgrade.
    */
@@ -746,7 +746,7 @@ export class UpdateCommand {
 
             // Use hyphen-based command references for OpenCode
             const transformer = tool.value === 'opencode' ? transformToHyphenCommands : undefined;
-            const skillContent = generateSkillContent(template, OPENSPEC_VERSION, transformer);
+            const skillContent = generateSkillContent(template, DUOWENSPEC_VERSION, transformer);
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
         }

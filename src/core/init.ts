@@ -1,7 +1,7 @@
 /**
  * Init Command
  *
- * Sets up OpenSpec with Agent Skills and /opsx:* slash commands.
+ * Sets up DuowenSpec with Agent Skills and /dwsp:* slash commands.
  * This is the unified setup command for project bootstrap and tool setup.
  */
 
@@ -14,7 +14,7 @@ import { FileSystemUtils } from '../utils/file-system.js';
 import { transformToHyphenCommands } from '../utils/command-references.js';
 import {
   AI_TOOLS,
-  OPENSPEC_DIR_NAME,
+  DUOWENSPEC_DIR_NAME,
   AIToolOption,
 } from './config.js';
 import { PALETTE } from './styles/palette.js';
@@ -63,7 +63,7 @@ import {
 } from './scaffold/index.js';
 
 const require = createRequire(import.meta.url);
-const { version: OPENSPEC_VERSION } = require('../../package.json');
+const { version: DUOWENSPEC_VERSION } = require('../../package.json');
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -77,19 +77,19 @@ const PROGRESS_SPINNER = {
 };
 
 const WORKFLOW_TO_SKILL_DIR: Record<string, string> = {
-  'explore': 'openspec-explore',
-  'new': 'openspec-new-change',
-  'continue': 'openspec-continue-change',
-  'apply': 'openspec-apply-change',
-  'review': 'openspec-review-change',
-  'ff': 'openspec-ff-change',
-  'sync': 'openspec-sync-specs',
-  'archive': 'openspec-archive-change',
-  'bulk-archive': 'openspec-bulk-archive-change',
-  'verify': 'openspec-verify-change',
-  'document': 'openspec-document-change',
-  'onboard': 'openspec-onboard',
-  'propose': 'openspec-propose',
+  'explore': 'duowenspec-explore',
+  'new': 'duowenspec-new-change',
+  'continue': 'duowenspec-continue-change',
+  'apply': 'duowenspec-apply-change',
+  'review': 'duowenspec-review-change',
+  'ff': 'duowenspec-ff-change',
+  'sync': 'duowenspec-sync-specs',
+  'archive': 'duowenspec-archive-change',
+  'bulk-archive': 'duowenspec-bulk-archive-change',
+  'verify': 'duowenspec-verify-change',
+  'document': 'duowenspec-document-change',
+  'onboard': 'duowenspec-onboard',
+  'propose': 'duowenspec-propose',
 };
 
 // -----------------------------------------------------------------------------
@@ -135,11 +135,11 @@ export class InitCommand {
 
   async execute(targetPath: string): Promise<void> {
     const projectPath = path.resolve(targetPath);
-    const openspecDir = OPENSPEC_DIR_NAME;
-    const openspecPath = path.join(projectPath, openspecDir);
+    const duowenspecDir = DUOWENSPEC_DIR_NAME;
+    const duowenspecPath = path.join(projectPath, duowenspecDir);
 
     // Validation happens silently in the background
-    const extendMode = await this.validate(projectPath, openspecPath);
+    const extendMode = await this.validate(projectPath, duowenspecPath);
 
     // Check for legacy artifacts and handle cleanup
     await this.handleLegacyCleanup(projectPath, extendMode);
@@ -176,7 +176,7 @@ export class InitCommand {
     await this.assertRequiredEnterpriseCapabilities(projectPath, validatedTools);
 
     // Create directory structure and scaffold assets if requested
-    await this.createDirectoryStructure(openspecPath, extendMode);
+    await this.createDirectoryStructure(duowenspecPath, extendMode);
     const scaffoldStatus = await this.setupScaffold(projectPath);
 
     // Generate skills and commands for each tool
@@ -184,7 +184,7 @@ export class InitCommand {
     const results = await this.generateSkillsAndCommands(projectPath, validatedTools, modoProject);
 
     // Create config.yaml if needed
-    const configStatus = await this.createConfig(openspecPath, extendMode);
+    const configStatus = await this.createConfig(duowenspecPath, extendMode);
 
     // Display success message
     this.displaySuccessMessage(projectPath, validatedTools, results, configStatus, scaffoldStatus, modoProject);
@@ -196,9 +196,9 @@ export class InitCommand {
 
   private async validate(
     projectPath: string,
-    openspecPath: string
+    duowenspecPath: string
   ): Promise<boolean> {
-    const extendMode = await FileSystemUtils.directoryExists(openspecPath);
+    const extendMode = await FileSystemUtils.directoryExists(duowenspecPath);
 
     // Check write permissions
     if (!(await FileSystemUtils.ensureWritePermissions(projectPath))) {
@@ -258,7 +258,7 @@ export class InitCommand {
 
     if (this.force || !canPrompt) {
       // --force flag or non-interactive mode: proceed with cleanup automatically.
-      // Legacy slash commands are 100% OpenSpec-managed, and config file cleanup
+      // Legacy slash commands are 100% DuowenSpec-managed, and config file cleanup
       // only removes markers (never deletes files), so auto-cleanup is safe.
       await this.performLegacyCleanup(projectPath, detection);
       return;
@@ -369,7 +369,7 @@ export class InitCommand {
       .map((toolId) => AI_TOOLS.find((t) => t.value === toolId)?.name || toolId);
 
     if (configuredNames.length > 0) {
-      console.log(`已配置 OpenSpec 的工具：${configuredNames.join(', ')}（已预选）`);
+      console.log(`已配置 DuowenSpec 的工具：${configuredNames.join(', ')}（已预选）`);
     }
 
     const detectedOnlyNames = detectedTools
@@ -498,14 +498,14 @@ export class InitCommand {
   // DIRECTORY STRUCTURE
   // ═══════════════════════════════════════════════════════════
 
-  private async createDirectoryStructure(openspecPath: string, extendMode: boolean): Promise<void> {
+  private async createDirectoryStructure(duowenspecPath: string, extendMode: boolean): Promise<void> {
     if (extendMode) {
       // In extend mode, just ensure directories exist without spinner
       const directories = [
-        openspecPath,
-        path.join(openspecPath, 'specs'),
-        path.join(openspecPath, 'changes'),
-        path.join(openspecPath, 'changes', 'archive'),
+        duowenspecPath,
+        path.join(duowenspecPath, 'specs'),
+        path.join(duowenspecPath, 'changes'),
+        path.join(duowenspecPath, 'changes', 'archive'),
       ];
 
       for (const dir of directories) {
@@ -514,13 +514,13 @@ export class InitCommand {
       return;
     }
 
-    const spinner = this.startSpinner('正在创建 OpenSpec 目录结构...');
+    const spinner = this.startSpinner('正在创建 DuowenSpec 目录结构...');
 
     const directories = [
-      openspecPath,
-      path.join(openspecPath, 'specs'),
-      path.join(openspecPath, 'changes'),
-      path.join(openspecPath, 'changes', 'archive'),
+      duowenspecPath,
+      path.join(duowenspecPath, 'specs'),
+      path.join(duowenspecPath, 'changes'),
+      path.join(duowenspecPath, 'changes', 'archive'),
     ];
 
     for (const dir of directories) {
@@ -529,7 +529,7 @@ export class InitCommand {
 
     spinner.stopAndPersist({
       symbol: PALETTE.white('▌'),
-      text: PALETTE.white('OpenSpec 目录结构已创建'),
+      text: PALETTE.white('DuowenSpec 目录结构已创建'),
     });
   }
 
@@ -618,7 +618,7 @@ export class InitCommand {
             // Generate SKILL.md content with YAML frontmatter including generatedBy
             // Use hyphen-based command references for OpenCode
             const transformer = tool.value === 'opencode' ? transformToHyphenCommands : undefined;
-            const skillContent = generateSkillContent(template, OPENSPEC_VERSION, transformer);
+            const skillContent = generateSkillContent(template, DUOWENSPEC_VERSION, transformer);
 
             // Write the skill file
             await FileSystemUtils.writeFile(skillFile, skillContent);
@@ -675,9 +675,9 @@ export class InitCommand {
   // CONFIG FILE
   // ═══════════════════════════════════════════════════════════
 
-  private async createConfig(openspecPath: string, extendMode: boolean): Promise<'created' | 'exists' | 'skipped'> {
-    const configPath = path.join(openspecPath, 'config.yaml');
-    const configYmlPath = path.join(openspecPath, 'config.yml');
+  private async createConfig(duowenspecPath: string, extendMode: boolean): Promise<'created' | 'exists' | 'skipped'> {
+    const configPath = path.join(duowenspecPath, 'config.yaml');
+    const configYmlPath = path.join(duowenspecPath, 'config.yml');
     const configYamlExists = fs.existsSync(configPath);
     const configYmlExists = fs.existsSync(configYmlPath);
 
@@ -787,13 +787,13 @@ export class InitCommand {
 
     // Config status
     if (configStatus === 'created') {
-      console.log(`配置：openspec/config.yaml（schema: ${DEFAULT_SCHEMA}）`);
+      console.log(`配置：duowenspec/config.yaml（schema: ${DEFAULT_SCHEMA}）`);
     } else if (configStatus === 'exists') {
       // Show actual filename (config.yaml or config.yml)
-      const configYaml = path.join(projectPath, OPENSPEC_DIR_NAME, 'config.yaml');
-      const configYml = path.join(projectPath, OPENSPEC_DIR_NAME, 'config.yml');
+      const configYaml = path.join(projectPath, DUOWENSPEC_DIR_NAME, 'config.yaml');
+      const configYml = path.join(projectPath, DUOWENSPEC_DIR_NAME, 'config.yml');
       const configName = fs.existsSync(configYaml) ? 'config.yaml' : fs.existsSync(configYml) ? 'config.yml' : 'config.yaml';
-      console.log(`配置：openspec/${configName}（已存在）`);
+      console.log(`配置：duowenspec/${configName}（已存在）`);
     } else {
       console.log(chalk.dim('配置：已跳过（当前为非交互模式）'));
     }

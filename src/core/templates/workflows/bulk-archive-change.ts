@@ -8,12 +8,12 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getBulkArchiveChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-bulk-archive-change',
+    name: 'duowenspec-bulk-archive-change',
     description: '一次归档多个已完成变更。适用于并行变更统一收尾归档。',
     instructions: getBulkArchiveInstructions(),
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -49,11 +49,11 @@ function getBulkArchiveInstructions(): string {
       - 解析 \`schemaName\` 和 \`artifacts\`
       - 记录哪些产物已是 \`done\`，哪些还没完成
 
-   b. **任务完成度**：读取 \`openspec/changes/<name>/tasks.md\`
+   b. **任务完成度**：读取 \`duowenspec/changes/<name>/tasks.md\`
       - 统计 \`- [ ]\`（未完成）和 \`- [x]\`（已完成）数量
       - 如果没有 tasks 文件，就标记为 “无任务文件”
 
-   c. **Delta specs**：检查 \`openspec/changes/<name>/specs/\` 目录
+   c. **Delta specs**：检查 \`duowenspec/changes/<name>/specs/\` 目录
       - 列出包含哪些 capability spec
       - 对每份 spec 提取 requirement 名称（匹配 \`### Requirement: <name>\`）
 
@@ -132,14 +132,14 @@ function getBulkArchiveInstructions(): string {
    依据前面确定好的顺序处理 change（包含冲突解决后的同步顺序）：
 
    a. **如果存在 delta specs，就先同步 specs**
-      - 使用 openspec-sync-specs 的方式做智能同步
+      - 使用 duowenspec-sync-specs 的方式做智能同步
       - 遇到冲突时按已确定顺序应用
       - 记录是否同步成功
 
    b. **执行归档**
       \`\`\`bash
-      mkdir -p openspec/changes/archive
-      mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>
+      mkdir -p duowenspec/changes/archive
+      mv duowenspec/changes/<name> duowenspec/changes/archive/YYYY-MM-DD-<name>
       \`\`\`
 
    c. **记录每个 change 的结果**
@@ -253,7 +253,7 @@ Spec 同步总结：
 - 确认前必须把每个 change 的状态讲清楚
 - 整批操作只做一次统一确认
 - 要完整记录并汇报成功 / 跳过 / 失败的结果
-- 移动到 archive 时要保留 .openspec.yaml
+- 移动到 archive 时要保留 .duowenspec.yaml
 - 归档目录名使用当天日期：YYYY-MM-DD-<name>
 - 如果目标归档目录已存在，该 change 记为失败，但继续处理其它 change`;
 }

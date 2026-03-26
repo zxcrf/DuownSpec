@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://github.com/zxcrf/DuownSpec">
     <picture>
-      <source srcset="assets/openspec_bg.png">
-      <img src="assets/openspec_bg.png" alt="DuowenSpec logo">
+      <source srcset="assets/duowenspec_bg.png">
+      <img src="assets/duowenspec_bg.png" alt="DuowenSpec logo">
     </picture>
   </a>
 </p>
@@ -49,7 +49,7 @@ Our philosophy:
 
 ### Teams
 
-Using DuowenSpec in a team? [Email here](mailto:teams@openspec.dev) for access to our Slack channel.
+Using DuowenSpec in a team? [Email here](mailto:teams@duowenspec.dev) for access to our Slack channel.
 
 <!-- TODO: Add GIF demo of /dwsp:propose -> /dwsp:archive workflow -->
 
@@ -57,7 +57,7 @@ Using DuowenSpec in a team? [Email here](mailto:teams@openspec.dev) for access t
 
 ```text
 You: /dwsp:propose add-dark-mode
-AI:  Created openspec/changes/add-dark-mode/
+AI:  Created duowenspec/changes/add-dark-mode/
      ✓ proposal.md — why we're doing this, what's changing
      ✓ specs/       — requirements and scenarios
      ✓ design.md    — technical approach
@@ -73,7 +73,7 @@ AI:  Implementing tasks...
      All tasks complete!
 
 You: /dwsp:archive
-AI:  Archived to openspec/changes/archive/2025-01-23-add-dark-mode/
+AI:  Archived to duowenspec/changes/archive/2025-01-23-add-dark-mode/
      Specs updated. Ready for the next feature.
 ```
 
@@ -81,7 +81,7 @@ AI:  Archived to openspec/changes/archive/2025-01-23-add-dark-mode/
 <summary><strong>DuowenSpec Dashboard</strong></summary>
 
 <p align="center">
-  <img src="assets/openspec_dashboard.png" alt="DuowenSpec dashboard preview" width="90%">
+  <img src="assets/duowenspec_dashboard.png" alt="DuowenSpec dashboard preview" width="90%">
 </p>
 
 </details>
@@ -190,7 +190,7 @@ DuowenSpec collects anonymous usage stats.
 
 We collect only command names and version to understand usage patterns. No arguments, paths, content, or PII. Automatically disabled in CI.
 
-**Opt-out:** `export OPENSPEC_TELEMETRY=0` or `export DO_NOT_TRACK=1`
+**Opt-out:** `export DUOWENSPEC_TELEMETRY=0` or `export DO_NOT_TRACK=1`
 
 </details>
 

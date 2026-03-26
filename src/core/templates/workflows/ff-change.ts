@@ -9,8 +9,8 @@ import { getModoBEndImplementationHint } from './shared-b-end.js';
 
 export function getFfChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'openspec-ff-change',
-    description: '快速完成 OpenSpec 产物生成。适用于用户想一次性生成实现所需全部产物，而不逐步推进。',
+    name: 'duowenspec-ff-change',
+    description: '快速完成 DuowenSpec 产物生成。适用于用户想一次性生成实现所需全部产物，而不逐步推进。',
     instructions: `用“快速推进”方式一次生成开始实现所需的全部产物。
 
 **输入**：用户的请求应当包含一个变更名（kebab-case），或者描述想要构建/修复的内容。
@@ -30,7 +30,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
    \`\`\`bash
    dwsp new change "<name>"
    \`\`\`
-   这会在 \`openspec/changes/<name>/\` 下创建变更骨架。
+   这会在 \`duowenspec/changes/<name>/\` 下创建变更骨架。
 
 3. **获取产物构建顺序**
    \`\`\`bash
@@ -105,7 +105,7 @@ export function getFfChangeSkillTemplate(): SkillTemplate {
 ${getModoBEndImplementationHint()}`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
-    metadata: { author: 'openspec', version: '1.0' },
+    metadata: { author: 'duowenspec', version: '1.0' },
   };
 }
 
@@ -134,7 +134,7 @@ export function getOpsxFfCommandTemplate(): CommandTemplate {
    \`\`\`bash
    dwsp new change "<name>"
    \`\`\`
-   这会在 \`openspec/changes/<name>/\` 下创建变更骨架。
+   这会在 \`duowenspec/changes/<name>/\` 下创建变更骨架。
 
 3. **获取产物构建顺序**
    \`\`\`bash
