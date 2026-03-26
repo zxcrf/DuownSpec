@@ -1,17 +1,9 @@
 # Maintainers
 
-People who maintain and guide OpenSpec.
+People who maintain and guide DuowenSpec.
 
-## Core Maintainers
+## Core Maintainer
 
 | Name | GitHub | Role |
 |------|--------|------|
-| Tabish Bidiwale | [@TabishB](https://github.com/zxcrf/DuownSpec) | Lead maintainer |
-
-## Advisors
-
-Advisors help shape technical direction and provide guidance to the project.
-
-| Name | GitHub | Focus |
-|------|--------|-------|
-| Hari Krishnan | [@harikrishnan83](https://github.com/zxcrf/DuownSpec) | Technical direction |
+| zxcrf | [@zxcrf](https://github.com/zxcrf) | Owner & Lead maintainer |
