@@ -187,18 +187,18 @@ Requirement levels:
 
 This preserves proportionality during exploration while keeping implementation, review, and delivery discipline strict.
 
-### 4.5 Enterprise setup must verify required capabilities before activation
+### 4.5 Enterprise setup must package and install workflow-referenced bundled skills
 
-The enterprise workflow treats `superpowers:executing-plans`, `superpowers:requesting-code-review`, `superpowers:receiving-code-review`, and `superpowers:verification-before-completion` as required external capability checkpoints rather than optional assistance. Documentation remains required, but should be modeled as an enterprise checkpoint instead of being mislabeled as a standard `superpowers` skill.
+The enterprise workflow treats `superpowers:executing-plans`, `superpowers:requesting-code-review`, `superpowers:receiving-code-review`, and `superpowers:verification-before-completion` as required capability checkpoints rather than optional assistance. It also references `superpowers:brainstorming`, `superpowers:test-driven-development`, and `superpowers:subagent-driven-development` as allowed stage-local companions. Documentation remains required, but should be modeled as an enterprise checkpoint instead of being mislabeled as a standard `superpowers` skill.
 
-Because those capabilities do not come from today's default OpenSpec installation, downstream setup cannot assume they are already available.
+This fork should not depend on contributors pre-installing any of those referenced skills separately. Instead, the published `opsx` package should carry the bundled skill templates itself and copy them into downstream projects during setup.
 
 Required setup rule:
 
-- when a project selects the enterprise workflow, `openspec init` or the equivalent workflow-selection path must perform a capability preflight check
-- the preflight must verify that the required external capabilities for the selected tool are available
-- if required capabilities are missing, enterprise activation must be blocked rather than deferred until apply/review/document time
-- the only allowed bypass is an explicit approved exception already declared in project-level `AGENTS.md`
+- when a project selects the enterprise workflow, `openspec init` or the equivalent workflow-selection path must perform a packaged-skill preflight check
+- the preflight must verify that all bundled enterprise skill templates referenced by the selected workflow are present in this fork
+- setup must copy those bundled enterprise skills into the selected tool's project-local skills directory together with the normal workflow assets
+- if the package is missing any bundled enterprise skill referenced by the selected workflow, enterprise activation must be blocked rather than deferred until use time
 
 This avoids the bad failure mode where a project appears successfully initialized but cannot actually complete the required enterprise steps.
 
@@ -206,20 +206,21 @@ Recommended setup behavior:
 
 - `openspec init` in this fork should assume enterprise workflow setup by default
 - setup may still ask enterprise-specific questions, but should not default back to the lighter upstream mode
-- if capability preflight fails, setup should stop before generating enterprise workflow artifacts
+- if packaged-skill preflight fails, setup should stop before generating enterprise workflow artifacts
 
 More concrete `init` expectations:
 
 - the default generated workflow set should match the enterprise workflow this fork publishes
 - setup output should describe enterprise-oriented next steps
-- capability preflight should run before workflow artifacts are generated so setup cannot partially succeed in an unusable state
+- packaged-skill preflight should run before workflow artifacts are generated so setup cannot partially succeed in an unusable state
 
 Suggested `init` checklist:
 
 - resolve enterprise-first defaults before workflow templates are chosen
-- check required external capabilities for the selected tool before generation starts
-- stop setup if required capabilities are missing and no approved exception exists
+- check bundled enterprise skills referenced by the selected workflow before generation starts
+- stop setup if any referenced bundled skills are missing from the package
 - generate the same public workflow names, but with enterprise-oriented instructions
+- copy the bundled enterprise skills into the selected tool directory
 - show enterprise-oriented next steps in the final success output
 
 ### 5. Enterprise propose must define release scope early
@@ -761,6 +762,7 @@ Those should not silently weaken the enterprise workflow globally. Instead:
 - the published workflow defines the default strict path
 - project-level `AGENTS.md` can document justified exceptions
 - exceptions should be explicit, local, and reviewable
+- `AGENTS.md` should not be used to bypass missing packaged enterprise skills; missing packaged skills indicate a defect in this fork and should block setup
 
 Examples worth handling:
 
@@ -785,9 +787,9 @@ That implies at least one reusable mechanism inside this fork, such as:
 Required code/review/document/release gates will slow simple changes down.
 Mitigation: position this explicitly as the enterprise workflow, not the only workflow.
 
-**Risk: external capability dependency**
-If required superpowers checkpoints are unavailable, the enterprise workflow cannot run as intended.
-Mitigation: make required capabilities explicit at workflow selection time instead of discovering the dependency late, and allow project-level exception policy only through explicit `AGENTS.md` guidance.
+**Risk: packaged enterprise skills drift or go missing**
+If required bundled enterprise skills are not shipped or copied consistently, the enterprise workflow cannot run as intended.
+Mitigation: keep the bundled skill set small, check it before setup writes files, and verify that both `init` and `update` regenerate the required bundled skills consistently.
 
 **Risk: release modeling can become vague**
 If "release" is not defined precisely enough, teams may mark it complete inconsistently.

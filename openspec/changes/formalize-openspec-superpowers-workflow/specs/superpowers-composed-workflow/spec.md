@@ -6,7 +6,7 @@ The enterprise workflow SHALL use OpenSpec as the authoritative owner of change 
 #### Scenario: Stage progression in the hybrid flow
 - **WHEN** a contributor uses the composed workflow
 - **THEN** stage transitions SHALL be expressed through OpenSpec commands and artifacts
-- **AND** external capability invocations SHALL NOT replace OpenSpec change state or completion rules
+- **AND** superpowers capability invocations SHALL NOT replace OpenSpec change state or completion rules
 
 #### Scenario: External capability use inside a stage
 - **WHEN** a contributor invokes a superpowers capability during exploration, implementation, review, or documentation
@@ -67,10 +67,15 @@ The enterprise workflow SHALL define where superpowers capabilities may be used 
 - **THEN** a required enterprise documentation checkpoint SHALL occur after `/opsx:verify` and before release
 - **AND** documentation SHALL reflect the verified result rather than an earlier draft implementation
 
-#### Scenario: Enterprise activation requires capability preflight
+#### Scenario: Enterprise activation requires bundled-skill preflight
 - **WHEN** a project selects the enterprise workflow during setup or configuration
-- **THEN** the system SHALL verify that required external capabilities for required enterprise steps are available
-- **AND** enterprise activation SHALL NOT complete if those required capabilities are missing and no approved exception has been declared
+- **THEN** the system SHALL verify that the bundled enterprise skills referenced by the selected workflow are present in this published fork
+- **AND** enterprise activation SHALL NOT complete if any of those referenced bundled skills are missing from the package
+
+#### Scenario: Init copies bundled enterprise skills into the project
+- **WHEN** a project runs `openspec init` with enterprise workflow stages that use bundled enterprise skills
+- **THEN** setup SHALL copy those bundled enterprise skills into the selected AI tool's project-local skills directory
+- **AND** downstream projects SHALL NOT need a separate manual install step for those skills
 
 #### Scenario: Init defaults to enterprise-first setup
 - **WHEN** a contributor runs `openspec init` from this fork
