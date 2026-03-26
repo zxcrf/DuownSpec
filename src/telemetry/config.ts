@@ -1,10 +1,10 @@
 /**
  * Global configuration for telemetry state.
- * Stores anonymous ID and notice-seen flag in ~/.config/openspec/config.json
+ * Stores anonymous ID and notice-seen flag in the fork-specific global config file.
  */
 import { promises as fs } from 'fs';
 import path from 'path';
-import os from 'os';
+import { getGlobalConfigPath } from '../core/global-config.js';
 
 export interface TelemetryConfig {
   anonymousId?: string;
@@ -18,11 +18,9 @@ export interface GlobalConfig {
 
 /**
  * Get the path to the global config file.
- * Uses ~/.config/openspec/config.json on all platforms.
  */
 export function getConfigPath(): string {
-  const configDir = path.join(os.homedir(), '.config', 'openspec');
-  return path.join(configDir, 'config.json');
+  return getGlobalConfigPath();
 }
 
 /**

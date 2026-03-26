@@ -336,5 +336,10 @@ describe('config-schema', () => {
     it('should have empty featureFlags', () => {
       expect(DEFAULT_CONFIG.featureFlags).toEqual({});
     });
+
+    it('should default to enterprise-first workflows', () => {
+      expect(DEFAULT_CONFIG.profile).toBe('custom');
+      expect(DEFAULT_CONFIG.workflows).toEqual(['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive']);
+    });
   });
 });

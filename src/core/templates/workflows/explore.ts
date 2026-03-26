@@ -80,6 +80,11 @@ Depending on what the user brings, you might:
 
 You have full context of the OpenSpec system. Use it naturally, don't force it.
 
+OpenSpec owns the workflow stage. If the problem statement or available context
+is incomplete, you MAY recommend \`superpowers:brainstorming\` to widen options or
+compare approaches. Any accepted conclusion must still be captured back into
+OpenSpec artifacts such as the proposal, design, specs, or tasks.
+
 ### Check for context
 
 At the start, quickly check what exists:

@@ -31,6 +31,7 @@ import {
   type NewChangeOptions,
 } from '../commands/workflow/index.js';
 import { maybeShowTelemetryNotice, trackCommand, shutdown } from '../telemetry/index.js';
+import { CLI_COMMAND } from '../core/app-info.js';
 
 const program = new Command();
 const require = createRequire(import.meta.url);
@@ -46,18 +47,18 @@ function getCommandPath(command: Command): string {
 
   while (current) {
     const name = current.name();
-    // Skip the root 'openspec' command
-    if (name && name !== 'openspec') {
+    // Skip the root command name
+    if (name && name !== CLI_COMMAND) {
       names.unshift(name);
     }
     current = current.parent;
   }
 
-  return names.join(':') || 'openspec';
+  return names.join(':') || CLI_COMMAND;
 }
 
 program
-  .name('openspec')
+  .name(CLI_COMMAND)
   .description('AI-native system for spec-driven development')
   .version(version);
 

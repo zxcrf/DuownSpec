@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ENTERPRISE_DEFAULT_WORKFLOWS } from './profiles.js';
 
 /**
  * Zod schema for global OpenSpec configuration.
@@ -13,14 +14,15 @@ export const GlobalConfigSchema = z
     profile: z
       .enum(['core', 'custom'])
       .optional()
-      .default('core'),
+      .default('custom'),
     delivery: z
       .enum(['both', 'skills', 'commands'])
       .optional()
       .default('both'),
     workflows: z
       .array(z.string())
-      .optional(),
+      .optional()
+      .default([...ENTERPRISE_DEFAULT_WORKFLOWS]),
   })
   .passthrough();
 
@@ -31,8 +33,9 @@ export type GlobalConfigType = z.infer<typeof GlobalConfigSchema>;
  */
 export const DEFAULT_CONFIG: GlobalConfigType = {
   featureFlags: {},
-  profile: 'core',
+  profile: 'custom',
   delivery: 'both',
+  workflows: [...ENTERPRISE_DEFAULT_WORKFLOWS],
 };
 
 const KNOWN_TOP_LEVEL_KEYS = new Set([...Object.keys(DEFAULT_CONFIG), 'workflows']);

@@ -11,6 +11,7 @@
 import { PostHog } from 'posthog-node';
 import { randomUUID } from 'crypto';
 import { getTelemetryConfig, updateTelemetryConfig } from './config.js';
+import { CLI_COMMAND } from '../core/app-info.js';
 
 // PostHog API key - public key for client-side analytics
 // This is safe to embed as it only allows sending events, not reading data
@@ -132,7 +133,7 @@ export async function maybeShowTelemetryNotice(): Promise<void> {
 
     // Display notice
     console.log(
-      'Note: OpenSpec collects anonymous usage stats. Opt out: OPENSPEC_TELEMETRY=0'
+      `Note: ${CLI_COMMAND} collects anonymous usage stats. Opt out: OPENSPEC_TELEMETRY=0`
     );
 
     // Mark as seen

@@ -9,25 +9,25 @@
 ### npm
 
 ```bash
-npm install -g @fission-ai/openspec@latest
+npm install -g @duowen-ai/opsx@latest
 ```
 
 ### pnpm
 
 ```bash
-pnpm add -g @fission-ai/openspec@latest
+pnpm add -g @duowen-ai/opsx@latest
 ```
 
 ### yarn
 
 ```bash
-yarn global add @fission-ai/openspec@latest
+yarn global add @duowen-ai/opsx@latest
 ```
 
 ### bun
 
 ```bash
-bun add -g @fission-ai/openspec@latest
+bun add -g @duowen-ai/opsx@latest
 ```
 
 ## Nix
@@ -64,7 +64,7 @@ Or add to your development environment in `flake.nix`:
 ## Verify Installation
 
 ```bash
-openspec --version
+opsx --version
 ```
 
 ## Next Steps
@@ -73,7 +73,7 @@ After installing, initialize OpenSpec in your project:
 
 ```bash
 cd your-project
-openspec init
+opsx init
 ```
 
 See [Getting Started](getting-started.md) for a full walkthrough.

@@ -3,11 +3,16 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
+const execOptions = {
+  encoding: 'utf-8' as const,
+  env: { ...process.env, OPENSPEC_TELEMETRY: '0' },
+};
+
 describe('spec command', () => {
   const projectRoot = process.cwd();
   const testDir = path.join(projectRoot, 'test-spec-command-tmp');
   const specsDir = path.join(testDir, 'openspec', 'specs');
-  const openspecBin = path.join(projectRoot, 'bin', 'openspec.js');
+  const openspecBin = path.join(projectRoot, 'bin', 'opsx.js');
   
   
   beforeEach(async () => {
@@ -59,9 +64,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec show auth`, execOptions);
         
         // Raw passthrough should match spec.md content
         const raw = await fs.readFile(path.join(specsDir, 'auth', 'spec.md'), 'utf-8');
@@ -75,9 +78,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec show auth --json`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.id).toBe('auth');
@@ -94,9 +95,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json --requirements`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec show auth --json --requirements`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(2);
@@ -111,9 +110,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json --no-scenarios`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec show auth --json --no-scenarios`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(2);
@@ -127,9 +124,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json -r 1`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec show auth --json -r 1`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(1);
@@ -143,9 +138,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec show auth --json --no-scenarios`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec show auth --json --no-scenarios`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.requirements).toHaveLength(2);
@@ -161,9 +154,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec list`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec list`, execOptions);
         
         expect(output).toContain('auth');
         expect(output).toContain('payment');
@@ -178,9 +169,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec list --json`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec list --json`, execOptions);
         
         const json = JSON.parse(output);
         expect(json).toHaveLength(2);
@@ -198,9 +187,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec validate auth`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec validate auth`, execOptions);
         
         expect(output).toContain("Specification 'auth' is valid");
       } finally {
@@ -212,9 +199,7 @@ The system SHALL process credit card payments securely`;
       const originalCwd = process.cwd();
       try {
         process.chdir(testDir);
-        const output = execSync(`node ${openspecBin} spec validate auth --json`, {
-          encoding: 'utf-8'
-        });
+        const output = execSync(`node ${openspecBin} spec validate auth --json`, execOptions);
         
         const json = JSON.parse(output);
         expect(json.valid).toBeDefined();

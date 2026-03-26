@@ -77,20 +77,22 @@ describe('InitCommand', () => {
       expect(content).toContain('schema: spec-driven');
     });
 
-    it('should create core profile skills for Claude Code by default', async () => {
+    it('should create enterprise-default skills for Claude Code by default', async () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
 
       await initCommand.execute(testDir);
 
-      // Core profile: propose, explore, apply, archive
-      const coreSkillNames = [
+      const defaultSkillNames = [
         'openspec-propose',
         'openspec-explore',
         'openspec-apply-change',
+        'openspec-review-change',
+        'openspec-verify-change',
+        'openspec-document-change',
         'openspec-archive-change',
       ];
 
-      for (const skillName of coreSkillNames) {
+      for (const skillName of defaultSkillNames) {
         const skillFile = path.join(testDir, '.claude', 'skills', skillName, 'SKILL.md');
         expect(await fileExists(skillFile)).toBe(true);
 
@@ -100,51 +102,49 @@ describe('InitCommand', () => {
         expect(content).toContain('description:');
       }
 
-      // Non-core skills should NOT be created
-      const nonCoreSkillNames = [
+      const nonDefaultSkillNames = [
         'openspec-new-change',
         'openspec-continue-change',
         'openspec-ff-change',
         'openspec-sync-specs',
         'openspec-bulk-archive-change',
-        'openspec-verify-change',
       ];
 
-      for (const skillName of nonCoreSkillNames) {
+      for (const skillName of nonDefaultSkillNames) {
         const skillFile = path.join(testDir, '.claude', 'skills', skillName, 'SKILL.md');
         expect(await fileExists(skillFile)).toBe(false);
       }
     });
 
-    it('should create core profile commands for Claude Code by default', async () => {
+    it('should create enterprise-default commands for Claude Code by default', async () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
 
       await initCommand.execute(testDir);
 
-      // Core profile: propose, explore, apply, archive
-      const coreCommandNames = [
+      const defaultCommandNames = [
         'opsx/propose.md',
         'opsx/explore.md',
         'opsx/apply.md',
+        'opsx/review.md',
+        'opsx/verify.md',
+        'opsx/document.md',
         'opsx/archive.md',
       ];
 
-      for (const cmdName of coreCommandNames) {
+      for (const cmdName of defaultCommandNames) {
         const cmdFile = path.join(testDir, '.claude', 'commands', cmdName);
         expect(await fileExists(cmdFile)).toBe(true);
       }
 
-      // Non-core commands should NOT be created
-      const nonCoreCommandNames = [
+      const nonDefaultCommandNames = [
         'opsx/new.md',
         'opsx/continue.md',
         'opsx/ff.md',
         'opsx/sync.md',
         'opsx/bulk-archive.md',
-        'opsx/verify.md',
       ];
 
-      for (const cmdName of nonCoreCommandNames) {
+      for (const cmdName of nonDefaultCommandNames) {
         const cmdFile = path.join(testDir, '.claude', 'commands', cmdName);
         expect(await fileExists(cmdFile)).toBe(false);
       }
@@ -677,8 +677,9 @@ describe('InitCommand - profile and detection features', () => {
   it('should respect delivery=skills setting (no commands)', async () => {
     saveGlobalConfig({
       featureFlags: {},
-      profile: 'core',
+      profile: 'custom',
       delivery: 'skills',
+      workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
     });
 
     const initCommand = new InitCommand({ tools: 'claude', force: true });
@@ -696,8 +697,9 @@ describe('InitCommand - profile and detection features', () => {
   it('should respect delivery=commands setting (no skills)', async () => {
     saveGlobalConfig({
       featureFlags: {},
-      profile: 'core',
+      profile: 'custom',
       delivery: 'commands',
+      workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
     });
 
     const initCommand = new InitCommand({ tools: 'claude', force: true });
@@ -715,8 +717,9 @@ describe('InitCommand - profile and detection features', () => {
   it('should remove commands on re-init when delivery changes to skills', async () => {
     saveGlobalConfig({
       featureFlags: {},
-      profile: 'core',
+      profile: 'custom',
       delivery: 'both',
+      workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
     });
 
     const initCommand1 = new InitCommand({ tools: 'claude', force: true });
@@ -727,8 +730,9 @@ describe('InitCommand - profile and detection features', () => {
 
     saveGlobalConfig({
       featureFlags: {},
-      profile: 'core',
+      profile: 'custom',
       delivery: 'skills',
+      workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
     });
 
     const initCommand2 = new InitCommand({ tools: 'claude', force: true });

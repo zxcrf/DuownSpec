@@ -62,6 +62,10 @@ const WORKFLOW_PROMPT_META: Record<string, WorkflowPromptMeta> = {
     name: 'Apply tasks',
     description: 'Implement tasks from the current change',
   },
+  review: {
+    name: 'Review change',
+    description: 'Review the completed implementation before verification',
+  },
   ff: {
     name: 'Fast-forward',
     description: 'Run a faster implementation workflow',
@@ -81,6 +85,10 @@ const WORKFLOW_PROMPT_META: Record<string, WorkflowPromptMeta> = {
   verify: {
     name: 'Verify change',
     description: 'Run verification checks against a change',
+  },
+  document: {
+    name: 'Document change',
+    description: 'Confirm release documentation is complete',
   },
   onboard: {
     name: 'Onboard',
@@ -454,7 +462,7 @@ export function registerConfigCommand(program: Command): void {
     .command('profile [preset]')
     .description('Configure workflow profile (interactive picker or preset shortcut)')
     .action(async (preset?: string) => {
-      // Preset shortcut: `openspec config profile core`
+      // Backward-compatible preset shortcut.
       if (preset === 'core') {
         const config = getGlobalConfig();
         config.profile = 'core';
@@ -466,14 +474,14 @@ export function registerConfigCommand(program: Command): void {
       }
 
       if (preset) {
-        console.error(`Error: Unknown profile preset "${preset}". Available presets: core`);
+        console.error(`Error: Unknown profile preset "${preset}".`);
         process.exitCode = 1;
         return;
       }
 
       // Non-interactive check
       if (!process.stdout.isTTY) {
-        console.error('Interactive mode required. Use `openspec config profile core` or set config via environment/flags.');
+        console.error('Interactive mode required. Use `openspec config profile` interactively or update config via file/flags.');
         process.exitCode = 1;
         return;
       }

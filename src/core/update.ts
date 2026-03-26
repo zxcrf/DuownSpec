@@ -95,7 +95,7 @@ export class UpdateCommand {
 
     // 3. Read global config for profile/delivery
     const globalConfig = getGlobalConfig();
-    const profile = globalConfig.profile ?? 'core';
+    const profile = globalConfig.profile ?? 'custom';
     const delivery: Delivery = globalConfig.delivery ?? 'both';
     const profileWorkflows = getProfileWorkflows(profile, globalConfig.workflows);
     const desiredWorkflows = profileWorkflows.filter((workflow): workflow is (typeof ALL_WORKFLOWS)[number] =>
@@ -268,9 +268,11 @@ export class UpdateCommand {
     if (newlyConfiguredTools.length > 0) {
       console.log();
       console.log(chalk.bold('Getting started:'));
-      console.log('  /opsx:new       Start a new change');
-      console.log('  /opsx:continue  Create the next artifact');
-      console.log('  /opsx:apply     Implement tasks');
+      console.log('  /opsx:propose   Start an enterprise proposal');
+      console.log('  /opsx:apply     Implement approved tasks');
+      console.log('  /opsx:review    Run the required review checkpoint');
+      console.log('  /opsx:verify    Run the release-readiness verification gate');
+      console.log('  /opsx:document  Complete the required documentation checkpoint');
       console.log();
       console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/OpenSpec')}`);
     }

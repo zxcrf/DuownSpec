@@ -18,6 +18,10 @@ describe('instruction-loader', () => {
 
       expect(template).toContain('## Why');
       expect(template).toContain('## What Changes');
+      expect(template).toContain('## Core User Stories');
+      expect(template).toContain('## Release Coverage');
+      expect(template).toContain('## Release Evidence Plan');
+      expect(template).toContain('## Out of Scope');
     });
 
     it('should throw TemplateLoadError for non-existent template', () => {
@@ -150,6 +154,7 @@ describe('instruction-loader', () => {
       const instructions = generateInstructions(context, 'proposal');
 
       expect(instructions.template).toContain('## Why');
+      expect(instructions.template).toContain('## Core User Stories');
     });
 
     it('should show dependencies with completion status', () => {

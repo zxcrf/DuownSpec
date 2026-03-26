@@ -67,6 +67,12 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 
 6. **Implement tasks (loop until done or blocked)**
 
+   In this enterprise-first fork, \`superpowers:executing-plans\` is the default
+   implementation augmentation inside this stage. \`superpowers:test-driven-development\`
+   and \`superpowers:subagent-driven-development\` may also be used when they fit
+   the task. OpenSpec still owns task completion, change state, and whether the
+   work is actually done.
+
    For each pending task:
    - Show which task is being worked on
    - Make the code changes required
@@ -148,6 +154,7 @@ What would you like to do?
 - Update task checkbox immediately after completing each task
 - Pause on errors, blockers, or unclear requirements - don't guess
 - Use contextFiles from CLI output, don't assume specific file names
+- Treat \`superpowers:executing-plans\` as stage-local implementation help, not as the workflow owner
 
 **Fluid Workflow Integration**
 
@@ -223,6 +230,12 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
    - Dynamic instruction from CLI
 
 6. **Implement tasks (loop until done or blocked)**
+
+   In this enterprise-first fork, \`superpowers:executing-plans\` is the default
+   implementation augmentation inside this stage. \`superpowers:test-driven-development\`
+   and \`superpowers:subagent-driven-development\` may also be used when they fit
+   the task. OpenSpec still owns task completion, change state, and whether the
+   work is actually done.
 
    For each pending task:
    - Show which task is being worked on

@@ -14,6 +14,20 @@ import type { Profile } from './global-config.js';
 export const CORE_WORKFLOWS = ['propose', 'explore', 'apply', 'archive'] as const;
 
 /**
+ * Enterprise-first workflows shipped by this fork.
+ * These keep the public command surface small while adding verification to the default path.
+ */
+export const ENTERPRISE_DEFAULT_WORKFLOWS = [
+  'propose',
+  'explore',
+  'apply',
+  'review',
+  'verify',
+  'document',
+  'archive',
+] as const;
+
+/**
  * All available workflows in the system.
  */
 export const ALL_WORKFLOWS = [
@@ -22,11 +36,13 @@ export const ALL_WORKFLOWS = [
   'new',
   'continue',
   'apply',
+  'review',
   'ff',
   'sync',
   'archive',
   'bulk-archive',
   'verify',
+  'document',
   'onboard',
 ] as const;
 

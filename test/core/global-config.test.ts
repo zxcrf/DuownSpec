@@ -43,7 +43,7 @@ describe('global-config', () => {
 
   describe('constants', () => {
     it('should export correct directory name', () => {
-      expect(GLOBAL_CONFIG_DIR_NAME).toBe('openspec');
+      expect(GLOBAL_CONFIG_DIR_NAME).toBe('opsx');
     });
 
     it('should export correct file name', () => {
@@ -57,7 +57,7 @@ describe('global-config', () => {
 
       const result = getGlobalConfigDir();
 
-      expect(result).toBe(path.join(tempDir, 'openspec'));
+      expect(result).toBe(path.join(tempDir, 'opsx'));
     });
 
     it('should fall back to ~/.config on Unix/macOS without XDG_CONFIG_HOME', () => {
@@ -65,9 +65,9 @@ describe('global-config', () => {
 
       const result = getGlobalConfigDir();
 
-      // On non-Windows, should use ~/.config/openspec
+      // On non-Windows, should use ~/.config/opsx
       if (os.platform() !== 'win32') {
-        expect(result).toBe(path.join(os.homedir(), '.config', 'openspec'));
+        expect(result).toBe(path.join(os.homedir(), '.config', 'opsx'));
       }
     });
 
@@ -79,7 +79,7 @@ describe('global-config', () => {
         const appData = process.env.APPDATA;
         if (appData) {
           const result = getGlobalConfigDir();
-          expect(result).toBe(path.join(appData, 'openspec'));
+          expect(result).toBe(path.join(appData, 'opsx'));
         }
       }
     });
@@ -91,7 +91,7 @@ describe('global-config', () => {
 
       const result = getGlobalConfigPath();
 
-      expect(result).toBe(path.join(tempDir, 'openspec', 'config.json'));
+      expect(result).toBe(path.join(tempDir, 'opsx', 'config.json'));
     });
   });
 
@@ -101,12 +101,17 @@ describe('global-config', () => {
 
       const config = getGlobalConfig();
 
-      expect(config).toEqual({ featureFlags: {}, profile: 'core', delivery: 'both' });
+      expect(config).toEqual({
+        featureFlags: {},
+        profile: 'custom',
+        delivery: 'both',
+        workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
+      });
     });
 
     it('should not create directory when reading non-existent config', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
 
       getGlobalConfig();
 
@@ -115,7 +120,7 @@ describe('global-config', () => {
 
     it('should load valid config from file', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
       const configPath = path.join(configDir, 'config.json');
 
       fs.mkdirSync(configDir, { recursive: true });
@@ -130,7 +135,7 @@ describe('global-config', () => {
 
     it('should return defaults for invalid JSON', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
       const configPath = path.join(configDir, 'config.json');
 
       fs.mkdirSync(configDir, { recursive: true });
@@ -138,12 +143,17 @@ describe('global-config', () => {
 
       const config = getGlobalConfig();
 
-      expect(config).toEqual({ featureFlags: {}, profile: 'core', delivery: 'both' });
+      expect(config).toEqual({
+        featureFlags: {},
+        profile: 'custom',
+        delivery: 'both',
+        workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
+      });
     });
 
     it('should log warning for invalid JSON', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
       const configPath = path.join(configDir, 'config.json');
 
       fs.mkdirSync(configDir, { recursive: true });
@@ -158,7 +168,7 @@ describe('global-config', () => {
 
     it('should preserve unknown fields from config file', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
       const configPath = path.join(configDir, 'config.json');
 
       fs.mkdirSync(configDir, { recursive: true });
@@ -176,7 +186,7 @@ describe('global-config', () => {
 
     it('should merge loaded config with defaults', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
       const configPath = path.join(configDir, 'config.json');
 
       // Config with only some fields
@@ -194,7 +204,7 @@ describe('global-config', () => {
     describe('schema evolution', () => {
       it('should add default profile and delivery when loading old config without them', () => {
         process.env.XDG_CONFIG_HOME = tempDir;
-        const configDir = path.join(tempDir, 'openspec');
+        const configDir = path.join(tempDir, 'opsx');
         const configPath = path.join(configDir, 'config.json');
 
         // Simulate a pre-existing config that only has featureFlags
@@ -205,15 +215,15 @@ describe('global-config', () => {
 
         const config = getGlobalConfig();
 
-        expect(config.profile).toBe('core');
+        expect(config.profile).toBe('custom');
         expect(config.delivery).toBe('both');
-        expect(config.workflows).toBeUndefined();
+        expect(config.workflows).toEqual(['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive']);
         expect(config.featureFlags?.existingFlag).toBe(true);
       });
 
       it('should preserve explicit profile and delivery values from config', () => {
         process.env.XDG_CONFIG_HOME = tempDir;
-        const configDir = path.join(tempDir, 'openspec');
+        const configDir = path.join(tempDir, 'opsx');
         const configPath = path.join(configDir, 'config.json');
 
         fs.mkdirSync(configDir, { recursive: true });
@@ -229,6 +239,47 @@ describe('global-config', () => {
         expect(config.profile).toBe('custom');
         expect(config.delivery).toBe('skills');
         expect(config.workflows).toEqual(['propose', 'review']);
+      });
+
+      it('should upgrade legacy custom default workflows to enterprise defaults', () => {
+        process.env.XDG_CONFIG_HOME = tempDir;
+        const configDir = path.join(tempDir, 'opsx');
+        const configPath = path.join(configDir, 'config.json');
+
+        fs.mkdirSync(configDir, { recursive: true });
+        fs.writeFileSync(configPath, JSON.stringify({
+          featureFlags: {},
+          profile: 'custom',
+          delivery: 'both',
+          workflows: ['propose', 'explore', 'apply', 'archive']
+        }));
+
+        const config = getGlobalConfig();
+        const persisted = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+        expect(config.profile).toBe('custom');
+        expect(config.workflows).toEqual(['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive']);
+        expect(persisted.workflows).toEqual(['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive']);
+      });
+
+      it('should preserve explicit custom workflow selections that differ from the legacy defaults', () => {
+        process.env.XDG_CONFIG_HOME = tempDir;
+        const configDir = path.join(tempDir, 'opsx');
+        const configPath = path.join(configDir, 'config.json');
+
+        fs.mkdirSync(configDir, { recursive: true });
+        fs.writeFileSync(configPath, JSON.stringify({
+          featureFlags: {},
+          profile: 'custom',
+          delivery: 'both',
+          workflows: ['propose', 'explore', 'apply']
+        }));
+
+        const config = getGlobalConfig();
+        const persisted = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+        expect(config.workflows).toEqual(['propose', 'explore', 'apply']);
+        expect(persisted.workflows).toEqual(['propose', 'explore', 'apply']);
       });
 
       it('should round-trip new fields correctly', () => {
@@ -248,9 +299,9 @@ describe('global-config', () => {
         expect(loadedConfig.workflows).toEqual(['propose']);
       });
 
-      it('should default workflows to undefined when not in config', () => {
+      it('should default workflows to the enterprise workflow set when not in config', () => {
         process.env.XDG_CONFIG_HOME = tempDir;
-        const configDir = path.join(tempDir, 'openspec');
+        const configDir = path.join(tempDir, 'opsx');
         const configPath = path.join(configDir, 'config.json');
 
         fs.mkdirSync(configDir, { recursive: true });
@@ -262,7 +313,7 @@ describe('global-config', () => {
 
         const config = getGlobalConfig();
 
-        expect(config.workflows).toBeUndefined();
+        expect(config.workflows).toEqual(['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive']);
       });
     });
   });
@@ -270,7 +321,7 @@ describe('global-config', () => {
   describe('saveGlobalConfig', () => {
     it('should create directory if it does not exist', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
 
       saveGlobalConfig({ featureFlags: { test: true } });
 
@@ -279,7 +330,7 @@ describe('global-config', () => {
 
     it('should write config to file', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configPath = path.join(tempDir, 'openspec', 'config.json');
+      const configPath = path.join(tempDir, 'opsx', 'config.json');
 
       saveGlobalConfig({ featureFlags: { myFlag: true } });
 
@@ -290,7 +341,7 @@ describe('global-config', () => {
 
     it('should overwrite existing config file', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configDir = path.join(tempDir, 'openspec');
+      const configDir = path.join(tempDir, 'opsx');
       const configPath = path.join(configDir, 'config.json');
 
       // Create initial config
@@ -308,7 +359,7 @@ describe('global-config', () => {
 
     it('should write formatted JSON with trailing newline', () => {
       process.env.XDG_CONFIG_HOME = tempDir;
-      const configPath = path.join(tempDir, 'openspec', 'config.json');
+      const configPath = path.join(tempDir, 'opsx', 'config.json');
 
       saveGlobalConfig({ featureFlags: {} });
 

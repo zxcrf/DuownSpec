@@ -396,4 +396,14 @@ describe('config profile interactive flow', () => {
     expect(checkbox).not.toHaveBeenCalled();
     expect(confirm).not.toHaveBeenCalled();
   });
+
+  it('non-interactive error should no longer advertise the upstream preset', async () => {
+    (process.stdout as NodeJS.WriteStream & { isTTY?: boolean }).isTTY = false;
+
+    await runConfigCommand(['profile']);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Interactive mode required. Use `openspec config profile` interactively or update config via file/flags.'
+    );
+  });
 });

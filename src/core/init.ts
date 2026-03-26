@@ -65,11 +65,13 @@ const WORKFLOW_TO_SKILL_DIR: Record<string, string> = {
   'new': 'openspec-new-change',
   'continue': 'openspec-continue-change',
   'apply': 'openspec-apply-change',
+  'review': 'openspec-review-change',
   'ff': 'openspec-ff-change',
   'sync': 'openspec-sync-specs',
   'archive': 'openspec-archive-change',
   'bulk-archive': 'openspec-bulk-archive-change',
   'verify': 'openspec-verify-change',
+  'document': 'openspec-document-change',
   'onboard': 'openspec-onboard',
   'propose': 'openspec-propose',
 };
@@ -511,7 +513,7 @@ export class InitCommand {
 
     // Read global config for profile and delivery settings (use --profile override if set)
     const globalConfig = getGlobalConfig();
-    const profile: Profile = this.resolveProfileOverride() ?? globalConfig.profile ?? 'core';
+    const profile: Profile = this.resolveProfileOverride() ?? globalConfig.profile ?? 'custom';
     const delivery: Delivery = globalConfig.delivery ?? 'both';
     const workflows = getProfileWorkflows(profile, globalConfig.workflows);
 
@@ -652,7 +654,7 @@ export class InitCommand {
     const successfulTools = [...results.createdTools, ...results.refreshedTools];
     if (successfulTools.length > 0) {
       const globalConfig = getGlobalConfig();
-      const profile: Profile = (this.profileOverride as Profile) ?? globalConfig.profile ?? 'core';
+      const profile: Profile = (this.profileOverride as Profile) ?? globalConfig.profile ?? 'custom';
       const delivery: Delivery = globalConfig.delivery ?? 'both';
       const workflows = getProfileWorkflows(profile, globalConfig.workflows);
       const toolDirs = [...new Set(successfulTools.map((t) => t.skillsDir))].join(', ');
@@ -698,12 +700,12 @@ export class InitCommand {
 
     // Getting started (task 7.6: show propose if in profile)
     const globalCfg = getGlobalConfig();
-    const activeProfile: Profile = (this.profileOverride as Profile) ?? globalCfg.profile ?? 'core';
+    const activeProfile: Profile = (this.profileOverride as Profile) ?? globalCfg.profile ?? 'custom';
     const activeWorkflows = [...getProfileWorkflows(activeProfile, globalCfg.workflows)];
     console.log();
     if (activeWorkflows.includes('propose')) {
       console.log(chalk.bold('Getting started:'));
-      console.log('  Start your first change: /opsx:propose "your idea"');
+      console.log('  Start your first enterprise proposal: /opsx:propose "your idea"');
     } else if (activeWorkflows.includes('new')) {
       console.log(chalk.bold('Getting started:'));
       console.log('  Start your first change: /opsx:new "your idea"');

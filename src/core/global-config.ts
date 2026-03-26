@@ -1,11 +1,13 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { GLOBAL_NAMESPACE } from './app-info.js';
+import { ENTERPRISE_DEFAULT_WORKFLOWS } from './profiles.js';
 
 // Constants
-export const GLOBAL_CONFIG_DIR_NAME = 'openspec';
+export const GLOBAL_CONFIG_DIR_NAME = GLOBAL_NAMESPACE;
 export const GLOBAL_CONFIG_FILE_NAME = 'config.json';
-export const GLOBAL_DATA_DIR_NAME = 'openspec';
+export const GLOBAL_DATA_DIR_NAME = GLOBAL_NAMESPACE;
 
 // TypeScript types
 export type Profile = 'core' | 'custom';
@@ -21,9 +23,58 @@ export interface GlobalConfig {
 
 const DEFAULT_CONFIG: GlobalConfig = {
   featureFlags: {},
-  profile: 'core',
+  profile: 'custom',
   delivery: 'both',
+  workflows: [...ENTERPRISE_DEFAULT_WORKFLOWS],
 };
+
+const LEGACY_CUSTOM_DEFAULT_WORKFLOW_SETS = [
+  ['propose', 'explore', 'apply', 'archive'],
+  ['propose', 'explore', 'apply', 'archive', 'verify'],
+] as const;
+
+function matchesWorkflowSet(actual: unknown, expected: readonly string[]): actual is string[] {
+  return (
+    Array.isArray(actual) &&
+    actual.length === expected.length &&
+    expected.every((workflow) => actual.includes(workflow))
+  );
+}
+
+function maybeUpgradeLegacyEnterpriseDefaults(
+  parsed: Record<string, unknown>,
+  merged: GlobalConfig,
+  configPath: string
+): void {
+  const isLegacyCustomDefault =
+    parsed.profile === 'custom' &&
+    LEGACY_CUSTOM_DEFAULT_WORKFLOW_SETS.some((workflows) =>
+      matchesWorkflowSet(parsed.workflows, workflows)
+    );
+
+  if (!isLegacyCustomDefault) {
+    return;
+  }
+
+  merged.workflows = [...ENTERPRISE_DEFAULT_WORKFLOWS];
+
+  try {
+    fs.writeFileSync(
+      configPath,
+      JSON.stringify(
+        {
+          ...parsed,
+          workflows: [...ENTERPRISE_DEFAULT_WORKFLOWS],
+        },
+        null,
+        2
+      ) + '\n',
+      'utf-8'
+    );
+  } catch {
+    // Keep the in-memory upgrade even if the persisted migration fails.
+  }
+}
 
 /**
  * Gets the global configuration directory path following XDG Base Directory Specification.
@@ -107,7 +158,7 @@ export function getGlobalConfig(): GlobalConfig {
     }
 
     const content = fs.readFileSync(configPath, 'utf-8');
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(content) as Record<string, unknown>;
 
     // Merge with defaults (loaded values take precedence)
     const merged: GlobalConfig = {
@@ -127,6 +178,8 @@ export function getGlobalConfig(): GlobalConfig {
     if (parsed.delivery === undefined) {
       merged.delivery = DEFAULT_CONFIG.delivery;
     }
+
+    maybeUpgradeLegacyEnterpriseDefaults(parsed, merged, configPath);
 
     return merged;
   } catch (error) {

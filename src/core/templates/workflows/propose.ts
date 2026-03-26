@@ -17,6 +17,12 @@ I'll create a change with artifacts:
 - design.md (how)
 - tasks.md (implementation steps)
 
+In this enterprise-first fork, the proposal is also expected to define:
+- Core User Stories
+- Release Coverage
+- Release Evidence Plan
+- Out of Scope
+
 When ready to implement, run /opsx:apply
 
 ---
@@ -127,6 +133,12 @@ I'll create a change with artifacts:
 - proposal.md (what & why)
 - design.md (how)
 - tasks.md (implementation steps)
+
+In this enterprise-first fork, the proposal is also expected to define:
+- Core User Stories
+- Release Coverage
+- Release Evidence Plan
+- Out of Scope
 
 When ready to implement, run /opsx:apply
 

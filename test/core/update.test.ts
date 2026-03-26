@@ -13,8 +13,9 @@ import { randomUUID } from 'crypto';
 const mockState = {
   config: {
     featureFlags: {},
-    profile: 'core' as const,
+    profile: 'custom' as const,
     delivery: 'both' as const,
+    workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
   } as GlobalConfig,
 };
 
@@ -35,7 +36,12 @@ function setMockConfig(config: GlobalConfig) {
 }
 
 function resetMockConfig() {
-  mockState.config = { featureFlags: {}, profile: 'core', delivery: 'both' };
+  mockState.config = {
+    featureFlags: {},
+    profile: 'custom',
+    delivery: 'both',
+    workflows: ['propose', 'explore', 'apply', 'review', 'verify', 'document', 'archive'],
+  };
 }
 
 describe('UpdateCommand', () => {
@@ -140,7 +146,7 @@ Old instructions content
       consoleSpy.mockRestore();
     });
 
-    it('should update core profile skill files when tool is configured', async () => {
+    it('should update enterprise-default skill files when tool is configured', async () => {
       // Set up a configured tool with one skill directory
       const skillsDir = path.join(testDir, '.claude', 'skills');
 
@@ -155,15 +161,17 @@ Old instructions content
 
       await updateCommand.execute(testDir);
 
-      // Verify core profile skill files were created/updated (propose, explore, apply, archive)
-      const coreSkillNames = [
+      const defaultSkillNames = [
         'openspec-explore',
         'openspec-apply-change',
+        'openspec-review-change',
         'openspec-archive-change',
         'openspec-propose',
+        'openspec-verify-change',
+        'openspec-document-change',
       ];
 
-      for (const skillName of coreSkillNames) {
+      for (const skillName of defaultSkillNames) {
         const skillFile = path.join(skillsDir, skillName, 'SKILL.md');
         const exists = await FileSystemUtils.fileExists(skillFile);
         expect(exists).toBe(true);
@@ -174,17 +182,15 @@ Old instructions content
         expect(content).toContain('description:');
       }
 
-      // Verify non-core skills are NOT created
-      const nonCoreSkillNames = [
+      const nonDefaultSkillNames = [
         'openspec-new-change',
         'openspec-continue-change',
         'openspec-ff-change',
         'openspec-sync-specs',
         'openspec-bulk-archive-change',
-        'openspec-verify-change',
       ];
 
-      for (const skillName of nonCoreSkillNames) {
+      for (const skillName of nonDefaultSkillNames) {
         const skillFile = path.join(skillsDir, skillName, 'SKILL.md');
         const exists = await FileSystemUtils.fileExists(skillFile);
         expect(exists).toBe(false);
@@ -220,7 +226,7 @@ Old instructions content
       expect(content).toContain('tags:');
     });
 
-    it('should update core profile opsx commands when tool is configured', async () => {
+    it('should update enterprise-default opsx commands when tool is configured', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
       await fs.mkdir(path.join(skillsDir, 'openspec-explore'), {
@@ -233,18 +239,16 @@ Old instructions content
 
       await updateCommand.execute(testDir);
 
-      // Verify core profile commands were created (propose, explore, apply, archive)
-      const coreCommandIds = ['explore', 'apply', 'archive', 'propose'];
+      const defaultCommandIds = ['explore', 'apply', 'review', 'archive', 'propose', 'verify', 'document'];
       const commandsDir = path.join(testDir, '.claude', 'commands', 'opsx');
-      for (const cmdId of coreCommandIds) {
+      for (const cmdId of defaultCommandIds) {
         const cmdFile = path.join(commandsDir, `${cmdId}.md`);
         const exists = await FileSystemUtils.fileExists(cmdFile);
         expect(exists).toBe(true);
       }
 
-      // Verify non-core commands are NOT created
-      const nonCoreCommandIds = ['new', 'continue', 'ff', 'sync', 'bulk-archive', 'verify'];
-      for (const cmdId of nonCoreCommandIds) {
+      const nonDefaultCommandIds = ['new', 'continue', 'ff', 'sync', 'bulk-archive'];
+      for (const cmdId of nonDefaultCommandIds) {
         const cmdFile = path.join(commandsDir, `${cmdId}.md`);
         const exists = await FileSystemUtils.fileExists(cmdFile);
         expect(exists).toBe(false);
@@ -1141,7 +1145,7 @@ More user content after markers.
         expect.stringContaining('Getting started')
       );
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('/opsx:new')
+        expect.stringContaining('/opsx:propose')
       );
 
       // Skills should be created

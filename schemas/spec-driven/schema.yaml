@@ -12,14 +12,25 @@ artifacts:
       Sections:
       - **Why**: 1-2 sentences on the problem or opportunity. What problem does this solve? Why now?
       - **What Changes**: Bullet list of changes. Be specific about new capabilities, modifications, or removals. Mark breaking changes with **BREAKING**.
+      - **Core User Stories**: Define the 2-5 release-critical stories for this change. Each story should include a story ID, role, goal, business value, user-visible critical flows, and success criteria.
+      - **Release Coverage**: Define what private-cloud verification and customer-environment verification must cover. Covered flows MUST reference the story IDs and named flows from Core User Stories.
+      - **Release Evidence Plan**: Define how each environment gate will be proven. Accepted evidence is limited to AI-run validation or explicit human text confirmation, and every record must identify environment, method, result, covered stories, covered flows, evidence summary, and recorder identity.
       - **Capabilities**: Identify which specs will be created or modified:
         - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<name>/spec.md`. Use kebab-case names (e.g., `user-auth`, `data-export`).
         - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Check `openspec/specs/` for existing spec names. Leave empty if no requirement changes.
       - **Impact**: Affected code, APIs, dependencies, or systems.
+      - **Out of Scope**: Important work that is intentionally excluded from this change.
 
       IMPORTANT: The Capabilities section is critical. It creates the contract between
       proposal and specs phases. Research existing specs before filling this in.
       Each capability listed here will need a corresponding spec file.
+
+      Enterprise proposal rules:
+      - Keep the story list focused: usually 2-5 stories.
+      - Each story should describe one complete user goal.
+      - Critical flows must be user-visible flows, not implementation steps.
+      - Release Coverage must be derived from Core User Stories. Do not invent release-critical flows later without updating the proposal first.
+      - Customer-environment coverage may be a subset of private-cloud coverage, but it must still trace back to the same story IDs and flows.
 
       Keep it concise (1-2 pages). Focus on the "why" not the "how" -
       implementation details belong in design.md.
