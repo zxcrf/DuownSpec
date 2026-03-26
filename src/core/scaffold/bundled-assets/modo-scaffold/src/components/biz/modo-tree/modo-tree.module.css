@@ -1,0 +1,142 @@
+/* MODO Tree Style Overrides (Reference) */
+
+.compact :global(.ant-tree-treenode) {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 28px !important;
+    min-height: 28px !important;
+}
+
+.compact :global(.ant-tree-switcher) {
+    width: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-inline-end: 0 !important;
+    transition: none !important;
+}
+
+/* Checkbox Overrides - Aggressive 12px Enforcement */
+/* Target the wrapper span for positioning and size */
+.compact :global(.ant-tree-checkbox) {
+    width: 12px !important;
+    height: 12px !important;
+    margin-inline-start: 4px !important;
+    /* Spacing between switcher and checkbox */
+    margin-inline-end: 0 !important;
+    margin-block-start: 0 !important;
+    padding: 0 !important;
+    align-self: center;
+    /* Ensure vertical centering in flex container */
+    margin-top: 0 !important;
+    line-height: 1 !important;
+}
+
+/* 1. Size Enforcement (No Colors) - Target the inner span */
+.compact :global(.ant-tree-checkbox .ant-tree-checkbox-inner) {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 2px !important;
+}
+
+/* 2. Checked Tick Size/Position */
+.compact :global(.ant-tree-checkbox-checked .ant-tree-checkbox-inner::after) {
+    /* Critical Fix: Explicitly size the tick mark for 12px container */
+    width: 3px !important;
+    /* Slightly smaller for better fit */
+    height: 6px !important;
+    border: 2px solid #fff !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    transform: rotate(45deg) scale(1) translate(-50%, -50%) !important;
+    top: 45% !important;
+    /* Adjusted positioning */
+    left: 20% !important;
+    opacity: 1 !important;
+    transition: none !important;
+    /* Remove transition to prevent size jump artifacts */
+    display: table !important;
+    position: absolute !important;
+}
+
+/* 3. Indeterminate Block Size */
+.compact :global(.ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner::after) {
+    top: 50% !important;
+    left: 50% !important;
+    width: 6px !important;
+    height: 6px !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+/* Node Icon Container */
+.compact :global(.ant-tree-iconEle) {
+    width: 16px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    display: inline-block !important;
+    padding-left: 0 !important;
+    padding-right: 4px !important;
+    color: inherit !important;
+}
+
+.compact :global(.ant-tree-iconEle .anticon) {
+    font-size: 12px !important;
+}
+
+/* Switcher Interaction */
+.compact :global(.ant-tree-switcher:hover:before) {
+    background: transparent !important;
+}
+
+.compact :global(.ant-tree-switcher),
+.compact :global(.ant-tree-switcher-icon),
+.compact :global(.ant-tree-switcher-icon svg) {
+    transform: none !important;
+}
+
+.compact :global(.ant-tree-indent-unit) {
+    width: 16px !important;
+    margin-inline-end: 0 !important;
+}
+
+.compact :global(.ant-tree-switcher-icon) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+}
+
+.compact :global(.ant-tree-node-content-wrapper) {
+    padding-inline-start: 4px !important;
+}
+
+/* ShowLine Fixes */
+.compact :global(.ant-tree-show-line .ant-tree-indent-unit::before) {
+    inset-inline-start: 6px !important;
+    inset-inline-end: auto !important;
+    border-inline-start: 1px solid #d9d9d9 !important;
+    border-inline-end: none !important;
+}
+
+.compact :global(.ant-tree-show-line .ant-tree-switcher-leaf-line::before) {
+    inset-inline-start: 6px !important;
+    inset-inline-end: auto !important;
+    border-inline-start: 1px solid #d9d9d9 !important;
+    border-inline-end: none !important;
+}
+
+.compact :global(.ant-tree-show-line .ant-tree-switcher-leaf-line::after) {
+    display: block !important;
+    width: 6px !important;
+    height: 14px !important;
+    inset-inline-start: 6px !important;
+    border-bottom: 1px solid #d9d9d9 !important;
+}
+
+.compact :global(.ant-tree-show-line .ant-tree-treenode-leaf-last .ant-tree-switcher-leaf-line::before) {
+    height: 14px !important;
+}
+
+.compact :global(.ant-tree-show-line .ant-tree-switcher-icon) {
+    margin-top: 0 !important;
+}

@@ -1,0 +1,36 @@
+.modo-input {
+    background-color: #EFF4F9 !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.modo-input:hover {
+    background-color: #E5ECF4 !important;
+    border-color: transparent !important;
+}
+
+.modo-input:focus,
+.modo-input:focus-within {
+    background-color: #FFFFFF !important;
+    border-color: #3261CE !important;
+    box-shadow: 0 0 0 2px rgba(50, 97, 206, 0.1);
+}
+
+/* Handle disabled state */
+.modo-input:disabled,
+.modo-input[disabled] {
+    cursor: not-allowed;
+}
+
+/* For TextArea */
+.modo-input:global(.ant-input-textarea) textarea {
+    background-color: inherit !important;
+}
+
+/* TextArea resize handle (native browser) */
+.modo-input textarea::-webkit-resizer {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 8L8 0M4 8L8 4' stroke='%2379879C' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 8px 8px;
+}

@@ -5,325 +5,326 @@
  * templates file into workflow-focused modules.
  */
 import type { SkillTemplate, CommandTemplate } from '../types.js';
+import { getModoBEndImplementationHint } from './shared-b-end.js';
 
 export function getApplyChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-apply-change',
-    description: 'Implement tasks from an DuowenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.',
-    instructions: `Implement tasks from an DuowenSpec change.
+    description: '执行 OpenSpec 变更中的任务。适用于开始实现、继续实现或逐项完成任务。',
+    instructions: `执行 OpenSpec 变更中的任务。
 
-**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**: 可选传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
-**Steps**
+**步骤**
 
-1. **Select the change**
+1. **选择变更**
 
-   If a name is provided, use it. Otherwise:
-   - Infer from conversation context if the user mentioned a change
-   - Auto-select if only one active change exists
-   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   如果提供了变更名，直接使用；否则：
+   - 从对话中判断用户是否已提到某个变更
+   - 若只有一个活跃变更，可自动选择
+   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
-   Always announce: "Using change: <name>" and how to override (e.g., \`/dwsp:apply <other>\`).
+   始终明确说明："当前使用变更：<name>"，并告知如何覆盖（例如：\`/dwsp:apply <other>\`）。
 
-2. **Check status to understand the schema**
+2. **检查状态并识别 schema**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to understand:
-   - \`schemaName\`: The workflow being used (e.g., "spec-driven")
-   - Which artifact contains the tasks (typically "tasks" for spec-driven, check status for others)
+   解析 JSON 以了解：
+   - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
+   - 哪个产物承载任务列表（spec-driven 通常是 "tasks"，其他 schema 以状态结果为准）
 
-3. **Get apply instructions**
+3. **获取 apply 指令**
 
    \`\`\`bash
-   duowenspec instructions apply --change "<name>" --json
+   openspec instructions apply --change "<name>" --json
    \`\`\`
 
-   This returns:
-   - Context file paths (varies by schema - could be proposal/specs/design/tasks or spec/tests/implementation/docs)
-   - Progress (total, complete, remaining)
-   - Task list with status
-   - Dynamic instruction based on current state
+   返回内容包括：
+   - 上下文文件路径（随 schema 不同，可能是 proposal/specs/design/tasks 或 spec/tests/implementation/docs）
+   - 进度信息（总数、已完成、剩余）
+   - 任务清单及状态
+   - 基于当前状态生成的动态指引
 
-   **Handle states:**
-   - If \`state: "blocked"\` (missing artifacts): show message, suggest using openspec-continue-change
-   - If \`state: "all_done"\`: congratulate, suggest archive
-   - Otherwise: proceed to implementation
+   **状态处理：**
+   - 若 \`state: "blocked"\`（缺少前置产物）：提示受阻，并建议使用 openspec-continue-change
+   - 若 \`state: "all_done"\`：提示已全部完成，并建议归档
+   - 其他情况：进入实现流程
 
-4. **Read context files**
+4. **读取上下文文件**
 
-   Read the files listed in \`contextFiles\` from the apply instructions output.
-   The files depend on the schema being used:
-   - **spec-driven**: proposal, specs, design, tasks
-   - Other schemas: follow the contextFiles from CLI output
+   读取 apply 指令输出中 \`contextFiles\` 列出的全部文件。
+   文件内容随 schema 而定：
+   - **spec-driven**: proposal、specs、design、tasks
+   - 其他 schema: 以 CLI 返回的 contextFiles 为准
 
-5. **Show current progress**
+5. **展示当前进度**
 
-   Display:
-   - Schema being used
-   - Progress: "N/M tasks complete"
-   - Remaining tasks overview
-   - Dynamic instruction from CLI
+   展示：
+   - 当前 schema
+   - 进度："N/M 个任务已完成"
+   - 剩余任务概览
+   - CLI 返回的动态指引
 
-6. **Implement tasks (loop until done or blocked)**
+6. **执行任务（循环直到完成或受阻）**
 
-   In this enterprise-first fork, \`superpowers:executing-plans\` is the default
-   implementation augmentation inside this stage. \`superpowers:test-driven-development\`
-   and \`superpowers:subagent-driven-development\` may also be used when they fit
-   the task. DuowenSpec still owns task completion, change state, and whether the
-   work is actually done.
+   在这个企业优先分支中，\`superpowers:executing-plans\` 是此阶段默认的实现增强能力；
+   \`superpowers:test-driven-development\` 和 \`superpowers:subagent-driven-development\`
+   也可在合适时使用。OpenSpec 仍是任务完成状态与阶段推进的唯一依据。
 
-   For each pending task:
-   - Show which task is being worked on
-   - Make the code changes required
-   - Keep changes minimal and focused
-   - Mark task complete in the tasks file: \`- [ ]\` → \`- [x]\`
-   - Continue to next task
+   对每个待完成任务：
+   - 说明当前正在处理的任务
+   - 执行所需代码修改
+   - 改动保持最小且聚焦
+   - 在 tasks 文件中把任务从 \`- [ ]\` 标记为 \`- [x]\`
+   - 继续下一个任务
 
-   **Pause if:**
-   - Task is unclear → ask for clarification
-   - Implementation reveals a design issue → suggest updating artifacts
-   - Error or blocker encountered → report and wait for guidance
-   - User interrupts
+   **以下情况需暂停：**
+   - 任务描述不清晰：先向用户澄清
+   - 实现暴露设计问题：建议更新相关产物
+   - 遇到错误或阻塞：先汇报，再等待指示
+   - 用户主动打断
 
-7. **On completion or pause, show status**
+7. **完成或暂停时展示状态**
 
-   Display:
-   - Tasks completed this session
-   - Overall progress: "N/M tasks complete"
-   - If all done: suggest archive
-   - If paused: explain why and wait for guidance
+   展示：
+   - 本次会话完成的任务
+   - 总体进度："N/M 个任务已完成"
+   - 若全部完成：建议归档
+   - 若暂停：说明原因并等待下一步指示
 
-**Output During Implementation**
+**执行过程输出**
 
 \`\`\`
-## Implementing: <change-name> (schema: <schema-name>)
+## 正在实现: <change-name> (schema: <schema-name>)
 
-Working on task 3/7: <task description>
-[...implementation happening...]
-✓ Task complete
+处理任务 3/7: <任务描述>
+[...正在实现...]
+✓ 任务完成
 
-Working on task 4/7: <task description>
-[...implementation happening...]
-✓ Task complete
+处理任务 4/7: <任务描述>
+[...正在实现...]
+✓ 任务完成
 \`\`\`
 
-**Output On Completion**
+**完成时输出**
 
 \`\`\`
-## Implementation Complete
+## 实现完成
 
-**Change:** <change-name>
-**Schema:** <schema-name>
-**Progress:** 7/7 tasks complete ✓
+**变更:** <change-name>
+**工作流:** <schema-name>
+**进度:** 7/7 个任务已完成 ✓
 
-### Completed This Session
-- [x] Task 1
-- [x] Task 2
+### 本次完成
+- [x] 任务 1
+- [x] 任务 2
 ...
 
-All tasks complete! Ready to archive this change.
+所有任务已完成，可以归档这个变更。
 \`\`\`
 
-**Output On Pause (Issue Encountered)**
+**暂停时输出（遇到问题）**
 
 \`\`\`
-## Implementation Paused
+## 实现已暂停
 
-**Change:** <change-name>
-**Schema:** <schema-name>
-**Progress:** 4/7 tasks complete
+**变更:** <change-name>
+**工作流:** <schema-name>
+**进度:** 4/7 个任务已完成
 
-### Issue Encountered
-<description of the issue>
+### 遇到的问题
+<问题描述>
 
-**Options:**
-1. <option 1>
-2. <option 2>
-3. Other approach
+**可选方案:**
+1. <方案 1>
+2. <方案 2>
+3. 其他方案
 
-What would you like to do?
+你希望我怎么继续？
 \`\`\`
 
-**Guardrails**
-- Keep going through tasks until done or blocked
-- Always read context files before starting (from the apply instructions output)
-- If task is ambiguous, pause and ask before implementing
-- If implementation reveals issues, pause and suggest artifact updates
-- Keep code changes minimal and scoped to each task
-- Update task checkbox immediately after completing each task
-- Pause on errors, blockers, or unclear requirements - don't guess
-- Use contextFiles from CLI output, don't assume specific file names
-- Treat \`superpowers:executing-plans\` as stage-local implementation help, not as the workflow owner
+**约束**
+- 持续推进任务，直到全部完成或遇到阻塞
+- 开始实现前必须先读取上下文文件（来自 apply 指令输出）
+- 任务有歧义时先问再做，不要猜
+- 实现中若暴露问题，应暂停并建议更新产物
+- 每项改动都要最小化，并与当前任务强相关
+- 每完成一项任务立即更新对应勾选状态
+- 遇到错误、阻塞或需求不清晰时必须暂停并汇报
+- 以 CLI 输出的 contextFiles 为准，不要假设固定文件名
+- \`superpowers:executing-plans\` 仅是阶段内辅助能力，不是工作流所有者
 
-**Fluid Workflow Integration**
+**流式工作流集成**
 
-This skill supports the "actions on a change" model:
+这个技能支持“围绕同一变更持续动作”的模式：
 
-- **Can be invoked anytime**: Before all artifacts are done (if tasks exist), after partial implementation, interleaved with other actions
-- **Allows artifact updates**: If implementation reveals design issues, suggest updating artifacts - not phase-locked, work fluidly`,
+- **可随时调用**：产物未全部完成时（只要已有任务）也可调用，并可与其他动作交错进行
+- **允许更新产物**：实现过程发现设计问题时，应建议更新产物，而不是被阶段强绑定
+
+${getModoBEndImplementationHint()}`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxApplyCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: Apply',
-    description: 'Implement tasks from an DuowenSpec change (Experimental)',
-    category: 'Workflow',
+    name: 'OPSX: Apply',
+    description: '执行 OpenSpec 变更任务（实验工作流）',
+    category: '工作流',
     tags: ['workflow', 'artifacts', 'experimental'],
-    content: `Implement tasks from an DuowenSpec change.
+    content: `执行 OpenSpec 变更中的任务。
 
-**Input**: Optionally specify a change name (e.g., \`/dwsp:apply add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**: 可选传入变更名（例如 \`/dwsp:apply add-auth\`）。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
-**Steps**
+**步骤**
 
-1. **Select the change**
+1. **选择变更**
 
-   If a name is provided, use it. Otherwise:
-   - Infer from conversation context if the user mentioned a change
-   - Auto-select if only one active change exists
-   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   如果提供了变更名，直接使用；否则：
+   - 从对话中判断用户是否已提到某个变更
+   - 若只有一个活跃变更，可自动选择
+   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
-   Always announce: "Using change: <name>" and how to override (e.g., \`/dwsp:apply <other>\`).
+   始终明确说明："当前使用变更：<name>"，并告知如何覆盖（例如：\`/dwsp:apply <other>\`）。
 
-2. **Check status to understand the schema**
+2. **检查状态并识别 schema**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to understand:
-   - \`schemaName\`: The workflow being used (e.g., "spec-driven")
-   - Which artifact contains the tasks (typically "tasks" for spec-driven, check status for others)
+   解析 JSON 以了解：
+   - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
+   - 哪个产物承载任务列表（spec-driven 通常是 "tasks"，其他 schema 以状态结果为准）
 
-3. **Get apply instructions**
+3. **获取 apply 指令**
 
    \`\`\`bash
-   duowenspec instructions apply --change "<name>" --json
+   openspec instructions apply --change "<name>" --json
    \`\`\`
 
-   This returns:
-   - Context file paths (varies by schema)
-   - Progress (total, complete, remaining)
-   - Task list with status
-   - Dynamic instruction based on current state
+   返回内容包括：
+   - 上下文文件路径（随 schema 不同）
+   - 进度信息（总数、已完成、剩余）
+   - 任务清单及状态
+   - 基于当前状态生成的动态指引
 
-   **Handle states:**
-   - If \`state: "blocked"\` (missing artifacts): show message, suggest using \`/dwsp:continue\`
-   - If \`state: "all_done"\`: congratulate, suggest archive
-   - Otherwise: proceed to implementation
+   **状态处理：**
+   - 若 \`state: "blocked"\`（缺少前置产物）：提示受阻，并建议使用 \`/dwsp:continue\`
+   - 若 \`state: "all_done"\`：提示已全部完成，并建议归档
+   - 其他情况：进入实现流程
 
-4. **Read context files**
+4. **读取上下文文件**
 
-   Read the files listed in \`contextFiles\` from the apply instructions output.
-   The files depend on the schema being used:
-   - **spec-driven**: proposal, specs, design, tasks
-   - Other schemas: follow the contextFiles from CLI output
+   读取 apply 指令输出中 \`contextFiles\` 列出的全部文件。
+   文件内容随 schema 而定：
+   - **spec-driven**: proposal、specs、design、tasks
+   - 其他 schema: 以 CLI 返回的 contextFiles 为准
 
-5. **Show current progress**
+5. **展示当前进度**
 
-   Display:
-   - Schema being used
-   - Progress: "N/M tasks complete"
-   - Remaining tasks overview
-   - Dynamic instruction from CLI
+   展示：
+   - 当前 schema
+   - 进度："N/M 个任务已完成"
+   - 剩余任务概览
+   - CLI 返回的动态指引
 
-6. **Implement tasks (loop until done or blocked)**
+6. **执行任务（循环直到完成或受阻）**
 
-   In this enterprise-first fork, \`superpowers:executing-plans\` is the default
-   implementation augmentation inside this stage. \`superpowers:test-driven-development\`
-   and \`superpowers:subagent-driven-development\` may also be used when they fit
-   the task. DuowenSpec still owns task completion, change state, and whether the
-   work is actually done.
+   在这个企业优先分支中，\`superpowers:executing-plans\` 是此阶段默认的实现增强能力；
+   \`superpowers:test-driven-development\` 和 \`superpowers:subagent-driven-development\`
+   也可在合适时使用。OpenSpec 仍是任务完成状态与阶段推进的唯一依据。
 
-   For each pending task:
-   - Show which task is being worked on
-   - Make the code changes required
-   - Keep changes minimal and focused
-   - Mark task complete in the tasks file: \`- [ ]\` → \`- [x]\`
-   - Continue to next task
+   对每个待完成任务：
+   - 说明当前正在处理的任务
+   - 执行所需代码修改
+   - 改动保持最小且聚焦
+   - 在 tasks 文件中把任务从 \`- [ ]\` 标记为 \`- [x]\`
+   - 继续下一个任务
 
-   **Pause if:**
-   - Task is unclear → ask for clarification
-   - Implementation reveals a design issue → suggest updating artifacts
-   - Error or blocker encountered → report and wait for guidance
-   - User interrupts
+   **以下情况需暂停：**
+   - 任务描述不清晰：先向用户澄清
+   - 实现暴露设计问题：建议更新相关产物
+   - 遇到错误或阻塞：先汇报，再等待指示
+   - 用户主动打断
 
-7. **On completion or pause, show status**
+7. **完成或暂停时展示状态**
 
-   Display:
-   - Tasks completed this session
-   - Overall progress: "N/M tasks complete"
-   - If all done: suggest archive
-   - If paused: explain why and wait for guidance
+   展示：
+   - 本次会话完成的任务
+   - 总体进度："N/M 个任务已完成"
+   - 若全部完成：建议归档
+   - 若暂停：说明原因并等待下一步指示
 
-**Output During Implementation**
+**执行过程输出**
 
 \`\`\`
-## Implementing: <change-name> (schema: <schema-name>)
+## 正在实现: <change-name> (schema: <schema-name>)
 
-Working on task 3/7: <task description>
-[...implementation happening...]
-✓ Task complete
+处理任务 3/7: <任务描述>
+[...正在实现...]
+✓ 任务完成
 
-Working on task 4/7: <task description>
-[...implementation happening...]
-✓ Task complete
+处理任务 4/7: <任务描述>
+[...正在实现...]
+✓ 任务完成
 \`\`\`
 
-**Output On Completion**
+**完成时输出**
 
 \`\`\`
-## Implementation Complete
+## 实现完成
 
-**Change:** <change-name>
-**Schema:** <schema-name>
-**Progress:** 7/7 tasks complete ✓
+**变更:** <change-name>
+**工作流:** <schema-name>
+**进度:** 7/7 个任务已完成 ✓
 
-### Completed This Session
-- [x] Task 1
-- [x] Task 2
+### 本次完成
+- [x] 任务 1
+- [x] 任务 2
 ...
 
-All tasks complete! You can archive this change with \`/dwsp:archive\`.
+所有任务已完成！你可以使用 \`/dwsp:archive\` 归档该变更。
 \`\`\`
 
-**Output On Pause (Issue Encountered)**
+**暂停时输出（遇到问题）**
 
 \`\`\`
-## Implementation Paused
+## 实现已暂停
 
-**Change:** <change-name>
-**Schema:** <schema-name>
-**Progress:** 4/7 tasks complete
+**变更:** <change-name>
+**工作流:** <schema-name>
+**进度:** 4/7 个任务已完成
 
-### Issue Encountered
-<description of the issue>
+### 遇到的问题
+<问题描述>
 
-**Options:**
-1. <option 1>
-2. <option 2>
-3. Other approach
+**可选方案:**
+1. <方案 1>
+2. <方案 2>
+3. 其他方案
 
-What would you like to do?
+你希望我怎么继续？
 \`\`\`
 
-**Guardrails**
-- Keep going through tasks until done or blocked
-- Always read context files before starting (from the apply instructions output)
-- If task is ambiguous, pause and ask before implementing
-- If implementation reveals issues, pause and suggest artifact updates
-- Keep code changes minimal and scoped to each task
-- Update task checkbox immediately after completing each task
-- Pause on errors, blockers, or unclear requirements - don't guess
-- Use contextFiles from CLI output, don't assume specific file names
+**约束**
+- 持续推进任务，直到全部完成或遇到阻塞
+- 开始实现前必须先读取上下文文件（来自 apply 指令输出）
+- 任务有歧义时先问再做，不要猜
+- 实现中若暴露问题，应暂停并建议更新产物
+- 每项改动都要最小化，并与当前任务强相关
+- 每完成一项任务立即更新对应勾选状态
+- 遇到错误、阻塞或需求不清晰时必须暂停并汇报
+- 以 CLI 输出的 contextFiles 为准，不要假设固定文件名
 
-**Fluid Workflow Integration**
+**流式工作流集成**
 
-This skill supports the "actions on a change" model:
+这个技能支持“围绕同一变更持续动作”的模式：
 
-- **Can be invoked anytime**: Before all artifacts are done (if tasks exist), after partial implementation, interleaved with other actions
-- **Allows artifact updates**: If implementation reveals design issues, suggest updating artifacts - not phase-locked, work fluidly`
+- **可随时调用**：产物未全部完成时（只要已有任务）也可调用，并可与其他动作交错进行
+- **允许更新产物**：实现过程发现设计问题时，应建议更新产物，而不是被阶段强绑定
+
+${getModoBEndImplementationHint()}`
   };
 }

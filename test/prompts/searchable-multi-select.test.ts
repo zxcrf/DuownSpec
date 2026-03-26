@@ -208,13 +208,13 @@ describe('searchable-multi-select keybindings', () => {
   });
 
   describe('hint text', () => {
-    it('should include Space toggle and Enter confirm in rendered output', async () => {
+    it('should include localized keyboard hints in rendered output', async () => {
       await setup();
-      expect(renderOutput).toContain('Space');
-      expect(renderOutput).toContain('toggle');
-      expect(renderOutput).toContain('Enter');
-      expect(renderOutput).toContain('confirm');
-      expect(renderOutput).not.toMatch(/Tab.*confirm/);
+      expect(renderOutput).toContain('空格');
+      expect(renderOutput).toContain('勾选/取消');
+      expect(renderOutput).toContain('回车');
+      expect(renderOutput).toContain('确认');
+      expect(renderOutput).not.toMatch(/Tab.*确认/);
     });
   });
 });

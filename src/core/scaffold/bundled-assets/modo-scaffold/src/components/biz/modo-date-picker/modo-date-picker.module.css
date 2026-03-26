@@ -1,0 +1,43 @@
+/* ModoDatePicker — MODO Design System */
+/* variant="filled" 默认视觉效果，背景色与 ModoInput 保持一致 */
+
+.modo-date-picker {
+    background-color: var(--color-fill-2) !important;
+    /* #EFF4F9 */
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.modo-date-picker:hover {
+    background-color: var(--color-fill-3) !important;
+    /* #E3E9EF */
+    border-color: transparent !important;
+}
+
+.modo-date-picker:focus,
+.modo-date-picker:focus-within {
+    background-color: #FFFFFF !important;
+    border-color: var(--color-modo-6) !important;
+    /* #3261CE */
+    box-shadow: 0 0 0 2px rgba(50, 97, 206, 0.1);
+}
+
+/* Disabled */
+.modo-date-picker:disabled,
+.modo-date-picker[disabled],
+.modo-date-picker:global(.ant-picker-disabled) {
+    background-color: var(--color-fill-1) !important;
+    border-color: transparent !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 内部 input 继承背景（filled 模式下 ant 会添加自己的背景，需重置） */
+.modo-date-picker :global(.ant-picker-input) input {
+    background-color: transparent !important;
+}
+
+.modo-date-picker :global(.ant-picker-suffix),
+.modo-date-picker :global(.ant-picker-separator) {
+    color: var(--color-text-3);
+}

@@ -43,56 +43,56 @@ interface WorkflowPromptMeta {
 
 const WORKFLOW_PROMPT_META: Record<string, WorkflowPromptMeta> = {
   propose: {
-    name: 'Propose change',
-    description: 'Create proposal, design, and tasks from a request',
+    name: '提出变更',
+    description: '根据需求生成 proposal、design 和 tasks',
   },
   explore: {
-    name: 'Explore ideas',
-    description: 'Investigate a problem before implementation',
+    name: '探索方案',
+    description: '在动手前先梳理问题和方向',
   },
   new: {
-    name: 'New change',
-    description: 'Create a new change scaffold quickly',
+    name: '新建变更',
+    description: '快速创建新的 change 骨架',
   },
   continue: {
-    name: 'Continue change',
-    description: 'Resume work on an existing change',
+    name: '继续变更',
+    description: '继续处理已有 change',
   },
   apply: {
-    name: 'Apply tasks',
-    description: 'Implement tasks from the current change',
+    name: '执行任务',
+    description: '落实当前 change 中的任务',
   },
   review: {
-    name: 'Review change',
-    description: 'Review the completed implementation before verification',
+    name: '审查变更',
+    description: '在验证前检查已完成的实现',
   },
   ff: {
-    name: 'Fast-forward',
-    description: 'Run a faster implementation workflow',
+    name: '快速推进',
+    description: '执行更快的实现流程',
   },
   sync: {
-    name: 'Sync specs',
-    description: 'Sync change artifacts with specs',
+    name: '同步 specs',
+    description: '同步 change 制品与 specs',
   },
   archive: {
-    name: 'Archive change',
-    description: 'Finalize and archive a completed change',
+    name: '归档变更',
+    description: '完成并归档一个 change',
   },
   'bulk-archive': {
-    name: 'Bulk archive',
-    description: 'Archive multiple completed changes together',
+    name: '批量归档',
+    description: '一次归档多个已完成的 change',
   },
   verify: {
-    name: 'Verify change',
-    description: 'Run verification checks against a change',
+    name: '验证变更',
+    description: '对 change 执行验证检查',
   },
   document: {
-    name: 'Document change',
-    description: 'Confirm release documentation is complete',
+    name: '补齐文档',
+    description: '确认发布文档已经完整',
   },
   onboard: {
-    name: 'Onboard',
-    description: 'Guided onboarding flow for DuowenSpec',
+    name: '上手引导',
+    description: 'OpenSpec 引导式上手流程',
   },
 };
 
@@ -206,7 +206,7 @@ function maybeWarnConfigDrift(
   if (!hasProjectConfigDrift(projectDir, state.workflows, state.delivery)) {
     return;
   }
-  console.log(colorize('Warning: Global config is not applied to this project. Run `duowenspec update` to sync.'));
+  console.log(colorize('警告：当前项目尚未应用全局配置。请运行 `dwsp update` 进行同步。'));
 }
 
 /**
@@ -217,12 +217,12 @@ function maybeWarnConfigDrift(
 export function registerConfigCommand(program: Command): void {
   const configCmd = program
     .command('config')
-    .description('View and modify global DuowenSpec configuration')
-    .option('--scope <scope>', 'Config scope (only "global" supported currently)')
+    .description('查看和修改全局 OpenSpec 配置')
+    .option('--scope <scope>', '配置作用域（当前仅支持 "global"）')
     .hook('preAction', (thisCommand) => {
       const opts = thisCommand.opts();
       if (opts.scope && opts.scope !== 'global') {
-        console.error('Error: Project-local config is not yet implemented');
+        console.error('错误：暂未支持项目级配置');
         process.exit(1);
       }
     });
@@ -230,7 +230,7 @@ export function registerConfigCommand(program: Command): void {
   // config path
   configCmd
     .command('path')
-    .description('Show config file location')
+    .description('显示配置文件位置')
     .action(() => {
       console.log(getGlobalConfigPath());
     });
@@ -238,8 +238,8 @@ export function registerConfigCommand(program: Command): void {
   // config list
   configCmd
     .command('list')
-    .description('Show all current settings')
-    .option('--json', 'Output as JSON')
+    .description('显示当前全部配置')
+    .option('--json', '以 JSON 输出')
     .action((options: { json?: boolean }) => {
       const config = getGlobalConfig();
 
@@ -260,17 +260,17 @@ export function registerConfigCommand(program: Command): void {
         console.log(formatValueYaml(config));
 
         // Annotate profile settings
-        const profileSource = rawConfig.profile !== undefined ? '(explicit)' : '(default)';
-        const deliverySource = rawConfig.delivery !== undefined ? '(explicit)' : '(default)';
-        console.log(`\nProfile settings:`);
+        const profileSource = rawConfig.profile !== undefined ? '(显式设置)' : '(默认值)';
+        const deliverySource = rawConfig.delivery !== undefined ? '(显式设置)' : '(默认值)';
+        console.log(`\nProfile 设置：`);
         console.log(`  profile: ${config.profile} ${profileSource}`);
         console.log(`  delivery: ${config.delivery} ${deliverySource}`);
         if (config.profile === 'core') {
-          console.log(`  workflows: ${CORE_WORKFLOWS.join(', ')} (from core profile)`);
+          console.log(`  workflows: ${CORE_WORKFLOWS.join(', ')} (来自 core profile)`);
         } else if (config.workflows && config.workflows.length > 0) {
-          console.log(`  workflows: ${config.workflows.join(', ')} (explicit)`);
+          console.log(`  workflows: ${config.workflows.join(', ')} (显式设置)`);
         } else {
-          console.log(`  workflows: (none)`);
+          console.log(`  workflows: （无）`);
         }
       }
     });
@@ -278,7 +278,7 @@ export function registerConfigCommand(program: Command): void {
   // config get
   configCmd
     .command('get <key>')
-    .description('Get a specific value (raw, scriptable)')
+    .description('读取指定配置值（原始输出，便于脚本使用）')
     .action((key: string) => {
       const config = getGlobalConfig();
       const value = getNestedValue(config as Record<string, unknown>, key);
@@ -298,17 +298,17 @@ export function registerConfigCommand(program: Command): void {
   // config set
   configCmd
     .command('set <key> <value>')
-    .description('Set a value (auto-coerce types)')
-    .option('--string', 'Force value to be stored as string')
-    .option('--allow-unknown', 'Allow setting unknown keys')
+    .description('设置配置值（自动识别类型）')
+    .option('--string', '强制按字符串保存')
+    .option('--allow-unknown', '允许设置未知键')
     .action((key: string, value: string, options: { string?: boolean; allowUnknown?: boolean }) => {
       const allowUnknown = Boolean(options.allowUnknown);
       const keyValidation = validateConfigKeyPath(key);
       if (!keyValidation.valid && !allowUnknown) {
         const reason = keyValidation.reason ? ` ${keyValidation.reason}.` : '';
-        console.error(`Error: Invalid configuration key "${key}".${reason}`);
-        console.error('Use "duowenspec config list" to see available keys.');
-        console.error('Pass --allow-unknown to bypass this check.');
+        console.error(`错误：无效配置键 "${key}"。${reason}`);
+        console.error('可运行 "dwsp config list" 查看可用键。');
+        console.error('如需跳过检查，可传入 --allow-unknown。');
         process.exitCode = 1;
         return;
       }
@@ -323,7 +323,7 @@ export function registerConfigCommand(program: Command): void {
       // Validate the new config
       const validation = validateConfig(newConfig);
       if (!validation.success) {
-        console.error(`Error: Invalid configuration - ${validation.error}`);
+        console.error(`错误：配置无效 - ${validation.error}`);
         process.exitCode = 1;
         return;
       }
@@ -334,35 +334,35 @@ export function registerConfigCommand(program: Command): void {
 
       const displayValue =
         typeof coercedValue === 'string' ? `"${coercedValue}"` : String(coercedValue);
-      console.log(`Set ${key} = ${displayValue}`);
+      console.log(`已设置 ${key} = ${displayValue}`);
     });
 
   // config unset
   configCmd
     .command('unset <key>')
-    .description('Remove a key (revert to default)')
+    .description('移除配置键（恢复默认值）')
     .action((key: string) => {
       const config = getGlobalConfig() as Record<string, unknown>;
       const existed = deleteNestedValue(config, key);
 
       if (existed) {
         saveGlobalConfig(config as GlobalConfig);
-        console.log(`Unset ${key} (reverted to default)`);
+        console.log(`已移除 ${key}（已恢复默认值）`);
       } else {
-        console.log(`Key "${key}" was not set`);
+        console.log(`键 "${key}" 当前未设置`);
       }
     });
 
   // config reset
   configCmd
     .command('reset')
-    .description('Reset configuration to defaults')
-    .option('--all', 'Reset all configuration (required)')
-    .option('-y, --yes', 'Skip confirmation prompts')
+    .description('将配置重置为默认值')
+    .option('--all', '重置全部配置（必填）')
+    .option('-y, --yes', '跳过确认提示')
     .action(async (options: { all?: boolean; yes?: boolean }) => {
       if (!options.all) {
-        console.error('Error: --all flag is required for reset');
-        console.error('Usage: duowenspec config reset --all [-y]');
+        console.error('错误：执行 reset 时必须传入 --all');
+        console.error('用法：dwsp config reset --all [-y]');
         process.exitCode = 1;
         return;
       }
@@ -372,12 +372,12 @@ export function registerConfigCommand(program: Command): void {
         let confirmed: boolean;
         try {
           confirmed = await confirm({
-            message: 'Reset all configuration to defaults?',
+            message: '确认将全部配置重置为默认值？',
             default: false,
           });
         } catch (error) {
           if (isPromptCancellationError(error)) {
-            console.log('Reset cancelled.');
+            console.log('已取消重置。');
             process.exitCode = 130;
             return;
           }
@@ -385,26 +385,26 @@ export function registerConfigCommand(program: Command): void {
         }
 
         if (!confirmed) {
-          console.log('Reset cancelled.');
+          console.log('已取消重置。');
           return;
         }
       }
 
       saveGlobalConfig({ ...DEFAULT_CONFIG });
-      console.log('Configuration reset to defaults');
+      console.log('配置已重置为默认值');
     });
 
   // config edit
   configCmd
     .command('edit')
-    .description('Open config in $EDITOR')
+    .description('用 $EDITOR 打开配置文件')
     .action(async () => {
       const editor = process.env.EDITOR || process.env.VISUAL;
 
       if (!editor) {
-        console.error('Error: No editor configured');
-        console.error('Set the EDITOR or VISUAL environment variable to your preferred editor');
-        console.error('Example: export EDITOR=vim');
+        console.error('错误：未配置编辑器');
+        console.error('请设置 EDITOR 或 VISUAL 环境变量');
+        console.error('例如：export EDITOR=vim');
         process.exitCode = 1;
         return;
       }
@@ -441,17 +441,17 @@ export function registerConfigCommand(program: Command): void {
         const validation = validateConfig(parsedConfig);
 
         if (!validation.success) {
-          console.error(`Error: Invalid configuration - ${validation.error}`);
+          console.error(`错误：配置无效 - ${validation.error}`);
           process.exitCode = 1;
         }
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-          console.error(`Error: Config file not found at ${configPath}`);
+          console.error(`错误：未找到配置文件：${configPath}`);
         } else if (error instanceof SyntaxError) {
-          console.error(`Error: Invalid JSON in ${configPath}`);
+          console.error(`错误：${configPath} 中的 JSON 不合法`);
           console.error(error.message);
         } else {
-          console.error(`Error: Unable to validate configuration - ${error instanceof Error ? error.message : String(error)}`);
+          console.error(`错误：无法校验配置 - ${error instanceof Error ? error.message : String(error)}`);
         }
         process.exitCode = 1;
       }
@@ -460,7 +460,7 @@ export function registerConfigCommand(program: Command): void {
   // config profile [preset]
   configCmd
     .command('profile [preset]')
-    .description('Configure workflow profile (interactive picker or preset shortcut)')
+    .description('配置工作流 profile（可交互选择，也可用预设快捷方式）')
     .action(async (preset?: string) => {
       // Backward-compatible preset shortcut.
       if (preset === 'core') {
@@ -469,19 +469,19 @@ export function registerConfigCommand(program: Command): void {
         config.workflows = [...CORE_WORKFLOWS];
         // Preserve delivery setting
         saveGlobalConfig(config);
-        console.log('Config updated. Run `duowenspec update` in your projects to apply.');
+        console.log('配置已更新。请在项目中运行 `dwsp update` 使其生效。');
         return;
       }
 
       if (preset) {
-        console.error(`Error: Unknown profile preset "${preset}".`);
+        console.error(`错误：未知 profile 预设 "${preset}"。`);
         process.exitCode = 1;
         return;
       }
 
       // Non-interactive check
       if (!process.stdout.isTTY) {
-        console.error('Interactive mode required. Use `duowenspec config profile` interactively or update config via file/flags.');
+        console.error('该命令需要交互模式。请直接运行 `dwsp config profile`，或改用文件/参数更新配置。');
         process.exitCode = 1;
         return;
       }
@@ -494,41 +494,41 @@ export function registerConfigCommand(program: Command): void {
         const config = getGlobalConfig();
         const currentState = resolveCurrentProfileState(config);
 
-        console.log(chalk.bold('\nCurrent profile settings'));
+        console.log(chalk.bold('\n当前 profile 设置'));
         console.log(`  Delivery: ${currentState.delivery}`);
         console.log(`  Workflows: ${formatWorkflowSummary(currentState.workflows, currentState.profile)}`);
-        console.log(chalk.dim('  Delivery = where workflows are installed (skills, commands, or both)'));
-        console.log(chalk.dim('  Workflows = which actions are available (propose, explore, apply, etc.)'));
+        console.log(chalk.dim('  Delivery = 工作流安装到哪里（skills、commands 或两者都有）'));
+        console.log(chalk.dim('  Workflows = 可用动作有哪些（propose、explore、apply 等）'));
         console.log();
 
         const action = await select<ProfileAction>({
-          message: 'What do you want to configure?',
+          message: '你想调整哪一部分？',
           choices: [
             {
               value: 'both',
-              name: 'Delivery and workflows',
-              description: 'Update install mode and available actions together',
+              name: '同时调整 Delivery 和 Workflows',
+              description: '一起更新安装方式和可用动作',
             },
             {
               value: 'delivery',
-              name: 'Delivery only',
-              description: 'Change where workflows are installed',
+              name: '只调整 Delivery',
+              description: '修改工作流安装位置',
             },
             {
               value: 'workflows',
-              name: 'Workflows only',
-              description: 'Change which workflow actions are available',
+              name: '只调整 Workflows',
+              description: '修改可用的工作流动作',
             },
             {
               value: 'keep',
-              name: 'Keep current settings (exit)',
-              description: 'Leave configuration unchanged and exit',
+              name: '保持不变并退出',
+              description: '不修改配置，直接退出',
             },
           ],
         });
 
         if (action === 'keep') {
-          console.log('No config changes.');
+          console.log('配置未发生变化。');
           maybeWarnConfigDrift(process.cwd(), currentState, chalk.yellow);
           return;
         }
@@ -543,28 +543,28 @@ export function registerConfigCommand(program: Command): void {
           const deliveryChoices: { value: Delivery; name: string; description: string }[] = [
             {
               value: 'both' as Delivery,
-              name: 'Both (skills + commands)',
-              description: 'Install workflows as both skills and slash commands',
+              name: '同时安装 skills 和 commands',
+              description: '把工作流同时装为 skills 和 slash commands',
             },
             {
               value: 'skills' as Delivery,
-              name: 'Skills only',
-              description: 'Install workflows only as skills',
+              name: '只安装 skills',
+              description: '只把工作流装为 skills',
             },
             {
               value: 'commands' as Delivery,
-              name: 'Commands only',
-              description: 'Install workflows only as slash commands',
+              name: '只安装 commands',
+              description: '只把工作流装为 slash commands',
             },
           ];
           for (const choice of deliveryChoices) {
             if (choice.value === currentState.delivery) {
-              choice.name += ' [current]';
+              choice.name += ' [当前]';
             }
           }
 
           nextState.delivery = await select<Delivery>({
-            message: 'Delivery mode (how workflows are installed):',
+            message: 'Delivery 模式（工作流如何安装）：',
             choices: deliveryChoices,
             default: currentState.delivery,
           });
@@ -586,8 +586,8 @@ export function registerConfigCommand(program: Command): void {
           };
 
           const selectedWorkflows = await checkbox<string>({
-            message: 'Select workflows to make available:',
-            instructions: 'Space to toggle, Enter to confirm',
+            message: '请选择要启用的 workflows：',
+            instructions: '空格切换，回车确认',
             pageSize: ALL_WORKFLOWS.length,
             theme: {
               icon: {
@@ -603,12 +603,12 @@ export function registerConfigCommand(program: Command): void {
 
         const diff = diffProfileState(currentState, nextState);
         if (!diff.hasChanges) {
-          console.log('No config changes.');
+          console.log('配置未发生变化。');
           maybeWarnConfigDrift(process.cwd(), nextState, chalk.yellow);
           return;
         }
 
-        console.log(chalk.bold('\nConfig changes:'));
+        console.log(chalk.bold('\n配置变更：'));
         for (const line of diff.lines) {
           console.log(`  ${line}`);
         }
@@ -619,31 +619,31 @@ export function registerConfigCommand(program: Command): void {
         config.workflows = nextState.workflows;
         saveGlobalConfig(config);
 
-        // Check if inside an DuowenSpec project
+        // Check if inside an OpenSpec project
         const projectDir = process.cwd();
         const openspecDir = path.join(projectDir, OPENSPEC_DIR_NAME);
         if (fs.existsSync(openspecDir)) {
           const applyNow = await confirm({
-            message: 'Apply changes to this project now?',
+            message: '现在就把改动应用到当前项目吗？',
             default: true,
           });
 
           if (applyNow) {
             try {
-              execSync('npx duowenspec update', { stdio: 'inherit', cwd: projectDir });
-              console.log('Run `duowenspec update` in your other projects to apply.');
+              execSync('npx dwsp update', { stdio: 'inherit', cwd: projectDir });
+              console.log('其他项目请自行运行 `dwsp update` 使配置生效。');
             } catch {
-              console.error('`duowenspec update` failed. Please run it manually to apply the profile changes.');
+              console.error('`dwsp update` 执行失败，请手动运行以应用 profile 改动。');
               process.exitCode = 1;
             }
             return;
           }
         }
 
-        console.log('Config updated. Run `duowenspec update` in your projects to apply.');
+        console.log('配置已更新。请在项目中运行 `dwsp update` 使其生效。');
       } catch (error) {
         if (isPromptCancellationError(error)) {
-          console.log('Config profile cancelled.');
+          console.log('已取消 profile 配置。');
           process.exitCode = 130;
           return;
         }

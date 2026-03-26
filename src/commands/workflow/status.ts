@@ -46,16 +46,16 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       if (available.length === 0) {
         spinner.stop();
         if (options.json) {
-          console.log(JSON.stringify({ changes: [], message: 'No active changes.' }, null, 2));
+          console.log(JSON.stringify({ changes: [], message: '当前没有进行中的 change。' }, null, 2));
           return;
         }
-        console.log('No active changes. Create one with: duowenspec new change <name>');
+        console.log('当前没有进行中的 change。可使用：openspec new change <name>');
         return;
       }
       // Changes exist but --change not provided
       spinner.stop();
       throw new Error(
-        `Missing required option --change. Available changes:\n  ${available.join('\n  ')}`
+        `缺少必填参数 --change。可用 changes：\n  ${available.join('\n  ')}`
       );
     }
 
@@ -88,9 +88,9 @@ export function printStatusText(status: ChangeStatus): void {
   const doneCount = status.artifacts.filter((a) => a.status === 'done').length;
   const total = status.artifacts.length;
 
-  console.log(`Change: ${status.changeName}`);
-  console.log(`Schema: ${status.schemaName}`);
-  console.log(`Progress: ${doneCount}/${total} artifacts complete`);
+  console.log(`Change：${status.changeName}`);
+  console.log(`Schema：${status.schemaName}`);
+  console.log(`进度：${doneCount}/${total} 个 artifact 已完成`);
   console.log();
 
   for (const artifact of status.artifacts) {
@@ -99,7 +99,7 @@ export function printStatusText(status: ChangeStatus): void {
     let line = `${indicator} ${artifact.id}`;
 
     if (artifact.status === 'blocked' && artifact.missingDeps && artifact.missingDeps.length > 0) {
-      line += color(` (blocked by: ${artifact.missingDeps.join(', ')})`);
+      line += color(`（受阻于：${artifact.missingDeps.join(', ')}）`);
     }
 
     console.log(line);
@@ -107,6 +107,6 @@ export function printStatusText(status: ChangeStatus): void {
 
   if (status.isComplete) {
     console.log();
-    console.log(chalk.green('All artifacts complete!'));
+    console.log(chalk.green('所有 artifacts 已完成！'));
   }
 }

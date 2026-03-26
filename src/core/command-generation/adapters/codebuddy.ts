@@ -23,7 +23,7 @@ export const codebuddyAdapter: ToolCommandAdapter = {
     return `---
 name: ${content.name}
 description: "${content.description}"
-argument-hint: "[command arguments]"
+argument-hint: "[命令参数]"
 ---
 
 ${content.body}

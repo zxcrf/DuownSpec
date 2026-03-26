@@ -1,7 +1,7 @@
 /**
  * Update Command
  *
- * Refreshes DuowenSpec skills and commands for configured tools.
+ * Refreshes OpenSpec skills and commands for configured tools.
  * Supports profile-aware updates, delivery changes, migration, and smart update detection.
  */
 
@@ -21,6 +21,8 @@ import {
   getToolVersionStatus,
   getSkillTemplates,
   getEnterpriseCapabilitySkillTemplates,
+  getModoSupportSkillTemplates,
+  MODO_SUPPORT_SKILL_DIRS,
   getCommandContents,
   generateSkillContent,
   getToolsWithSkillsDir,
@@ -48,11 +50,14 @@ import {
   scanInstalledWorkflows as scanInstalledWorkflowsShared,
   migrateIfNeeded as migrateIfNeededShared,
 } from './migration.js';
+import { CLI_COMMAND } from './app-info.js';
 import { assertEnterpriseCapabilitiesAvailable } from './enterprise-capability-preflight.js';
+import { syncProjectInstructionFiles, type SyncProjectInstructionFilesResult } from './project-instruction-files.js';
 import {
   getAllEnterpriseCapabilitySkillDirNames,
   getBundledEnterpriseCapabilitySkillDirNames,
 } from './enterprise-capability-skills.js';
+import { isModoScaffoldProject, readModoAgentsTemplate } from './scaffold/index.js';
 
 const require = createRequire(import.meta.url);
 const { version: OPENSPEC_VERSION } = require('../../package.json');
@@ -89,13 +94,13 @@ export class UpdateCommand {
     const resolvedProjectPath = path.resolve(projectPath);
     const openspecPath = path.join(resolvedProjectPath, OPENSPEC_DIR_NAME);
 
-    // 1. Check duowenspec directory exists
+    // 1. Check openspec directory exists
     if (!await FileSystemUtils.directoryExists(openspecPath)) {
-      throw new Error(`No DuowenSpec directory found. Run 'duowenspec init' first.`);
+      throw new Error("未找到 OpenSpec 目录。请先运行 'dwsp init'。");
     }
 
     // 2. Perform one-time migration if needed before any legacy upgrade generation.
-    // Use detected tool directories to preserve existing dwsp skills/commands.
+    // Use detected tool directories to preserve existing opsx skills/commands.
     const detectedTools = getAvailableTools(resolvedProjectPath);
     migrateIfNeededShared(resolvedProjectPath, detectedTools);
 
@@ -109,6 +114,7 @@ export class UpdateCommand {
     );
     const shouldGenerateSkills = delivery !== 'commands';
     const shouldGenerateCommands = delivery !== 'skills';
+    const modoProject = await isModoScaffoldProject(resolvedProjectPath);
 
     // 4. Detect and handle legacy artifacts + upgrade legacy tools using effective config
     const newlyConfiguredTools = await this.handleLegacyCleanup(
@@ -121,8 +127,10 @@ export class UpdateCommand {
     const configuredTools = getConfiguredToolsForProfileSync(resolvedProjectPath);
 
     if (configuredTools.length === 0 && newlyConfiguredTools.length === 0) {
-      console.log(chalk.yellow('No configured tools found.'));
-      console.log(chalk.dim('Run "duowenspec init" to set up tools.'));
+      const scaffoldInstructionStatus = await this.ensureScaffoldInstructionFiles(resolvedProjectPath);
+      this.displayScaffoldInstructionMessage(scaffoldInstructionStatus);
+      console.log(chalk.yellow('未找到已配置的工具。'));
+      console.log(chalk.dim('请运行 "dwsp init" 完成工具初始化。'));
       return;
     }
 
@@ -151,12 +159,15 @@ export class UpdateCommand {
     const toolsToUpdateSet = new Set<string>([
       ...toolsNeedingVersionUpdate,
       ...toolsNeedingConfigSync,
+      ...(modoProject ? this.getToolsMissingModoSupportSkills(resolvedProjectPath, configuredTools) : []),
     ]);
     const toolsUpToDate = toolStatuses.filter((s) => !toolsToUpdateSet.has(s.toolId));
 
     if (!this.force && toolsToUpdateSet.size === 0) {
       // All tools are up to date
       this.displayUpToDateMessage(toolStatuses);
+      const scaffoldInstructionStatus = await this.ensureScaffoldInstructionFiles(resolvedProjectPath);
+      this.displayScaffoldInstructionMessage(scaffoldInstructionStatus);
 
       // Still check for new tool directories and extra workflows
       this.detectNewTools(resolvedProjectPath, configuredTools);
@@ -164,12 +175,11 @@ export class UpdateCommand {
       return;
     }
 
-    const toolsToUpdate = this.force ? configuredTools : [...toolsToUpdateSet];
     assertEnterpriseCapabilitiesAvailable(desiredWorkflows);
 
     // 8. Display update plan
     if (this.force) {
-      console.log(`Force updating ${configuredTools.length} tool(s): ${configuredTools.join(', ')}`);
+      console.log(`强制更新 ${configuredTools.length} 个工具：${configuredTools.join(', ')}`);
     } else {
       this.displayUpdatePlan([...toolsToUpdateSet], statusByTool, toolsUpToDate);
     }
@@ -178,10 +188,13 @@ export class UpdateCommand {
     // 9. Determine what to generate based on delivery
     const workflowSkillTemplates = shouldGenerateSkills ? getSkillTemplates(desiredWorkflows) : [];
     const capabilitySkillTemplates = getEnterpriseCapabilitySkillTemplates(desiredWorkflows);
-    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates];
+    const modoSupportSkillTemplates = modoProject ? getModoSupportSkillTemplates() : [];
+    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates, ...modoSupportSkillTemplates];
+    const shouldGenerateAnySkills = skillTemplates.length > 0;
     const commandContents = shouldGenerateCommands ? getCommandContents(desiredWorkflows) : [];
 
     // 10. Update tools (all if force, otherwise only those needing update)
+    const toolsToUpdate = this.force ? configuredTools : [...toolsToUpdateSet];
     const updatedTools: string[] = [];
     const failedTools: Array<{ name: string; error: string }> = [];
     let removedCommandCount = 0;
@@ -193,13 +206,13 @@ export class UpdateCommand {
       const tool = AI_TOOLS.find((t) => t.value === toolId);
       if (!tool?.skillsDir) continue;
 
-      const spinner = ora(`Updating ${tool.name}...`).start();
+      const spinner = ora(`正在更新 ${tool.name}...`).start();
 
       try {
         const skillsDir = path.join(resolvedProjectPath, tool.skillsDir, 'skills');
 
-        // Generate workflow skills when enabled, plus bundled enterprise capability skills
-        if (skillTemplates.length > 0) {
+        // Generate workflow skills, enterprise capability skills, and any MODO support skills.
+        if (shouldGenerateAnySkills) {
           for (const { template, dirName } of skillTemplates) {
             const skillDir = path.join(skillsDir, dirName);
             const skillFile = path.join(skillDir, 'SKILL.md');
@@ -210,17 +223,16 @@ export class UpdateCommand {
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
 
-        }
-
-        if (shouldGenerateSkills) {
-          removedDeselectedSkillCount += await this.removeUnselectedSkillDirs(skillsDir, desiredWorkflows);
+          if (shouldGenerateSkills) {
+            removedDeselectedSkillCount += await this.removeUnselectedSkillDirs(skillsDir, desiredWorkflows);
+          }
         }
 
         removedDeselectedSkillCount += await this.removeUnselectedCapabilitySkillDirs(skillsDir, desiredWorkflows);
 
-        // Delete skill directories if delivery is commands-only
+        // Commands-only mode still keeps MODO support skills, but removes workflow skills.
         if (!shouldGenerateSkills) {
-          removedSkillCount += await this.removeSkillDirs(skillsDir);
+          removedSkillCount += await this.removeSkillDirs(skillsDir, modoProject);
         }
 
         // Generate commands if delivery includes commands
@@ -247,10 +259,10 @@ export class UpdateCommand {
           removedCommandCount += await this.removeCommandFiles(resolvedProjectPath, toolId);
         }
 
-        spinner.succeed(`Updated ${tool.name}`);
+        spinner.succeed(`${tool.name} 已更新`);
         updatedTools.push(tool.name);
       } catch (error) {
-        spinner.fail(`Failed to update ${tool.name}`);
+        spinner.fail(`${tool.name} 更新失败`);
         failedTools.push({
           name: tool.name,
           error: error instanceof Error ? error.message : String(error)
@@ -258,38 +270,41 @@ export class UpdateCommand {
       }
     }
 
+    const scaffoldInstructionStatus = await this.ensureScaffoldInstructionFiles(resolvedProjectPath);
+
     // 11. Summary
     console.log();
     if (updatedTools.length > 0) {
-      console.log(chalk.green(`✓ Updated: ${updatedTools.join(', ')} (v${OPENSPEC_VERSION})`));
+      console.log(chalk.green(`✓ 已更新：${updatedTools.join(', ')}（v${OPENSPEC_VERSION}）`));
     }
     if (failedTools.length > 0) {
-      console.log(chalk.red(`✗ Failed: ${failedTools.map(f => `${f.name} (${f.error})`).join(', ')}`));
+      console.log(chalk.red(`✗ 失败：${failedTools.map(f => `${f.name}（${f.error}）`).join(', ')}`));
     }
     if (removedCommandCount > 0) {
-      console.log(chalk.dim(`Removed: ${removedCommandCount} command files (delivery: skills)`));
+      console.log(chalk.dim(`已移除 ${removedCommandCount} 个 prompt 文件（当前仅保留 skills）`));
     }
     if (removedSkillCount > 0) {
-      console.log(chalk.dim(`Removed: ${removedSkillCount} skill directories (delivery: commands)`));
+      console.log(chalk.dim(`已移除 ${removedSkillCount} 个 skill 目录（当前仅保留 prompts）`));
     }
     if (removedDeselectedCommandCount > 0) {
-      console.log(chalk.dim(`Removed: ${removedDeselectedCommandCount} command files (deselected workflows)`));
+      console.log(chalk.dim(`已移除 ${removedDeselectedCommandCount} 个未选中的 prompt 文件`));
     }
     if (removedDeselectedSkillCount > 0) {
-      console.log(chalk.dim(`Removed: ${removedDeselectedSkillCount} skill directories (deselected workflows)`));
+      console.log(chalk.dim(`已移除 ${removedDeselectedSkillCount} 个未选中的 skill 目录`));
     }
+    this.displayScaffoldInstructionMessage(scaffoldInstructionStatus);
 
     // 12. Show onboarding message for newly configured tools from legacy upgrade
     if (newlyConfiguredTools.length > 0) {
       console.log();
-      console.log(chalk.bold('Getting started:'));
-      console.log('  /dwsp:propose   Start an enterprise proposal');
-      console.log('  /dwsp:apply     Implement approved tasks');
-      console.log('  /dwsp:review    Run the required review checkpoint');
-      console.log('  /dwsp:verify    Run the release-readiness verification gate');
-      console.log('  /dwsp:document  Complete the required documentation checkpoint');
+      console.log(chalk.bold('开始使用：'));
+      console.log(`  /${CLI_COMMAND}:propose   发起一份提案`);
+      console.log(`  /${CLI_COMMAND}:apply     执行已确认的任务`);
+      console.log(`  /${CLI_COMMAND}:review    进入审查检查点`);
+      console.log(`  /${CLI_COMMAND}:verify    进入发布前验证`);
+      console.log(`  /${CLI_COMMAND}:document  完成交付文档检查`);
       console.log();
-      console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
+      console.log(`了解更多：${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
     }
 
     const configuredAndNewTools = [...new Set([...configuredTools, ...newlyConfiguredTools])];
@@ -303,11 +318,11 @@ export class UpdateCommand {
     // 15. List affected tools
     if (updatedTools.length > 0) {
       const toolDisplayNames = updatedTools;
-      console.log(chalk.dim(`Tools: ${toolDisplayNames.join(', ')}`));
+      console.log(chalk.dim(`涉及工具：${toolDisplayNames.join(', ')}`));
     }
 
     console.log();
-    console.log(chalk.dim('Restart your IDE for changes to take effect.'));
+    console.log(chalk.dim('请重启你的 IDE，让变更生效。'));
   }
 
   /**
@@ -315,10 +330,10 @@ export class UpdateCommand {
    */
   private displayUpToDateMessage(toolStatuses: ToolVersionStatus[]): void {
     const toolNames = toolStatuses.map((s) => s.toolId);
-    console.log(chalk.green(`✓ All ${toolStatuses.length} tool(s) up to date (v${OPENSPEC_VERSION})`));
-    console.log(chalk.dim(`  Tools: ${toolNames.join(', ')}`));
+    console.log(chalk.green(`✓ ${toolStatuses.length} 个工具都已是最新状态（v${OPENSPEC_VERSION}）`));
+    console.log(chalk.dim(`  工具：${toolNames.join(', ')}`));
     console.log();
-    console.log(chalk.dim('Use --force to refresh files anyway.'));
+    console.log(chalk.dim('如需强制重写文件，可使用 --force。'));
   }
 
   /**
@@ -335,14 +350,14 @@ export class UpdateCommand {
         const fromVersion = status.generatedByVersion ?? 'unknown';
         return `${status.toolId} (${fromVersion} → ${OPENSPEC_VERSION})`;
       }
-      return `${toolId} (config sync)`;
+      return `${toolId}（配置同步）`;
     });
 
-    console.log(`Updating ${toolsToUpdate.length} tool(s): ${updates.join(', ')}`);
+    console.log(`准备更新 ${toolsToUpdate.length} 个工具：${updates.join(', ')}`);
 
     if (upToDate.length > 0) {
       const upToDateNames = upToDate.map((s) => s.toolId);
-      console.log(chalk.dim(`Already up to date: ${upToDateNames.join(', ')}`));
+      console.log(chalk.dim(`已是最新：${upToDateNames.join(', ')}`));
     }
   }
 
@@ -358,12 +373,11 @@ export class UpdateCommand {
     if (newTools.length > 0) {
       const newToolNames = newTools.map((tool) => tool.name);
       const isSingleTool = newToolNames.length === 1;
-      const toolNoun = isSingleTool ? 'tool' : 'tools';
-      const pronoun = isSingleTool ? 'it' : 'them';
+      const pronoun = isSingleTool ? '它' : '它们';
       console.log();
       console.log(
         chalk.yellow(
-          `Detected new ${toolNoun}: ${newToolNames.join(', ')}. Run 'duowenspec init' to add ${pronoun}.`
+          `检测到新的工具目录：${newToolNames.join(', ')}。请运行 'dwsp init' 把${pronoun}加入配置。`
         )
       );
     }
@@ -382,7 +396,7 @@ export class UpdateCommand {
     const extraWorkflows = installedWorkflows.filter((w) => !profileSet.has(w));
 
     if (extraWorkflows.length > 0) {
-      console.log(chalk.dim(`Note: ${extraWorkflows.length} extra workflows not in profile (use \`duowenspec config profile\` to manage)`));
+      console.log(chalk.dim(`提示：发现 ${extraWorkflows.length} 个不在当前 profile 中的额外工作流（可用 \`dwsp config profile\` 管理）`));
     }
   }
 
@@ -390,7 +404,7 @@ export class UpdateCommand {
    * Removes skill directories for workflows when delivery changed to commands-only.
    * Returns the number of directories removed.
    */
-  private async removeSkillDirs(skillsDir: string): Promise<number> {
+  private async removeSkillDirs(skillsDir: string, _modoProject: boolean): Promise<number> {
     let removed = 0;
 
     for (const workflow of ALL_WORKFLOWS) {
@@ -409,6 +423,26 @@ export class UpdateCommand {
     }
 
     return removed;
+  }
+
+  private getToolsMissingModoSupportSkills(projectPath: string, configuredTools: string[]): string[] {
+    const missing: string[] = [];
+
+    for (const toolId of configuredTools) {
+      const tool = AI_TOOLS.find((candidate) => candidate.value === toolId);
+      if (!tool?.skillsDir) continue;
+
+      const toolSkillsDir = path.join(projectPath, tool.skillsDir, 'skills');
+      const isMissingAnySupportSkill = MODO_SUPPORT_SKILL_DIRS.some((dirName) =>
+        !fs.existsSync(path.join(toolSkillsDir, dirName, 'SKILL.md'))
+      );
+
+      if (isMissingAnySupportSkill) {
+        missing.push(toolId);
+      }
+    }
+
+    return missing;
   }
 
   /**
@@ -529,7 +563,7 @@ export class UpdateCommand {
   }
 
   /**
-   * Detect and handle legacy DuowenSpec artifacts.
+   * Detect and handle legacy OpenSpec artifacts.
    * Unlike init, update warns but continues if legacy files found in non-interactive mode.
    * Returns array of tool IDs that were newly configured during legacy upgrade.
    */
@@ -562,7 +596,7 @@ export class UpdateCommand {
     if (!canPrompt) {
       // Non-interactive mode without --force: warn and continue
       // (Unlike init, update doesn't abort - user may just want to update skills)
-      console.log(chalk.yellow('⚠ Run with --force to auto-cleanup legacy files, or run interactively.'));
+      console.log(chalk.yellow('⚠ 检测到旧版遗留文件。可使用 --force 自动清理，或切换到交互模式处理。'));
       console.log();
       return [];
     }
@@ -570,7 +604,7 @@ export class UpdateCommand {
     // Interactive mode: prompt for confirmation
     const { confirm } = await import('@inquirer/prompts');
     const shouldCleanup = await confirm({
-      message: 'Upgrade and clean up legacy files?',
+      message: '是否升级并清理旧版遗留文件？',
       default: true,
     });
 
@@ -579,7 +613,7 @@ export class UpdateCommand {
       // Then upgrade legacy tools to new skills
       return this.upgradeLegacyTools(projectPath, detection, canPrompt, desiredWorkflows, delivery);
     } else {
-      console.log(chalk.dim('Skipping legacy cleanup. Continuing with skill update...'));
+      console.log(chalk.dim('已跳过旧版清理，继续刷新 skill 和 prompt。'));
       console.log();
       return [];
     }
@@ -589,11 +623,11 @@ export class UpdateCommand {
    * Perform cleanup of legacy artifacts.
    */
   private async performLegacyCleanup(projectPath: string, detection: LegacyDetectionResult): Promise<void> {
-    const spinner = ora('Cleaning up legacy files...').start();
+    const spinner = ora('正在清理旧版遗留文件...').start();
 
     const result = await cleanupLegacyArtifacts(projectPath, detection);
 
-    spinner.succeed('Legacy files cleaned up');
+    spinner.succeed('旧版遗留文件已清理');
 
     const summary = formatCleanupSummary(result);
     if (summary) {
@@ -615,6 +649,7 @@ export class UpdateCommand {
     desiredWorkflows: readonly (typeof ALL_WORKFLOWS)[number][],
     delivery: Delivery
   ): Promise<string[]> {
+    const modoProject = await isModoScaffoldProject(projectPath);
     // Get tools that had legacy artifacts
     const legacyTools = getToolsFromLegacyArtifacts(detection);
 
@@ -642,7 +677,7 @@ export class UpdateCommand {
     }
 
     // Show what tools were detected from legacy artifacts
-    console.log(chalk.bold('Tools detected from legacy artifacts:'));
+    console.log(chalk.bold('从旧版遗留文件中识别到以下工具：'));
     for (const toolId of validUnconfiguredTools) {
       const tool = AI_TOOLS.find((t) => t.value === toolId);
       console.log(`  • ${tool?.name || toolId}`);
@@ -654,7 +689,7 @@ export class UpdateCommand {
     if (this.force || !canPrompt) {
       // Non-interactive with --force: auto-select detected tools
       selectedTools = validUnconfiguredTools;
-      console.log(`Setting up skills for: ${selectedTools.join(', ')}`);
+      console.log(`将为以下工具补建技能文件：${selectedTools.join(', ')}`);
     } else {
       // Interactive mode: prompt for tool selection with detected tools pre-selected
       const { searchableMultiSelect } = await import('../prompts/searchable-multi-select.js');
@@ -670,20 +705,18 @@ export class UpdateCommand {
       });
 
       selectedTools = await searchableMultiSelect({
-        message: 'Select tools to set up with the new skill system:',
+        message: '请选择要迁移到新技能体系的工具：',
         pageSize: 15,
         choices: sortedChoices,
         validate: (_selected: string[]) => true, // Allow empty selection (user can skip)
       });
 
       if (selectedTools.length === 0) {
-        console.log(chalk.dim('Skipping tool setup.'));
+        console.log(chalk.dim('已跳过工具迁移。'));
         console.log();
         return [];
       }
     }
-
-    assertEnterpriseCapabilitiesAvailable(desiredWorkflows);
 
     // Create skills/commands for selected tools using effective profile+delivery.
     const newlyConfigured: string[] = [];
@@ -691,20 +724,22 @@ export class UpdateCommand {
     const shouldGenerateCommands = delivery !== 'skills';
     const workflowSkillTemplates = shouldGenerateSkills ? getSkillTemplates(desiredWorkflows) : [];
     const capabilitySkillTemplates = getEnterpriseCapabilitySkillTemplates(desiredWorkflows);
-    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates];
+    const modoSupportSkillTemplates = modoProject ? getModoSupportSkillTemplates() : [];
+    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates, ...modoSupportSkillTemplates];
+    const shouldGenerateAnySkills = skillTemplates.length > 0;
     const commandContents = shouldGenerateCommands ? getCommandContents(desiredWorkflows) : [];
 
     for (const toolId of selectedTools) {
       const tool = AI_TOOLS.find((t) => t.value === toolId);
       if (!tool?.skillsDir) continue;
 
-      const spinner = ora(`Setting up ${tool.name}...`).start();
+      const spinner = ora(`正在配置 ${tool.name}...`).start();
 
       try {
         const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
 
-        // Create skill files when delivery includes skills, plus bundled capability skills
-        if (skillTemplates.length > 0) {
+        // Create workflow skills plus any MODO support skills.
+        if (shouldGenerateAnySkills) {
           for (const { template, dirName } of skillTemplates) {
             const skillDir = path.join(skillsDir, dirName);
             const skillFile = path.join(skillDir, 'SKILL.md');
@@ -715,8 +750,6 @@ export class UpdateCommand {
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
         }
-
-        await this.removeUnselectedCapabilitySkillDirs(skillsDir, desiredWorkflows);
 
         // Create commands when delivery includes commands
         if (shouldGenerateCommands) {
@@ -731,10 +764,10 @@ export class UpdateCommand {
           }
         }
 
-        spinner.succeed(`Setup complete for ${tool.name}`);
+        spinner.succeed(`${tool.name} 配置完成`);
         newlyConfigured.push(toolId);
       } catch (error) {
-        spinner.fail(`Failed to set up ${tool.name}`);
+        spinner.fail(`${tool.name} 配置失败`);
         console.log(chalk.red(`  ${error instanceof Error ? error.message : String(error)}`));
       }
     }
@@ -744,5 +777,24 @@ export class UpdateCommand {
     }
 
     return newlyConfigured;
+  }
+
+  private async ensureScaffoldInstructionFiles(
+    projectPath: string
+  ): Promise<SyncProjectInstructionFilesResult | null> {
+    if (!await isModoScaffoldProject(projectPath)) {
+      return null;
+    }
+
+    const agentsContent = await readModoAgentsTemplate();
+    return syncProjectInstructionFiles(projectPath, agentsContent);
+  }
+
+  private displayScaffoldInstructionMessage(
+    status: SyncProjectInstructionFilesResult | null
+  ): void {
+    if (status?.status === 'created') {
+      console.log('脚手架说明文件：已创建 AGENTS.md，并建立 CLAUDE.md 软链');
+    }
   }
 }

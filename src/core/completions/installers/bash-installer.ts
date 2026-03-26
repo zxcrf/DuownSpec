@@ -260,10 +260,10 @@ export class BashInstaller {
       const warnings: string[] = [];
       if (!hasBashCompletion) {
         warnings.push(
-          '⚠️  Warning: bash-completion package not detected',
+          '⚠️  警告：未检测到 bash-completion 包',
           '',
-          'The completion script requires bash-completion to function.',
-          'Install it with:',
+          '补全脚本依赖 bash-completion 才能正常工作。',
+          '可用以下命令安装：',
           '  brew install bash-completion@2',
           '',
           'Then add to your ~/.bash_profile:',

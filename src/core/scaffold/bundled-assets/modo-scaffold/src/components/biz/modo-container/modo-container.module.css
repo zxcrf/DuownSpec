@@ -1,0 +1,20 @@
+.container-wrapper {
+    background: var(--color-gray-2, #EFF4F9);
+    padding: 10px 12px;
+    box-sizing: border-box;
+    display: flex;
+}
+
+.container-content {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    background: var(--color-white, #FFFFFF);
+    border-radius: 6px;
+    overflow: hidden;
+    /* 一级阴影 (Low) */
+    box-shadow: 0 2px 5px #242E431A;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}

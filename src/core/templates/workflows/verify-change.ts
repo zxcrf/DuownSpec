@@ -9,332 +9,332 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 export function getVerifyChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-verify-change',
-    description: 'Verify implementation matches change artifacts. Use when the user wants to validate that implementation is complete, correct, and coherent before archiving.',
-    instructions: `Verify that an implementation matches the change artifacts (specs, tasks, design).
+    description: '验证实现是否与变更产物一致。适用于归档前确认完整性、正确性与一致性。',
+    instructions: `验证实现是否与变更产物（specs、tasks、design）一致。
 
-**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**: 可选传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
-**Steps**
+**步骤**
 
-1. **If no change name provided, prompt for selection**
+1. **若未提供变更名，提示用户选择**
 
-   Run \`duowenspec list --json\` to get available changes. Use the **AskUserQuestion tool** to let the user select.
+   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
-   Show changes that have implementation tasks (tasks artifact exists).
-   Include the schema used for each change if available.
-   Mark changes with incomplete tasks as "(In Progress)".
+   展示包含实现任务的变更（存在 tasks 产物）。
+   若可用，展示每个变更使用的 schema。
+   对任务未完成的变更标记为“进行中”。
 
-   **IMPORTANT**: Do NOT guess or auto-select a change. Always let the user choose.
+   **重要**: 不要猜测或自动选择变更，始终让用户自己决定。
 
-2. **Check status to understand the schema**
+2. **检查状态并识别 schema**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to understand:
-   - \`schemaName\`: The workflow being used (e.g., "spec-driven")
-   - Which artifacts exist for this change
+   解析 JSON 以了解：
+   - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
+   - 当前变更已存在哪些产物
 
-3. **Get the change directory and load artifacts**
+3. **获取变更目录并加载产物**
 
    \`\`\`bash
-   duowenspec instructions apply --change "<name>" --json
+   openspec instructions apply --change "<name>" --json
    \`\`\`
 
-   This returns the change directory and context files. Read all available artifacts from \`contextFiles\`.
+   该命令会返回变更目录与上下文文件。读取 \`contextFiles\` 中全部可用产物。
 
-4. **Initialize verification report structure**
+4. **初始化验证报告结构**
 
-   Create a report structure with three dimensions:
-   - **Completeness**: Track tasks and spec coverage
-   - **Correctness**: Track requirement implementation and scenario coverage
-   - **Coherence**: Track design adherence and pattern consistency
+   使用三个维度组织报告：
+   - **完整性（Completeness）**: 任务完成度与需求覆盖
+   - **正确性（Correctness）**: 需求实现映射与场景覆盖
+   - **一致性（Coherence）**: 设计遵循度与代码模式一致性
 
-   Each dimension can have CRITICAL, WARNING, or SUGGESTION issues.
+   每个维度可包含 CRITICAL、WARNING、SUGGESTION 三类问题。
 
-5. **Verify Completeness**
+5. **验证完整性**
 
-   **Task Completion**:
-   - If tasks.md exists in contextFiles, read it
-   - Parse checkboxes: \`- [ ]\` (incomplete) vs \`- [x]\` (complete)
-   - Count complete vs total tasks
-   - If incomplete tasks exist:
-     - Add CRITICAL issue for each incomplete task
-     - Recommendation: "Complete task: <description>" or "Mark as done if already implemented"
+   **任务完成度检查**:
+   - 若 \`contextFiles\` 中存在 tasks.md，先读取
+   - 解析复选框：\`- [ ]\`（未完成）与 \`- [x]\`（已完成）
+   - 统计已完成/总任务数
+   - 若存在未完成任务：
+     - 对每项未完成任务添加 CRITICAL 问题
+     - 建议写法："完成任务：<description>" 或 "若已实现请更新为完成状态"
 
-   **Spec Coverage**:
-   - If delta specs exist in \`openspec/changes/<name>/specs/\`:
-     - Extract all requirements (marked with "### Requirement:")
-     - For each requirement:
-       - Search codebase for keywords related to the requirement
-       - Assess if implementation likely exists
-     - If requirements appear unimplemented:
-       - Add CRITICAL issue: "Requirement not found: <requirement name>"
-       - Recommendation: "Implement requirement X: <description>"
+   **需求覆盖检查**:
+   - 若 \`openspec/changes/<name>/specs/\` 中存在增量 specs：
+     - 提取全部 requirement（标记为 "### Requirement:"）
+     - 对每条 requirement：
+       - 在代码库中搜索相关关键词
+       - 判断实现是否大概率存在
+     - 若判断某些需求未实现：
+       - 添加 CRITICAL："未发现需求实现：<需求名称>"
+       - 给出建议："实现需求 X：<description>"
 
-6. **Verify Correctness**
+6. **验证正确性**
 
-   **Requirement Implementation Mapping**:
-   - For each requirement from delta specs:
-     - Search codebase for implementation evidence
-     - If found, note file paths and line ranges
-     - Assess if implementation matches requirement intent
-     - If divergence detected:
-       - Add WARNING: "Implementation may diverge from spec: <details>"
-       - Recommendation: "Review <file>:<lines> against requirement X"
+   **需求实现映射**:
+   - 对增量 specs 中每条 requirement：
+     - 搜索代码中的实现证据
+     - 若找到，记录文件路径与行号范围
+     - 判断实现是否符合需求意图
+     - 若发现偏差：
+       - 添加 WARNING："实现可能偏离需求：<details>"
+       - 给出建议："复核 <file>:<lines> 与需求 X 的对应关系"
 
-   **Scenario Coverage**:
-   - For each scenario in delta specs (marked with "#### Scenario:"):
-     - Check if conditions are handled in code
-     - Check if tests exist covering the scenario
-     - If scenario appears uncovered:
-       - Add WARNING: "Scenario not covered: <scenario name>"
-       - Recommendation: "Add test or implementation for scenario: <description>"
+   **场景覆盖检查**:
+   - 对增量 specs 中每个场景（标记为 "#### Scenario:"）：
+     - 检查代码是否处理该条件
+     - 检查是否有测试覆盖该场景
+     - 若场景可能未覆盖：
+       - 添加 WARNING："场景未覆盖：<场景名称>"
+       - 给出建议："补充测试或实现：<description>"
 
-7. **Verify Coherence**
+7. **验证一致性**
 
-   **Design Adherence**:
-   - If design.md exists in contextFiles:
-     - Extract key decisions (look for sections like "Decision:", "Approach:", "Architecture:")
-     - Verify implementation follows those decisions
-     - If contradiction detected:
-       - Add WARNING: "Design decision not followed: <decision>"
-       - Recommendation: "Update implementation or revise design.md to match reality"
-   - If no design.md: Skip design adherence check, note "No design.md to verify against"
+   **设计遵循检查**:
+   - 若 \`contextFiles\` 中存在 design.md：
+     - 提取关键决策（可关注 "Decision:"、"Approach:"、"Architecture:" 等段落）
+     - 验证实现是否遵循这些决策
+     - 若发现冲突：
+       - 添加 WARNING："未遵循设计决策：<decision>"
+       - 给出建议："更新实现，或同步修订 design.md 以反映真实情况"
+   - 若不存在 design.md：跳过该项，并注明"无 design.md 可供核对"
 
-   **Code Pattern Consistency**:
-   - Review new code for consistency with project patterns
-   - Check file naming, directory structure, coding style
-   - If significant deviations found:
-     - Add SUGGESTION: "Code pattern deviation: <details>"
-     - Recommendation: "Consider following project pattern: <example>"
+   **代码模式一致性检查**:
+   - 审查新增代码是否符合项目既有模式
+   - 检查命名、目录结构与编码风格
+   - 若偏差明显：
+     - 添加 SUGGESTION："代码模式偏差：<details>"
+     - 给出建议："参考项目既有模式：<example>"
 
-8. **Generate Verification Report**
+8. **生成验证报告**
 
-   **Summary Scorecard**:
+   **摘要计分卡**:
    \`\`\`
-   ## Verification Report: <change-name>
+   ## 验证报告: <change-name>
 
-   ### Summary
-   | Dimension    | Status           |
-   |--------------|------------------|
-   | Completeness | X/Y tasks, N reqs|
-   | Correctness  | M/N reqs covered |
-   | Coherence    | Followed/Issues  |
+   ### 总览
+   | 维度 | 状态 |
+   |------|------|
+   | 完整性 | X/Y 个任务，N 个需求 |
+   | 正确性 | M/N 个需求已覆盖 |
+   | 一致性 | 一致/存在问题 |
    \`\`\`
 
-   **Issues by Priority**:
+   **按优先级列出问题**:
 
-   1. **CRITICAL** (Must fix before archive):
-      - Incomplete tasks
-      - Missing requirement implementations
-      - Each with specific, actionable recommendation
+   1. **CRITICAL**（归档前必须修复）:
+      - 未完成任务
+      - 缺失需求实现
+      - 每项都要有具体且可执行的建议
 
-   2. **WARNING** (Should fix):
-      - Spec/design divergences
-      - Missing scenario coverage
-      - Each with specific recommendation
+   2. **WARNING**（建议修复）:
+      - 规格/设计偏差
+      - 场景覆盖不足
+      - 每项都要有明确建议
 
-   3. **SUGGESTION** (Nice to fix):
-      - Pattern inconsistencies
-      - Minor improvements
-      - Each with specific recommendation
+   3. **SUGGESTION**（可优化项）:
+      - 模式一致性问题
+      - 次要改进项
+      - 每项都要有明确建议
 
-   **Final Assessment**:
-   - If CRITICAL issues: "X critical issue(s) found. Fix before archiving."
-   - If only warnings: "No critical issues. Y warning(s) to consider. Ready for archive (with noted improvements)."
-   - If all clear: "All checks passed. Ready for archive."
+   **最终判断**:
+   - 若存在 CRITICAL："发现 X 个关键问题，修复后再归档。"
+   - 若仅有 WARNING："无关键问题，但有 Y 个警告，建议处理后归档。"
+   - 若全部通过："所有检查通过，可归档。"
 
-**Verification Heuristics**
+**验证启发式**
 
-- **Completeness**: Focus on objective checklist items (checkboxes, requirements list)
-- **Correctness**: Use keyword search, file path analysis, reasonable inference - don't require perfect certainty
-- **Coherence**: Look for glaring inconsistencies, don't nitpick style
-- **False Positives**: When uncertain, prefer SUGGESTION over WARNING, WARNING over CRITICAL
-- **Actionability**: Every issue must have a specific recommendation with file/line references where applicable
+- **完整性**: 重点看可客观核验项（任务勾选、需求列表）
+- **正确性**: 使用关键词搜索、文件路径分析和合理推断，不追求绝对确定
+- **一致性**: 关注明显冲突，不做吹毛求疵式风格审查
+- **误报控制**: 不确定时优先降级为 SUGGESTION，再到 WARNING，最后才是 CRITICAL
+- **可执行性**: 每个问题都要给出可落地建议；可定位时附文件/行号
 
-**Graceful Degradation**
+**降级处理策略**
 
-- If only tasks.md exists: verify task completion only, skip spec/design checks
-- If tasks + specs exist: verify completeness and correctness, skip design
-- If full artifacts: verify all three dimensions
-- Always note which checks were skipped and why
+- 仅有 tasks.md：只验证任务完成度，跳过 spec/design 检查
+- 有 tasks + specs：验证完整性与正确性，跳过设计遵循
+- 产物齐全：执行三维度完整验证
+- 对每个被跳过的检查都要写明原因
 
-**Output Format**
+**输出格式**
 
-Use clear markdown with:
-- Table for summary scorecard
-- Grouped lists for issues (CRITICAL/WARNING/SUGGESTION)
-- Code references in format: \`file.ts:123\`
-- Specific, actionable recommendations
-- No vague suggestions like "consider reviewing"`,
+请使用清晰的 Markdown：
+- 使用表格呈现摘要计分卡
+- 按 CRITICAL/WARNING/SUGGESTION 分组列出问题
+- 代码引用格式：\`file.ts:123\`
+- 建议必须具体、可执行
+- 避免“建议再看看”这类空泛表述`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxVerifyCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: Verify',
-    description: 'Verify implementation matches change artifacts before archiving',
-    category: 'Workflow',
+    name: 'OPSX: Verify',
+    description: '归档前验证实现与变更产物一致',
+    category: '工作流',
     tags: ['workflow', 'verify', 'experimental'],
-    content: `Verify that an implementation matches the change artifacts (specs, tasks, design).
+    content: `验证实现是否与变更产物（specs、tasks、design）一致。
 
-**Input**: Optionally specify a change name after \`/dwsp:verify\` (e.g., \`/dwsp:verify add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**: 可选在 \`/dwsp:verify\` 后传入变更名（例如 \`/dwsp:verify add-auth\`）。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
-**Steps**
+**步骤**
 
-1. **If no change name provided, prompt for selection**
+1. **若未提供变更名，提示用户选择**
 
-   Run \`duowenspec list --json\` to get available changes. Use the **AskUserQuestion tool** to let the user select.
+   运行 \`openspec list --json\` 获取可用变更，并使用 **AskUserQuestion tool** 让用户选择。
 
-   Show changes that have implementation tasks (tasks artifact exists).
-   Include the schema used for each change if available.
-   Mark changes with incomplete tasks as "(In Progress)".
+   展示包含实现任务的变更（存在 tasks 产物）。
+   若可用，展示每个变更使用的 schema。
+   对任务未完成的变更标记为“进行中”。
 
-   **IMPORTANT**: Do NOT guess or auto-select a change. Always let the user choose.
+   **重要**: 不要猜测或自动选择变更，始终让用户自己决定。
 
-2. **Check status to understand the schema**
+2. **检查状态并识别 schema**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to understand:
-   - \`schemaName\`: The workflow being used (e.g., "spec-driven")
-   - Which artifacts exist for this change
+   解析 JSON 以了解：
+   - \`schemaName\`: 当前使用的工作流（例如 "spec-driven"）
+   - 当前变更已存在哪些产物
 
-3. **Get the change directory and load artifacts**
+3. **获取变更目录并加载产物**
 
    \`\`\`bash
-   duowenspec instructions apply --change "<name>" --json
+   openspec instructions apply --change "<name>" --json
    \`\`\`
 
-   This returns the change directory and context files. Read all available artifacts from \`contextFiles\`.
+   该命令会返回变更目录与上下文文件。读取 \`contextFiles\` 中全部可用产物。
 
-4. **Initialize verification report structure**
+4. **初始化验证报告结构**
 
-   Create a report structure with three dimensions:
-   - **Completeness**: Track tasks and spec coverage
-   - **Correctness**: Track requirement implementation and scenario coverage
-   - **Coherence**: Track design adherence and pattern consistency
+   使用三个维度组织报告：
+   - **完整性（Completeness）**: 任务完成度与需求覆盖
+   - **正确性（Correctness）**: 需求实现映射与场景覆盖
+   - **一致性（Coherence）**: 设计遵循度与代码模式一致性
 
-   Each dimension can have CRITICAL, WARNING, or SUGGESTION issues.
+   每个维度可包含 CRITICAL、WARNING、SUGGESTION 三类问题。
 
-5. **Verify Completeness**
+5. **验证完整性**
 
-   **Task Completion**:
-   - If tasks.md exists in contextFiles, read it
-   - Parse checkboxes: \`- [ ]\` (incomplete) vs \`- [x]\` (complete)
-   - Count complete vs total tasks
-   - If incomplete tasks exist:
-     - Add CRITICAL issue for each incomplete task
-     - Recommendation: "Complete task: <description>" or "Mark as done if already implemented"
+   **任务完成度检查**:
+   - 若 \`contextFiles\` 中存在 tasks.md，先读取
+   - 解析复选框：\`- [ ]\`（未完成）与 \`- [x]\`（已完成）
+   - 统计已完成/总任务数
+   - 若存在未完成任务：
+     - 对每项未完成任务添加 CRITICAL 问题
+     - 建议写法："完成任务：<description>" 或 "若已实现请更新为完成状态"
 
-   **Spec Coverage**:
-   - If delta specs exist in \`openspec/changes/<name>/specs/\`:
-     - Extract all requirements (marked with "### Requirement:")
-     - For each requirement:
-       - Search codebase for keywords related to the requirement
-       - Assess if implementation likely exists
-     - If requirements appear unimplemented:
-       - Add CRITICAL issue: "Requirement not found: <requirement name>"
-       - Recommendation: "Implement requirement X: <description>"
+   **需求覆盖检查**:
+   - 若 \`openspec/changes/<name>/specs/\` 中存在增量 specs：
+     - 提取全部 requirement（标记为 "### Requirement:"）
+     - 对每条 requirement：
+       - 在代码库中搜索相关关键词
+       - 判断实现是否大概率存在
+     - 若判断某些需求未实现：
+       - 添加 CRITICAL："未发现需求实现：<需求名称>"
+       - 给出建议："实现需求 X：<description>"
 
-6. **Verify Correctness**
+6. **验证正确性**
 
-   **Requirement Implementation Mapping**:
-   - For each requirement from delta specs:
-     - Search codebase for implementation evidence
-     - If found, note file paths and line ranges
-     - Assess if implementation matches requirement intent
-     - If divergence detected:
-       - Add WARNING: "Implementation may diverge from spec: <details>"
-       - Recommendation: "Review <file>:<lines> against requirement X"
+   **需求实现映射**:
+   - 对增量 specs 中每条 requirement：
+     - 搜索代码中的实现证据
+     - 若找到，记录文件路径与行号范围
+     - 判断实现是否符合需求意图
+     - 若发现偏差：
+       - 添加 WARNING："实现可能偏离需求：<details>"
+       - 给出建议："复核 <file>:<lines> 与需求 X 的对应关系"
 
-   **Scenario Coverage**:
-   - For each scenario in delta specs (marked with "#### Scenario:"):
-     - Check if conditions are handled in code
-     - Check if tests exist covering the scenario
-     - If scenario appears uncovered:
-       - Add WARNING: "Scenario not covered: <scenario name>"
-       - Recommendation: "Add test or implementation for scenario: <description>"
+   **场景覆盖检查**:
+   - 对增量 specs 中每个场景（标记为 "#### Scenario:"）：
+     - 检查代码是否处理该条件
+     - 检查是否有测试覆盖该场景
+     - 若场景可能未覆盖：
+       - 添加 WARNING："场景未覆盖：<场景名称>"
+       - 给出建议："补充测试或实现：<description>"
 
-7. **Verify Coherence**
+7. **验证一致性**
 
-   **Design Adherence**:
-   - If design.md exists in contextFiles:
-     - Extract key decisions (look for sections like "Decision:", "Approach:", "Architecture:")
-     - Verify implementation follows those decisions
-     - If contradiction detected:
-       - Add WARNING: "Design decision not followed: <decision>"
-       - Recommendation: "Update implementation or revise design.md to match reality"
-   - If no design.md: Skip design adherence check, note "No design.md to verify against"
+   **设计遵循检查**:
+   - 若 \`contextFiles\` 中存在 design.md：
+     - 提取关键决策（可关注 "Decision:"、"Approach:"、"Architecture:" 等段落）
+     - 验证实现是否遵循这些决策
+     - 若发现冲突：
+       - 添加 WARNING："未遵循设计决策：<decision>"
+       - 给出建议："更新实现，或同步修订 design.md 以反映真实情况"
+   - 若不存在 design.md：跳过该项，并注明"无 design.md 可供核对"
 
-   **Code Pattern Consistency**:
-   - Review new code for consistency with project patterns
-   - Check file naming, directory structure, coding style
-   - If significant deviations found:
-     - Add SUGGESTION: "Code pattern deviation: <details>"
-     - Recommendation: "Consider following project pattern: <example>"
+   **代码模式一致性检查**:
+   - 审查新增代码是否符合项目既有模式
+   - 检查命名、目录结构与编码风格
+   - 若偏差明显：
+     - 添加 SUGGESTION："代码模式偏差：<details>"
+     - 给出建议："参考项目既有模式：<example>"
 
-8. **Generate Verification Report**
+8. **生成验证报告**
 
-   **Summary Scorecard**:
+   **摘要计分卡**:
    \`\`\`
-   ## Verification Report: <change-name>
+   ## 验证报告: <change-name>
 
-   ### Summary
-   | Dimension    | Status           |
-   |--------------|------------------|
-   | Completeness | X/Y tasks, N reqs|
-   | Correctness  | M/N reqs covered |
-   | Coherence    | Followed/Issues  |
+   ### 总览
+   | 维度 | 状态 |
+   |------|------|
+   | 完整性 | X/Y 个任务，N 个需求 |
+   | 正确性 | M/N 个需求已覆盖 |
+   | 一致性 | 一致/存在问题 |
    \`\`\`
 
-   **Issues by Priority**:
+   **按优先级列出问题**:
 
-   1. **CRITICAL** (Must fix before archive):
-      - Incomplete tasks
-      - Missing requirement implementations
-      - Each with specific, actionable recommendation
+   1. **CRITICAL**（归档前必须修复）:
+      - 未完成任务
+      - 缺失需求实现
+      - 每项都要有具体且可执行的建议
 
-   2. **WARNING** (Should fix):
-      - Spec/design divergences
-      - Missing scenario coverage
-      - Each with specific recommendation
+   2. **WARNING**（建议修复）:
+      - 规格/设计偏差
+      - 场景覆盖不足
+      - 每项都要有明确建议
 
-   3. **SUGGESTION** (Nice to fix):
-      - Pattern inconsistencies
-      - Minor improvements
-      - Each with specific recommendation
+   3. **SUGGESTION**（可优化项）:
+      - 模式一致性问题
+      - 次要改进项
+      - 每项都要有明确建议
 
-   **Final Assessment**:
-   - If CRITICAL issues: "X critical issue(s) found. Fix before archiving."
-   - If only warnings: "No critical issues. Y warning(s) to consider. Ready for archive (with noted improvements)."
-   - If all clear: "All checks passed. Ready for archive."
+   **最终判断**:
+   - 若存在 CRITICAL："发现 X 个关键问题，修复后再归档。"
+   - 若仅有 WARNING："无关键问题，但有 Y 个警告，建议处理后归档。"
+   - 若全部通过："所有检查通过，可归档。"
 
-**Verification Heuristics**
+**验证启发式**
 
-- **Completeness**: Focus on objective checklist items (checkboxes, requirements list)
-- **Correctness**: Use keyword search, file path analysis, reasonable inference - don't require perfect certainty
-- **Coherence**: Look for glaring inconsistencies, don't nitpick style
-- **False Positives**: When uncertain, prefer SUGGESTION over WARNING, WARNING over CRITICAL
-- **Actionability**: Every issue must have a specific recommendation with file/line references where applicable
+- **完整性**: 重点看可客观核验项（任务勾选、需求列表）
+- **正确性**: 使用关键词搜索、文件路径分析和合理推断，不追求绝对确定
+- **一致性**: 关注明显冲突，不做吹毛求疵式风格审查
+- **误报控制**: 不确定时优先降级为 SUGGESTION，再到 WARNING，最后才是 CRITICAL
+- **可执行性**: 每个问题都要给出可落地建议；可定位时附文件/行号
 
-**Graceful Degradation**
+**降级处理策略**
 
-- If only tasks.md exists: verify task completion only, skip spec/design checks
-- If tasks + specs exist: verify completeness and correctness, skip design
-- If full artifacts: verify all three dimensions
-- Always note which checks were skipped and why
+- 仅有 tasks.md：只验证任务完成度，跳过 spec/design 检查
+- 有 tasks + specs：验证完整性与正确性，跳过设计遵循
+- 产物齐全：执行三维度完整验证
+- 对每个被跳过的检查都要写明原因
 
-**Output Format**
+**输出格式**
 
-Use clear markdown with:
-- Table for summary scorecard
-- Grouped lists for issues (CRITICAL/WARNING/SUGGESTION)
-- Code references in format: \`file.ts:123\`
-- Specific, actionable recommendations
-- No vague suggestions like "consider reviewing"`
+请使用清晰的 Markdown：
+- 使用表格呈现摘要计分卡
+- 按 CRITICAL/WARNING/SUGGESTION 分组列出问题
+- 代码引用格式：\`file.ts:123\`
+- 建议必须具体、可执行
+- 避免“建议再看看”这类空泛表述`
   };
 }

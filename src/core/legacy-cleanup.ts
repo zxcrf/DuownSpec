@@ -1,5 +1,5 @@
 /**
- * Legacy cleanup module for detecting and removing DuowenSpec artifacts
+ * Legacy cleanup module for detecting and removing OpenSpec artifacts
  * from previous init versions during the migration to the skill-based workflow.
  */
 
@@ -11,7 +11,7 @@ import { OPENSPEC_MARKERS } from './config.js';
 
 /**
  * Legacy config file names from the old ToolRegistry.
- * These were config files created at project root with DuowenSpec markers.
+ * These were config files created at project root with OpenSpec markers.
  */
 export const LEGACY_CONFIG_FILES = [
   'CLAUDE.md',
@@ -70,7 +70,7 @@ export interface LegacySlashCommandPattern {
  * Result of legacy artifact detection
  */
 export interface LegacyDetectionResult {
-  /** Config files with DuowenSpec markers detected */
+  /** Config files with OpenSpec markers detected */
   configFiles: string[];
   /** Config files to update (remove markers only, never delete) */
   configFilesToUpdate: string[];
@@ -82,14 +82,14 @@ export interface LegacyDetectionResult {
   hasOpenspecAgents: boolean;
   /** Whether openspec/project.md exists (preserved, migration hint only) */
   hasProjectMd: boolean;
-  /** Whether root AGENTS.md has DuowenSpec markers */
+  /** Whether root AGENTS.md has OpenSpec markers */
   hasRootAgentsWithMarkers: boolean;
   /** Whether any legacy artifacts were found */
   hasLegacyArtifacts: boolean;
 }
 
 /**
- * Detects all legacy DuowenSpec artifacts in a project.
+ * Detects all legacy OpenSpec artifacts in a project.
  *
  * @param projectPath - The root path of the project
  * @returns Detection result with all found legacy artifacts
@@ -137,7 +137,7 @@ export async function detectLegacyArtifacts(
 }
 
 /**
- * Detects legacy config files with DuowenSpec markers.
+ * Detects legacy config files with OpenSpec markers.
  * All config files with markers are candidates for update (marker removal only).
  * Config files are NEVER deleted - they belong to the user's project root.
  *
@@ -257,7 +257,7 @@ async function findLegacySlashCommandFiles(
 }
 
 /**
- * Detects legacy DuowenSpec structure files (AGENTS.md and project.md).
+ * Detects legacy OpenSpec structure files (AGENTS.md and project.md).
  *
  * @param projectPath - The root path of the project
  * @returns Object with detection results for structure files
@@ -281,7 +281,7 @@ export async function detectLegacyStructureFiles(
   const projectMdPath = FileSystemUtils.joinPath(projectPath, 'openspec', 'project.md');
   hasProjectMd = await FileSystemUtils.fileExists(projectMdPath);
 
-  // Check for root AGENTS.md with DuowenSpec markers
+  // Check for root AGENTS.md with OpenSpec markers
   const rootAgentsPath = FileSystemUtils.joinPath(projectPath, 'AGENTS.md');
   if (await FileSystemUtils.fileExists(rootAgentsPath)) {
     const content = await FileSystemUtils.readFile(rootAgentsPath);
@@ -292,7 +292,7 @@ export async function detectLegacyStructureFiles(
 }
 
 /**
- * Checks if content contains DuowenSpec markers.
+ * Checks if content contains OpenSpec markers.
  *
  * @param content - File content to check
  * @returns True if both start and end markers are present
@@ -304,7 +304,7 @@ export function hasOpenSpecMarkers(content: string): boolean {
 }
 
 /**
- * Checks if file content is 100% DuowenSpec content (only markers and whitespace outside).
+ * Checks if file content is 100% OpenSpec content (only markers and whitespace outside).
  *
  * @param content - File content to check
  * @returns True if content outside markers is only whitespace
@@ -324,11 +324,11 @@ export function isOnlyOpenSpecContent(content: string): boolean {
 }
 
 /**
- * Removes the DuowenSpec marker block from file content.
+ * Removes the OpenSpec marker block from file content.
  * Only removes markers that are on their own lines (ignores inline mentions).
  * Cleans up double blank lines that may result from removal.
  *
- * @param content - File content with DuowenSpec markers
+ * @param content - File content with OpenSpec markers
  * @returns Content with marker block removed
  */
 export function removeMarkerBlock(content: string): string {
@@ -352,7 +352,7 @@ export interface CleanupResult {
 }
 
 /**
- * Cleans up legacy DuowenSpec artifacts from a project.
+ * Cleans up legacy OpenSpec artifacts from a project.
  * Preserves openspec/project.md (shows migration hint instead of deleting).
  *
  * @param projectPath - The root path of the project
@@ -386,7 +386,7 @@ export async function cleanupLegacyArtifacts(
     }
   }
 
-  // Delete legacy slash command directories (these are 100% DuowenSpec-managed)
+  // Delete legacy slash command directories (these are 100% OpenSpec-managed)
   for (const dirPath of detection.slashCommandDirs) {
     const fullPath = FileSystemUtils.joinPath(projectPath, dirPath);
     try {
@@ -397,7 +397,7 @@ export async function cleanupLegacyArtifacts(
     }
   }
 
-  // Delete legacy slash command files (these are 100% DuowenSpec-managed)
+  // Delete legacy slash command files (these are 100% OpenSpec-managed)
   for (const filePath of detection.slashCommandFiles) {
     const fullPath = FileSystemUtils.joinPath(projectPath, filePath);
     try {
@@ -408,7 +408,7 @@ export async function cleanupLegacyArtifacts(
     }
   }
 
-  // Delete openspec/AGENTS.md (this is inside openspec/, it's DuowenSpec-managed)
+  // Delete openspec/AGENTS.md (this is inside openspec/, it's OpenSpec-managed)
   if (detection.hasOpenspecAgents) {
     const agentsPath = FileSystemUtils.joinPath(projectPath, 'openspec', 'AGENTS.md');
     if (await FileSystemUtils.fileExists(agentsPath)) {
@@ -421,7 +421,7 @@ export async function cleanupLegacyArtifacts(
     }
   }
 
-  // Handle root AGENTS.md with DuowenSpec markers - remove markers only, NEVER delete
+  // Handle root AGENTS.md with OpenSpec markers - remove markers only, NEVER delete
   // Note: Root AGENTS.md is handled via configFilesToUpdate above (it's in LEGACY_CONFIG_FILES)
   // This hasRootAgentsWithMarkers flag is just for detection, cleanup happens via configFilesToUpdate
 
@@ -438,18 +438,18 @@ export function formatCleanupSummary(result: CleanupResult): string {
   const lines: string[] = [];
 
   if (result.deletedFiles.length > 0 || result.deletedDirs.length > 0 || result.modifiedFiles.length > 0) {
-    lines.push('Cleaned up legacy files:');
+    lines.push('已清理旧版遗留文件：');
 
     for (const file of result.deletedFiles) {
-      lines.push(`  ✓ Removed ${file}`);
+      lines.push(`  ✓ 已移除 ${file}`);
     }
 
     for (const dir of result.deletedDirs) {
-      lines.push(`  ✓ Removed ${dir}/ (replaced by /dwsp:*)`);
+      lines.push(`  ✓ 已移除 ${dir}/（已由 /opsx:* 取代）`);
     }
 
     for (const file of result.modifiedFiles) {
-      lines.push(`  ✓ Removed DuowenSpec markers from ${file}`);
+      lines.push(`  ✓ 已从 ${file} 中移除 OpenSpec 标记`);
     }
   }
 
@@ -464,7 +464,7 @@ export function formatCleanupSummary(result: CleanupResult): string {
     if (lines.length > 0) {
       lines.push('');
     }
-    lines.push('Errors during cleanup:');
+    lines.push('清理过程中出现的问题：');
     for (const error of result.errors) {
       lines.push(`  ⚠ ${error}`);
     }
@@ -475,7 +475,7 @@ export function formatCleanupSummary(result: CleanupResult): string {
 
 /**
  * Build list of files to be removed with explanations.
- * Only includes DuowenSpec-managed files (slash commands, openspec/AGENTS.md).
+ * Only includes OpenSpec-managed files (slash commands, openspec/AGENTS.md).
  * Config files like CLAUDE.md, AGENTS.md are NEVER deleted.
  *
  * @param detection - Detection result from detectLegacyArtifacts
@@ -484,19 +484,19 @@ export function formatCleanupSummary(result: CleanupResult): string {
 function buildRemovalsList(detection: LegacyDetectionResult): Array<{ path: string; explanation: string }> {
   const removals: Array<{ path: string; explanation: string }> = [];
 
-  // Slash command directories (these are 100% DuowenSpec-managed)
+  // Slash command directories (these are 100% OpenSpec-managed)
   for (const dir of detection.slashCommandDirs) {
     // Split on both forward and backward slashes for Windows compatibility
     const toolDir = dir.split(/[\/\\]/)[0];
     removals.push({ path: dir + '/', explanation: `replaced by ${toolDir}/skills/` });
   }
 
-  // Slash command files (these are 100% DuowenSpec-managed)
+  // Slash command files (these are 100% OpenSpec-managed)
   for (const file of detection.slashCommandFiles) {
     removals.push({ path: file, explanation: 'replaced by skills/' });
   }
 
-  // openspec/AGENTS.md (inside openspec/, it's DuowenSpec-managed)
+  // openspec/AGENTS.md (inside openspec/, it's OpenSpec-managed)
   if (detection.hasOpenspecAgents) {
     removals.push({ path: 'openspec/AGENTS.md', explanation: 'obsolete workflow file' });
   }
@@ -519,7 +519,7 @@ function buildUpdatesList(detection: LegacyDetectionResult): Array<{ path: strin
 
   // All config files with markers get updated (markers removed, file preserved)
   for (const file of detection.configFilesToUpdate) {
-    updates.push({ path: file, explanation: 'removing DuowenSpec markers' });
+    updates.push({ path: file, explanation: 'removing OpenSpec markers' });
   }
 
   return updates;
@@ -544,17 +544,16 @@ export function formatDetectionSummary(detection: LegacyDetectionResult): string
   }
 
   // Header - welcoming upgrade message
-  lines.push(chalk.bold('Upgrading to the new DuowenSpec'));
+  lines.push(chalk.bold('正在升级到新版 OpenSpec'));
   lines.push('');
-  lines.push('DuowenSpec now uses agent skills, the emerging standard across coding');
-  lines.push('agents. This simplifies your setup while keeping everything working');
-  lines.push('as before.');
+  lines.push('OpenSpec 现在改用 agent skills。这个方式更统一，');
+  lines.push('同时会尽量保持你现在的使用方式不受影响。');
   lines.push('');
 
   // Section 1: Files to remove (no user content to preserve)
   if (removals.length > 0) {
-    lines.push(chalk.bold('Files to remove'));
-    lines.push(chalk.dim('No user content to preserve:'));
+    lines.push(chalk.bold('将移除的文件'));
+    lines.push(chalk.dim('这些内容不包含需要保留的用户信息：'));
     for (const { path } of removals) {
       lines.push(`  • ${path}`);
     }
@@ -563,8 +562,8 @@ export function formatDetectionSummary(detection: LegacyDetectionResult): string
   // Section 2: Files to update (markers removed, content preserved)
   if (updates.length > 0) {
     if (removals.length > 0) lines.push('');
-    lines.push(chalk.bold('Files to update'));
-    lines.push(chalk.dim('DuowenSpec markers will be removed, your content preserved:'));
+    lines.push(chalk.bold('将更新的文件'));
+    lines.push(chalk.dim('只会移除 OpenSpec 标记，其余内容会保留：'));
     for (const { path } of updates) {
       lines.push(`  • ${path}`);
     }
@@ -636,15 +635,14 @@ export function getToolsFromLegacyArtifacts(detection: LegacyDetectionResult): s
  */
 export function formatProjectMdMigrationHint(): string {
   const lines: string[] = [];
-  lines.push(chalk.yellow.bold('Needs your attention'));
+  lines.push(chalk.yellow.bold('需要你关注'));
   lines.push('  • openspec/project.md');
-  lines.push(chalk.dim('    We won\'t delete this file. It may contain useful project context.'));
+  lines.push(chalk.dim('    这个文件不会被删除，里面可能还有有用的项目上下文。'));
   lines.push('');
-  lines.push(chalk.dim('    The new openspec/config.yaml has a "context:" section for planning'));
-  lines.push(chalk.dim('    context. This is included in every DuowenSpec request and works more'));
-  lines.push(chalk.dim('    reliably than the old project.md approach.'));
+  lines.push(chalk.dim('    新版 openspec/config.yaml 提供了 "context:" 区块来保存规划上下文。'));
+  lines.push(chalk.dim('    这部分会自动带入每次 OpenSpec 请求，也比旧的 project.md 方式更稳定。'));
   lines.push('');
-  lines.push(chalk.dim('    Review project.md, move any useful content to config.yaml\'s context'));
-  lines.push(chalk.dim('    section, then delete the file when ready.'));
+  lines.push(chalk.dim('    建议检查 project.md，把有用内容迁移到 config.yaml 的 context 区块。'));
+  lines.push(chalk.dim('    确认迁移完成后，再自行删除这个文件。'));
   return lines.join('\n');
 }

@@ -1,0 +1,558 @@
+@import "tailwindcss";
+
+@theme {
+    /* =========================================
+     MODO DESIGN SYSTEM TOKENS 
+     ========================================= */
+
+    /* 基础/底层变量 (Base Variables) */
+    --color-modo-1: #E8F3FF;
+    --color-modo-2: #BED6F5;
+    --color-modo-3: #97B9EB;
+    --color-modo-4: #739CE2;
+    --color-modo-5: #517ED8;
+    --color-modo-6: #3261CE;
+    --color-modo-7: #2045AE;
+    --color-modo-8: #112E8D;
+    --color-modo-9: #071B6D;
+    --color-modo-10: #000D4D;
+
+    --color-green-1: #E8FFF0;
+    --color-green-2: #C6F2D7;
+    --color-green-3: #A6E4C0;
+    --color-green-4: #88D7AC;
+    --color-green-5: #6EC99A;
+    --color-green-6: #55BC8A;
+    --color-green-7: #36A071;
+    --color-green-8: #1E845A;
+    --color-green-9: #0C6845;
+    --color-green-10: #004D32;
+
+    --color-orange-1: #FFFAE8;
+    --color-orange-2: #FDEEBF;
+    --color-orange-3: #FBDF97;
+    --color-orange-4: #F9CE70;
+    --color-orange-5: #F7BA49;
+    --color-orange-6: #F5A623;
+    --color-orange-7: #CB7F16;
+    --color-orange-8: #A15E0B;
+    --color-orange-9: #773F04;
+    --color-orange-10: #4D2500;
+
+    --color-red-1: #FFEDE8;
+    --color-red-2: #F3C6BD;
+    --color-red-3: #E79F94;
+    --color-red-4: #DB7A6F;
+    --color-red-5: #CF564E;
+    --color-red-6: #C3342F;
+    --color-red-7: #A51E1E;
+    --color-red-8: #881014;
+    --color-red-9: #6A060D;
+    --color-red-10: #4D0008;
+
+    --color-gray-1: #F9FBFD;
+    --color-gray-2: #EFF4F9;
+    --color-gray-3: #E3E9EF;
+    --color-gray-4: #B3C0CC;
+    --color-gray-5: #95A6BA;
+    --color-gray-6: #79879C;
+    --color-gray-7: #5E708A;
+    --color-gray-8: #4D5E7D;
+    --color-gray-9: #35435E;
+    --color-gray-10: #242E43;
+
+    --color-purple-1: #F3E8FF;
+    --color-purple-2: #D9C4F3;
+    --color-purple-3: #BFA2E8;
+    --color-purple-4: #A582DC;
+    --color-purple-5: #8B65D1;
+    --color-purple-6: #724BC5;
+    --color-purple-7: #5130A7;
+    --color-purple-8: #361A89;
+    --color-purple-9: #1F0A6B;
+    --color-purple-10: #0E004D;
+
+    --color-cyan-1: #E8FFFA;
+    --color-cyan-2: #BFF4E9;
+    --color-cyan-3: #98E9DC;
+    --color-cyan-4: #74DFD0;
+    --color-cyan-5: #53D4C7;
+    --color-cyan-6: #35C9C0;
+    --color-cyan-7: #22AAA5;
+    --color-cyan-8: #128B8B;
+    --color-cyan-9: #07686C;
+    --color-cyan-10: #00424D;
+
+    --color-blue-1: #E8FCFF;
+    --color-blue-2: #BEEBF5;
+    --color-blue-3: #97D9EB;
+    --color-blue-4: #73C6E2;
+    --color-blue-5: #51B2D8;
+    --color-blue-6: #329DCE;
+    --color-blue-7: #207CAE;
+    --color-blue-8: #115E8D;
+    --color-blue-9: #07426D;
+    --color-blue-10: #002A4D;
+
+    --color-gold-1: #FFFEE8;
+    --color-gold-2: #FDF8BF;
+    --color-gold-3: #FBEF97;
+    --color-gold-4: #F9E470;
+    --color-gold-5: #F7D749;
+    --color-gold-6: #F5C723;
+    --color-gold-7: #CB9E16;
+    --color-gold-8: #A1760B;
+    --color-gold-9: #775204;
+    --color-gold-10: #4D2D00;
+
+    --color-yellow-1: #FCFFE8;
+    --color-yellow-2: #F7FCCD;
+    --color-yellow-3: #F4F9B3;
+    --color-yellow-4: #F3F69A;
+    --color-yellow-5: #F3F380;
+    --color-yellow-6: #F0EB68;
+    --color-yellow-7: #C7BE41;
+    --color-yellow-8: #9E9222;
+    --color-yellow-9: #75670D;
+    --color-yellow-10: #4D3800;
+
+    --color-magenta-1: #FFE8F4;
+    --color-magenta-2: #F6C6E0;
+    --color-magenta-3: #EEA6CF;
+    --color-magenta-4: #E588C0;
+    --color-magenta-5: #DD6CB3;
+    --color-magenta-6: #D451A8;
+    --color-magenta-7: #B2338C;
+    --color-magenta-8: #901C71;
+    --color-magenta-9: #6E0B57;
+    --color-magenta-10: #4D0034;
+
+    --color-pinkpurple-1: #FDE8FF;
+    --color-pinkpurple-2: #EFC2F6;
+    --color-pinkpurple-3: #DF9DED;
+    --color-pinkpurple-4: #CF7BE3;
+    --color-pinkpurple-5: #BD5BDA;
+    --color-pinkpurple-6: #AB3ED1;
+    --color-pinkpurple-7: #8727B0;
+    --color-pinkpurple-8: #66158F;
+    --color-pinkpurple-9: #48086E;
+    --color-pinkpurple-10: #42004D;
+
+    --color-orangered-1: #FFF3E8;
+    --color-orangered-2: #F9DAC0;
+    --color-orangered-3: #F3BF99;
+    --color-orangered-4: #EEA374;
+    --color-orangered-5: #E88651;
+    --color-orangered-6: #E2682F;
+    --color-orangered-7: #BD4B1D;
+    --color-orangered-8: #973210;
+    --color-orangered-9: #721D06;
+    --color-orangered-10: #4D0E00;
+
+    --color-lime-1: #F9FFE8;
+    --color-lime-2: #E4F2C6;
+    --color-lime-3: #CFE4A6;
+    --color-lime-4: #BAD788;
+    --color-lime-5: #A5C96E;
+    --color-lime-6: #8FBC55;
+    --color-lime-7: #6FA036;
+    --color-lime-8: #51841E;
+    --color-lime-9: #37680C;
+    --color-lime-10: #2A4D00;
+
+    /* Neutral 别名 */
+    --color-neutral-1: var(--color-gray-1);
+    --color-neutral-2: var(--color-gray-2);
+    --color-neutral-3: var(--color-gray-3);
+    --color-neutral-4: var(--color-gray-4);
+    --color-neutral-5: var(--color-gray-5);
+    --color-neutral-6: var(--color-gray-6);
+    --color-neutral-7: var(--color-gray-7);
+    --color-neutral-8: var(--color-gray-8);
+    --color-neutral-9: var(--color-gray-9);
+    --color-neutral-10: var(--color-gray-10);
+
+    /* 语义化变量 (Semantic) */
+    --color-white: #FFFFFF;
+    --color-mask-bg: rgba(36, 46, 67, 0.6);
+    --color-bg-more: #FFFFFF;
+    --color-tooltip-bg: var(--color-gray-10);
+    --color-shadow: rgba(36, 46, 67, 0.1);
+
+    /* 填充色 */
+    --color-fill-1: var(--color-neutral-1);
+    --color-fill-2: var(--color-neutral-2);
+    --color-fill-3: var(--color-neutral-3);
+    --color-fill-4: var(--color-neutral-4);
+
+    /* 边框色 */
+    --color-border-1: var(--color-neutral-2);
+    --color-border-2: var(--color-neutral-3);
+    --color-border-3: var(--color-neutral-4);
+    --color-border-4: var(--color-neutral-6);
+
+    /* 文本及图标色 */
+    --color-text-1: var(--color-neutral-10);
+    --color-text-2: var(--color-neutral-8);
+    --color-text-3: var(--color-neutral-6);
+    --color-text-4: var(--color-neutral-4);
+
+    /* 品牌色 */
+    --color-primary-light-1: var(--color-modo-1);
+    --color-primary-light-2: var(--color-modo-2);
+    --color-primary-light-3: var(--color-modo-3);
+    --color-primary-light-4: var(--color-modo-4);
+    --color-primary-5: var(--color-modo-5);
+    --color-primary-6: var(--color-modo-6);
+    --color-primary-7: var(--color-modo-7);
+
+    /* 状态色 */
+    --color-success-1: var(--color-green-1);
+    --color-success-2: var(--color-green-2);
+    --color-success-3: var(--color-green-3);
+    --color-success-4: var(--color-green-4);
+    --color-success-5: var(--color-green-5);
+    --color-success-6: var(--color-green-6);
+    --color-success-7: var(--color-green-7);
+
+    --color-warning-1: var(--color-orange-1);
+    --color-warning-2: var(--color-orange-2);
+    --color-warning-3: var(--color-orange-3);
+    --color-warning-4: var(--color-orange-4);
+    --color-warning-5: var(--color-orange-5);
+    --color-warning-6: var(--color-orange-6);
+    --color-warning-7: var(--color-orange-7);
+
+    --color-danger-1: var(--color-red-1);
+    --color-danger-2: var(--color-red-2);
+    --color-danger-3: var(--color-red-3);
+    --color-danger-4: var(--color-red-4);
+    --color-danger-5: var(--color-red-5);
+    --color-danger-6: var(--color-red-6);
+    --color-danger-7: var(--color-red-7);
+
+    --color-link-1: var(--color-modo-1);
+    --color-link-2: var(--color-modo-2);
+    --color-link-3: var(--color-modo-3);
+    --color-link-4: var(--color-modo-4);
+    --color-link-5: var(--color-modo-5);
+    --color-link-6: var(--color-modo-6);
+    --color-link-7: var(--color-modo-7);
+
+    /* 背景色 */
+    --color-bg-1: #FFFFFF;
+    --color-bg-2: #FFFFFF;
+    --color-bg-3: #FFFFFF;
+    --color-bg-4: #FFFFFF;
+    --color-bg-5: #FFFFFF;
+
+    /* =========================================
+     Tailwind Default Palette override (50-950 mapped to MODO 1-10)
+     ========================================= */
+    /* Modo */
+    --color-modo-50: var(--color-modo-1);
+    --color-modo-100: var(--color-modo-2);
+    --color-modo-200: var(--color-modo-3);
+    --color-modo-300: var(--color-modo-4);
+    --color-modo-400: var(--color-modo-5);
+    --color-modo-500: var(--color-modo-6);
+    --color-modo-600: var(--color-modo-7);
+    --color-modo-700: var(--color-modo-8);
+    --color-modo-800: var(--color-modo-9);
+    --color-modo-900: var(--color-modo-10);
+    --color-modo-950: var(--color-modo-10);
+
+    /* Green */
+    --color-green-50: var(--color-green-1);
+    --color-green-100: var(--color-green-2);
+    --color-green-200: var(--color-green-3);
+    --color-green-300: var(--color-green-4);
+    --color-green-400: var(--color-green-5);
+    --color-green-500: var(--color-green-6);
+    --color-green-600: var(--color-green-7);
+    --color-green-700: var(--color-green-8);
+    --color-green-800: var(--color-green-9);
+    --color-green-900: var(--color-green-10);
+    --color-green-950: var(--color-green-10);
+
+    /* Orange */
+    --color-orange-50: var(--color-orange-1);
+    --color-orange-100: var(--color-orange-2);
+    --color-orange-200: var(--color-orange-3);
+    --color-orange-300: var(--color-orange-4);
+    --color-orange-400: var(--color-orange-5);
+    --color-orange-500: var(--color-orange-6);
+    --color-orange-600: var(--color-orange-7);
+    --color-orange-700: var(--color-orange-8);
+    --color-orange-800: var(--color-orange-9);
+    --color-orange-900: var(--color-orange-10);
+    --color-orange-950: var(--color-orange-10);
+
+    /* Red */
+    --color-red-50: var(--color-red-1);
+    --color-red-100: var(--color-red-2);
+    --color-red-200: var(--color-red-3);
+    --color-red-300: var(--color-red-4);
+    --color-red-400: var(--color-red-5);
+    --color-red-500: var(--color-red-6);
+    --color-red-600: var(--color-red-7);
+    --color-red-700: var(--color-red-8);
+    --color-red-800: var(--color-red-9);
+    --color-red-900: var(--color-red-10);
+    --color-red-950: var(--color-red-10);
+
+    /* Gray */
+    --color-gray-50: var(--color-gray-1);
+    --color-gray-100: var(--color-gray-2);
+    --color-gray-200: var(--color-gray-3);
+    --color-gray-300: var(--color-gray-4);
+    --color-gray-400: var(--color-gray-5);
+    --color-gray-500: var(--color-gray-6);
+    --color-gray-600: var(--color-gray-7);
+    --color-gray-700: var(--color-gray-8);
+    --color-gray-800: var(--color-gray-9);
+    --color-gray-900: var(--color-gray-10);
+    --color-gray-950: var(--color-gray-10);
+
+    /* Purple */
+    --color-purple-50: var(--color-purple-1);
+    --color-purple-100: var(--color-purple-2);
+    --color-purple-200: var(--color-purple-3);
+    --color-purple-300: var(--color-purple-4);
+    --color-purple-400: var(--color-purple-5);
+    --color-purple-500: var(--color-purple-6);
+    --color-purple-600: var(--color-purple-7);
+    --color-purple-700: var(--color-purple-8);
+    --color-purple-800: var(--color-purple-9);
+    --color-purple-900: var(--color-purple-10);
+    --color-purple-950: var(--color-purple-10);
+
+    /* Cyan */
+    --color-cyan-50: var(--color-cyan-1);
+    --color-cyan-100: var(--color-cyan-2);
+    --color-cyan-200: var(--color-cyan-3);
+    --color-cyan-300: var(--color-cyan-4);
+    --color-cyan-400: var(--color-cyan-5);
+    --color-cyan-500: var(--color-cyan-6);
+    --color-cyan-600: var(--color-cyan-7);
+    --color-cyan-700: var(--color-cyan-8);
+    --color-cyan-800: var(--color-cyan-9);
+    --color-cyan-900: var(--color-cyan-10);
+    --color-cyan-950: var(--color-cyan-10);
+
+    /* Blue */
+    --color-blue-50: var(--color-blue-1);
+    --color-blue-100: var(--color-blue-2);
+    --color-blue-200: var(--color-blue-3);
+    --color-blue-300: var(--color-blue-4);
+    --color-blue-400: var(--color-blue-5);
+    --color-blue-500: var(--color-blue-6);
+    --color-blue-600: var(--color-blue-7);
+    --color-blue-700: var(--color-blue-8);
+    --color-blue-800: var(--color-blue-9);
+    --color-blue-900: var(--color-blue-10);
+    --color-blue-950: var(--color-blue-10);
+
+    /* Gold */
+    --color-gold-50: var(--color-gold-1);
+    --color-gold-100: var(--color-gold-2);
+    --color-gold-200: var(--color-gold-3);
+    --color-gold-300: var(--color-gold-4);
+    --color-gold-400: var(--color-gold-5);
+    --color-gold-500: var(--color-gold-6);
+    --color-gold-600: var(--color-gold-7);
+    --color-gold-700: var(--color-gold-8);
+    --color-gold-800: var(--color-gold-9);
+    --color-gold-900: var(--color-gold-10);
+    --color-gold-950: var(--color-gold-10);
+
+    /* Yellow */
+    --color-yellow-50: var(--color-yellow-1);
+    --color-yellow-100: var(--color-yellow-2);
+    --color-yellow-200: var(--color-yellow-3);
+    --color-yellow-300: var(--color-yellow-4);
+    --color-yellow-400: var(--color-yellow-5);
+    --color-yellow-500: var(--color-yellow-6);
+    --color-yellow-600: var(--color-yellow-7);
+    --color-yellow-700: var(--color-yellow-8);
+    --color-yellow-800: var(--color-yellow-9);
+    --color-yellow-900: var(--color-yellow-10);
+    --color-yellow-950: var(--color-yellow-10);
+
+    /* Magenta */
+    --color-magenta-50: var(--color-magenta-1);
+    --color-magenta-100: var(--color-magenta-2);
+    --color-magenta-200: var(--color-magenta-3);
+    --color-magenta-300: var(--color-magenta-4);
+    --color-magenta-400: var(--color-magenta-5);
+    --color-magenta-500: var(--color-magenta-6);
+    --color-magenta-600: var(--color-magenta-7);
+    --color-magenta-700: var(--color-magenta-8);
+    --color-magenta-800: var(--color-magenta-9);
+    --color-magenta-900: var(--color-magenta-10);
+    --color-magenta-950: var(--color-magenta-10);
+
+    /* Pinkpurple */
+    --color-pinkpurple-50: var(--color-pinkpurple-1);
+    --color-pinkpurple-100: var(--color-pinkpurple-2);
+    --color-pinkpurple-200: var(--color-pinkpurple-3);
+    --color-pinkpurple-300: var(--color-pinkpurple-4);
+    --color-pinkpurple-400: var(--color-pinkpurple-5);
+    --color-pinkpurple-500: var(--color-pinkpurple-6);
+    --color-pinkpurple-600: var(--color-pinkpurple-7);
+    --color-pinkpurple-700: var(--color-pinkpurple-8);
+    --color-pinkpurple-800: var(--color-pinkpurple-9);
+    --color-pinkpurple-900: var(--color-pinkpurple-10);
+    --color-pinkpurple-950: var(--color-pinkpurple-10);
+
+    /* Orangered */
+    --color-orangered-50: var(--color-orangered-1);
+    --color-orangered-100: var(--color-orangered-2);
+    --color-orangered-200: var(--color-orangered-3);
+    --color-orangered-300: var(--color-orangered-4);
+    --color-orangered-400: var(--color-orangered-5);
+    --color-orangered-500: var(--color-orangered-6);
+    --color-orangered-600: var(--color-orangered-7);
+    --color-orangered-700: var(--color-orangered-8);
+    --color-orangered-800: var(--color-orangered-9);
+    --color-orangered-900: var(--color-orangered-10);
+    --color-orangered-950: var(--color-orangered-10);
+
+    /* Lime */
+    --color-lime-50: var(--color-lime-1);
+    --color-lime-100: var(--color-lime-2);
+    --color-lime-200: var(--color-lime-3);
+    --color-lime-300: var(--color-lime-4);
+    --color-lime-400: var(--color-lime-5);
+    --color-lime-500: var(--color-lime-6);
+    --color-lime-600: var(--color-lime-7);
+    --color-lime-700: var(--color-lime-8);
+    --color-lime-800: var(--color-lime-9);
+    --color-lime-900: var(--color-lime-10);
+    --color-lime-950: var(--color-lime-10);
+
+    /* Primary */
+    --color-primary-50: var(--color-modo-1);
+    --color-primary-100: var(--color-modo-2);
+    --color-primary-200: var(--color-modo-3);
+    --color-primary-300: var(--color-modo-4);
+    --color-primary-400: var(--color-modo-5);
+    --color-primary-500: var(--color-modo-6);
+    --color-primary-600: var(--color-modo-7);
+    --color-primary-700: var(--color-modo-8);
+    --color-primary-800: var(--color-modo-9);
+    --color-primary-900: var(--color-modo-10);
+    --color-primary-950: var(--color-modo-10);
+
+    /* Success */
+    --color-success-50: var(--color-green-1);
+    --color-success-100: var(--color-green-2);
+    --color-success-200: var(--color-green-3);
+    --color-success-300: var(--color-green-4);
+    --color-success-400: var(--color-green-5);
+    --color-success-500: var(--color-green-6);
+    --color-success-600: var(--color-green-7);
+    --color-success-700: var(--color-green-8);
+    --color-success-800: var(--color-green-9);
+    --color-success-900: var(--color-green-10);
+    --color-success-950: var(--color-green-10);
+
+    /* Warning */
+    --color-warning-50: var(--color-orange-1);
+    --color-warning-100: var(--color-orange-2);
+    --color-warning-200: var(--color-orange-3);
+    --color-warning-300: var(--color-orange-4);
+    --color-warning-400: var(--color-orange-5);
+    --color-warning-500: var(--color-orange-6);
+    --color-warning-600: var(--color-orange-7);
+    --color-warning-700: var(--color-orange-8);
+    --color-warning-800: var(--color-orange-9);
+    --color-warning-900: var(--color-orange-10);
+    --color-warning-950: var(--color-orange-10);
+
+    /* Danger */
+    --color-danger-50: var(--color-red-1);
+    --color-danger-100: var(--color-red-2);
+    --color-danger-200: var(--color-red-3);
+    --color-danger-300: var(--color-red-4);
+    --color-danger-400: var(--color-red-5);
+    --color-danger-500: var(--color-red-6);
+    --color-danger-600: var(--color-red-7);
+    --color-danger-700: var(--color-red-8);
+    --color-danger-800: var(--color-red-9);
+    --color-danger-900: var(--color-red-10);
+    --color-danger-950: var(--color-red-10);
+
+    /* Info */
+    --color-info-50: var(--color-blue-1);
+    --color-info-100: var(--color-blue-2);
+    --color-info-200: var(--color-blue-3);
+    --color-info-300: var(--color-blue-4);
+    --color-info-400: var(--color-blue-5);
+    --color-info-500: var(--color-blue-6);
+    --color-info-600: var(--color-blue-7);
+    --color-info-700: var(--color-blue-8);
+    --color-info-800: var(--color-blue-9);
+    --color-info-900: var(--color-blue-10);
+    --color-info-950: var(--color-blue-10);
+
+    /* 阴影体系 (Shadows) */
+    --shadow-low: 0 2px 5px var(--color-shadow);
+    --shadow-mid: 0 4px 10px var(--color-shadow);
+    --shadow-high: 0 8px 20px var(--color-shadow);
+}
+
+
+:root {
+    --background: #F9FBFD;
+    --foreground: #242E43;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    overflow: hidden;
+    /* Data-Dense Grid expects full screen flex layout with internal scrolling */
+}
+
+/* Ensure Next.js App Router root elements take full height */
+#__next,
+.next-route-announcer,
+body>div:first-child {
+    height: 100%;
+}
+
+.ant-app {
+    width: 100%;
+    height: 100%;
+}
+
+/* 全局滚动条基础样式 */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(50, 50, 50, 0.25) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(50, 50, 50, 0.25);
+    border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(50, 50, 50, 0.4);
+}

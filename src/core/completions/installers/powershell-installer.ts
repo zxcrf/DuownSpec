@@ -158,7 +158,7 @@ export class PowerShellInstaller {
         anyConfigured = true;
       } catch (error) {
         // Continue to next profile if this one fails
-        console.warn(`Warning: Could not configure ${profilePath}: ${error}`);
+        console.warn(`警告：无法配置 ${profilePath}：${error}`);
       }
     }
 
@@ -196,7 +196,7 @@ export class PowerShellInstaller {
 
         const endIndex = profileContent.indexOf(endMarker, startIndex);
         if (endIndex === -1) {
-          console.warn(`Warning: Found start marker but no end marker in ${profilePath}`);
+          console.warn(`警告：在 ${profilePath} 中找到了起始标记，但缺少结束标记`);
           continue;
         }
 
@@ -210,7 +210,7 @@ export class PowerShellInstaller {
         await fs.writeFile(profilePath, newContent, 'utf-8');
         anyRemoved = true;
       } catch (error) {
-        console.warn(`Warning: Could not clean ${profilePath}: ${error}`);
+        console.warn(`警告：无法清理 ${profilePath}：${error}`);
       }
     }
 

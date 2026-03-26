@@ -3,11 +3,21 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { tmpdir } from 'os';
 import { runCLI, cliProjectRoot } from '../helpers/run-cli.js';
+import { AI_TOOLS } from '../../src/core/config.js';
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);
     return true;
+  } catch {
+    return false;
+  }
+}
+
+async function isSymlink(filePath: string): Promise<boolean> {
+  try {
+    const stat = await fs.lstat(filePath);
+    return stat.isSymbolicLink();
   } catch {
     return false;
   }
@@ -26,38 +36,33 @@ async function prepareFixture(fixtureName: string): Promise<string> {
 }
 
 async function createMockScaffoldSources(baseDir: string): Promise<{
-  modoFrameRoot: string;
-  bEndDesignProRoot: string;
+  bundledRoot: string;
 }> {
-  const modoFrameRoot = path.join(baseDir, 'modo-frame');
-  const bEndDesignProRoot = path.join(baseDir, 'b-end-design-pro');
+  const bundledRoot = path.join(baseDir, 'modo-scaffold');
+  await fs.mkdir(bundledRoot, { recursive: true });
 
-  await fs.mkdir(modoFrameRoot, { recursive: true });
-  await fs.mkdir(bEndDesignProRoot, { recursive: true });
+  await fs.writeFile(path.join(bundledRoot, 'package.json'), '{"name":"modo-next"}\n');
+  await fs.writeFile(path.join(bundledRoot, '.b-end-adapter'), 'modo\n');
+  await fs.writeFile(path.join(bundledRoot, 'AGENTS.md'), '# scaffold agents\n');
+  await fs.writeFile(path.join(bundledRoot, 'next.config.ts'), 'export default {};\n');
+  await fs.writeFile(path.join(bundledRoot, 'tsconfig.json'), '{"compilerOptions":{}}\n');
+  await fs.writeFile(path.join(bundledRoot, 'postcss.config.mjs'), 'export default {};\n');
+  await fs.writeFile(path.join(bundledRoot, 'components.json'), '{"style":"new-york"}\n');
 
-  await fs.writeFile(path.join(modoFrameRoot, 'next.config.ts'), 'export default {};\n');
-  await fs.writeFile(path.join(modoFrameRoot, 'tsconfig.json'), '{"compilerOptions":{}}\n');
-  await fs.writeFile(path.join(modoFrameRoot, 'postcss.config.mjs'), 'export default {};\n');
+  await fs.mkdir(path.join(bundledRoot, 'src', 'theme'), { recursive: true });
+  await fs.mkdir(path.join(bundledRoot, 'src', 'app'), { recursive: true });
+  await fs.mkdir(path.join(bundledRoot, 'src', 'components', 'templates', 'login'), { recursive: true });
+  await fs.mkdir(path.join(bundledRoot, 'src', 'components', 'biz', 'modo-button'), { recursive: true });
+  await fs.mkdir(path.join(bundledRoot, 'openspec', 'b-end'), { recursive: true });
 
-  await fs.mkdir(path.join(bEndDesignProRoot, 'assets', '.prd', 'modules'), { recursive: true });
-  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', 'package.json'), '{"name":"modo-next"}\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.b-end-adapter'), 'modo\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', 'AGENTS.md'), '# scaffold agents\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.prd', 'main.md'), '# prd\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'assets', '.prd', 'modules', '_template.md'), '# module\n');
+  await fs.writeFile(path.join(bundledRoot, 'src', 'theme', 'modo-algorithm.ts'), 'export const modoAlgorithm = [];\n');
+  await fs.writeFile(path.join(bundledRoot, 'src', 'theme', 'antd-theme-token.tsx'), 'export const modoThemeToken = {};\n');
+  await fs.writeFile(path.join(bundledRoot, 'src', 'app', 'globals.css'), '@import "tailwindcss";\n');
+  await fs.writeFile(path.join(bundledRoot, 'src', 'components', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
+  await fs.writeFile(path.join(bundledRoot, 'src', 'components', 'biz', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
+  await fs.writeFile(path.join(bundledRoot, 'openspec', 'b-end', 'MANIFEST.md'), '# manifest\n');
 
-  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme'), { recursive: true });
-  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'components'), { recursive: true });
-  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'templates', 'login'), { recursive: true });
-  await fs.mkdir(path.join(bEndDesignProRoot, 'adapters', 'modo', 'biz_components', 'modo-button'), { recursive: true });
-
-  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme', 'modo-algorithm.ts'), 'export const modoAlgorithm = [];\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'theme', 'antd-theme-token.tsx'), 'export const modoThemeToken = {};\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'components', 'globals.css'), '@import "tailwindcss";\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'templates', 'login', 'page.tsx'), 'export default function Login() { return null; }\n');
-  await fs.writeFile(path.join(bEndDesignProRoot, 'adapters', 'modo', 'biz_components', 'modo-button', 'index.tsx'), 'export const ModoButton = () => null;\n');
-
-  return { modoFrameRoot, bEndDesignProRoot };
+  return { bundledRoot };
 }
 
 afterAll(async () => {
@@ -77,11 +82,13 @@ describe('openspec CLI e2e basics', () => {
     const result = await runCLI(['init', '--help']);
     expect(result.exitCode).toBe(0);
 
+    const expectedTools = AI_TOOLS.filter((tool) => tool.available)
+      .map((tool) => tool.value)
+      .join(', ');
     const normalizedOutput = result.stdout.replace(/\s+/g, ' ').trim();
-    expect(normalizedOutput).toContain('Use "all", "none", or a comma-separated list');
-    for (const toolId of ['claude', 'opencode', 'trae', 'qoder', 'codebuddy', 'codex']) {
-      expect(normalizedOutput).toContain(toolId);
-    }
+    expect(normalizedOutput).toContain(
+      `可使用 "all"、"none"，或传入逗号分隔的工具列表：${expectedTools}`
+    );
   });
 
   it('reports the package version', async () => {
@@ -107,7 +114,7 @@ describe('openspec CLI e2e basics', () => {
     const projectDir = await prepareFixture('tmp-init');
     const result = await runCLI(['validate', 'does-not-exist'], { cwd: projectDir });
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("Unknown item 'does-not-exist'");
+    expect(result.stderr).toContain("未知条目 'does-not-exist'");
   });
 
   describe('init command non-interactive options', () => {
@@ -122,13 +129,13 @@ describe('openspec CLI e2e basics', () => {
         env: { CODEX_HOME: codexHome },
       });
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('DuowenSpec Setup Complete');
+      expect(result.stdout).toContain('DuowenSpec 初始化完成');
 
       // Check that skills were created for multiple tools
       const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const opencodeSkillPath = path.join(emptyProjectDir, '.opencode/skills/openspec-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/openspec-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
-      expect(await fileExists(opencodeSkillPath)).toBe(true);
+      expect(await fileExists(cursorSkillPath)).toBe(true);
     });
 
     it('initializes with --tools list option', async () => {
@@ -138,16 +145,14 @@ describe('openspec CLI e2e basics', () => {
 
       const result = await runCLI(['init', '--tools', 'claude'], { cwd: emptyProjectDir });
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('DuowenSpec Setup Complete');
+      expect(result.stdout).toContain('DuowenSpec 初始化完成');
       expect(result.stdout).toContain('Claude Code');
 
       // New init creates skills, not CLAUDE.md
       const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const opencodeSkillPath = path.join(emptyProjectDir, '.opencode/skills/openspec-explore/SKILL.md');
-      const bundledCapabilitySkillPath = path.join(emptyProjectDir, '.claude/skills/executing-plans/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/openspec-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
-      expect(await fileExists(opencodeSkillPath)).toBe(false); // Not selected
-      expect(await fileExists(bundledCapabilitySkillPath)).toBe(true);
+      expect(await fileExists(cursorSkillPath)).toBe(false); // Not selected
     });
 
     it('initializes with --tools none option', async () => {
@@ -157,14 +162,14 @@ describe('openspec CLI e2e basics', () => {
 
       const result = await runCLI(['init', '--tools', 'none'], { cwd: emptyProjectDir });
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('DuowenSpec Setup Complete');
+      expect(result.stdout).toContain('DuowenSpec 初始化完成');
 
       // With --tools none, no tool skills should be created
       const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/openspec-explore/SKILL.md');
-      const opencodeSkillPath = path.join(emptyProjectDir, '.opencode/skills/openspec-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/openspec-explore/SKILL.md');
 
       expect(await fileExists(claudeSkillPath)).toBe(false);
-      expect(await fileExists(opencodeSkillPath)).toBe(false);
+      expect(await fileExists(cursorSkillPath)).toBe(false);
     });
 
     it('initializes scaffold project with --scaffold and creates instruction link', async () => {
@@ -176,13 +181,22 @@ describe('openspec CLI e2e basics', () => {
       const result = await runCLI(['init', '--tools', 'none', '--scaffold'], {
         cwd: emptyProjectDir,
         env: {
-          OPENSPEC_MODO_FRAME_ROOT: roots.modoFrameRoot,
-          OPENSPEC_B_END_DESIGN_PRO_ROOT: roots.bEndDesignProRoot,
+          OPENSPEC_MODO_SCAFFOLD_ASSET_ROOT: roots.bundledRoot,
         },
       });
 
-      expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain("unknown option '--scaffold'");
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('DuowenSpec 初始化完成');
+      expect(result.stdout).toContain('脚手架：已初始化 MODO 空骨架');
+      expect(result.stdout).toContain('说明文件：已创建 AGENTS.md，并建立 CLAUDE.md 软链');
+
+      const agentsPath = path.join(emptyProjectDir, 'AGENTS.md');
+      const claudePath = path.join(emptyProjectDir, 'CLAUDE.md');
+      expect(await fileExists(agentsPath)).toBe(true);
+      expect(await isSymlink(claudePath)).toBe(true);
+      expect(await fs.readlink(claudePath)).toBe('AGENTS.md');
+      expect(await fileExists(path.join(emptyProjectDir, '.prd', 'main.md'))).toBe(false);
+      expect(await fileExists(path.join(emptyProjectDir, 'openspec', 'b-end', 'MANIFEST.md'))).toBe(true);
     });
 
     it('does not create CLAUDE.md when AGENTS.md already exists in scaffold init', async () => {
@@ -195,13 +209,14 @@ describe('openspec CLI e2e basics', () => {
       const result = await runCLI(['init', '--tools', 'none', '--scaffold'], {
         cwd: emptyProjectDir,
         env: {
-          OPENSPEC_MODO_FRAME_ROOT: roots.modoFrameRoot,
-          OPENSPEC_B_END_DESIGN_PRO_ROOT: roots.bEndDesignProRoot,
+          OPENSPEC_MODO_SCAFFOLD_ASSET_ROOT: roots.bundledRoot,
         },
       });
 
-      expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain("unknown option '--scaffold'");
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('说明文件：已保留现有 AGENTS.md');
+      expect(await fileExists(path.join(emptyProjectDir, 'AGENTS.md'))).toBe(true);
+      expect(await fileExists(path.join(emptyProjectDir, 'CLAUDE.md'))).toBe(false);
     });
 
     it('returns error for invalid tool names', async () => {
@@ -211,8 +226,8 @@ describe('openspec CLI e2e basics', () => {
 
       const result = await runCLI(['init', '--tools', 'invalid-tool'], { cwd: emptyProjectDir });
       expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('Invalid tool(s): invalid-tool');
-      expect(result.stderr).toContain('Available values:');
+      expect(result.stderr).toContain('无效工具：invalid-tool');
+      expect(result.stderr).toContain('可选值：');
     });
 
     it('returns error when combining reserved keywords with explicit ids', async () => {
@@ -222,7 +237,7 @@ describe('openspec CLI e2e basics', () => {
 
       const result = await runCLI(['init', '--tools', 'all,claude'], { cwd: emptyProjectDir });
       expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('Cannot combine reserved values "all" or "none" with specific tool IDs');
+      expect(result.stderr).toContain('不能将 "all" 或 "none" 与具体工具 ID 混用');
     });
   });
 });

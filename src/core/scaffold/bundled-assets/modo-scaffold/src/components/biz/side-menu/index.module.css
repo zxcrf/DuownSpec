@@ -1,0 +1,70 @@
+/* 默认所有菜单项（含子菜单）字体粗细为 400，去除了 margin-top，保留 margin-bottom，增加左右 margin */
+.sideMenu :global(.ant-menu-inline .ant-menu-item),
+.sideMenu :global(.ant-menu-inline .ant-menu-submenu-title) {
+    font-weight: 400 !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    padding-left: 7px !important;
+    padding-right: 12px !important;
+    width: calc(100% - 16px) !important;
+    border-radius: 4px !important;
+}
+
+/* SubMenu 容器本身也需要控制上下间距，但不要左右间距以免子菜单递归缩进 */
+.sideMenu :global(.ant-menu-inline .ant-menu-submenu) {
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+}
+
+/* 一级菜单样式：容器高度不固定，文字加粗 600 */
+.sideMenu :global(.ant-menu-inline .root-menu-item) {
+    height: auto !important;
+    font-weight: 600 !important;
+}
+
+/* 一级菜单叶子节点(MenuItem)和一级菜单标题(SubMenu Title)：高度 44px */
+.sideMenu :global(.ant-menu-inline .root-menu-item.ant-menu-item),
+.sideMenu :global(.ant-menu-inline .root-menu-item > .ant-menu-submenu-title) {
+    height: 44px !important;
+    line-height: 44px !important;
+    font-weight: 600 !important;
+}
+
+/* 针对一级菜单文字内容的间距调整 */
+.sideMenu :global(.ant-menu-inline .root-menu-item .ant-menu-title-content) {
+    margin-left: 16px !important;
+}
+
+/* 子菜单（一级以下）样式调整 */
+.sideMenu :global(.ant-menu-inline .ant-menu-sub .ant-menu-item),
+.sideMenu :global(.ant-menu-inline .ant-menu-sub .ant-menu-submenu-title) {
+    padding-left: 37px !important;
+    padding-right: 12px !important;
+    border-radius: 4px !important;
+}
+
+/* 选中菜单项背景色改为 --color-fill-2 */
+.sideMenu :global(.ant-menu-inline .ant-menu-item-selected),
+.sideMenu :global(.ant-menu-inline .ant-menu-item-selected:hover) {
+    background-color: #EFF4F9 !important;
+}
+
+/* 悬浮菜单项背景色改为 --color-fill-2 */
+.sideMenu :global(.ant-menu-inline .ant-menu-item:hover),
+.sideMenu :global(.ant-menu-inline .ant-menu-submenu-title:hover) {
+    background-color: #EFF4F9 !important;
+}
+
+/* 控制一级以下菜单图标隐藏（默认行为，通过 hideSubMenuIcons 类激活） */
+.hideSubMenuIcons :global(.ant-menu-sub .ant-menu-item .anticon),
+.hideSubMenuIcons :global(.ant-menu-sub .ant-menu-submenu-title .anticon) {
+    display: none !important;
+}
+
+/* 当不展示一级以下菜单图标时，文字内容左边距设为 0 */
+.hideSubMenuIcons :global(.ant-menu-sub .ant-menu-item .ant-menu-title-content),
+.hideSubMenuIcons :global(.ant-menu-sub .ant-menu-submenu-title .ant-menu-title-content) {
+    margin-left: 0 !important;
+}

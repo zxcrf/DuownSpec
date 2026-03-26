@@ -24,7 +24,7 @@ interface CompleteOptions {
 }
 
 /**
- * Command for managing shell completions for DuowenSpec CLI
+ * Command for managing shell completions for OpenSpec CLI
  */
 export class CompletionCommand {
   private completionProvider: CompletionProvider;
@@ -51,21 +51,21 @@ export class CompletionCommand {
 
       // Shell was detected but not supported
       if (detectionResult.detected && !detectionResult.shell) {
-        console.error(`Error: Shell '${detectionResult.detected}' is not supported yet. Currently supported: ${CompletionFactory.getSupportedShells().join(', ')}`);
+        console.error(`错误：暂不支持 shell '${detectionResult.detected}'。当前支持：${CompletionFactory.getSupportedShells().join(', ')}`);
         process.exitCode = 1;
         return null;
       }
 
       // No shell specified and cannot auto-detect
-      console.error('Error: Could not auto-detect shell. Please specify shell explicitly.');
-      console.error(`Usage: duowenspec completion ${operationName} [shell]`);
-      console.error(`Currently supported: ${CompletionFactory.getSupportedShells().join(', ')}`);
+      console.error('错误：无法自动识别当前 shell，请手动指定。');
+      console.error(`用法：openspec completion ${operationName} [shell]`);
+      console.error(`当前支持：${CompletionFactory.getSupportedShells().join(', ')}`);
       process.exitCode = 1;
       return null;
     }
 
     if (!CompletionFactory.isSupported(normalizedShell)) {
-      console.error(`Error: Shell '${normalizedShell}' is not supported yet. Currently supported: ${CompletionFactory.getSupportedShells().join(', ')}`);
+      console.error(`错误：暂不支持 shell '${normalizedShell}'。当前支持：${CompletionFactory.getSupportedShells().join(', ')}`);
       process.exitCode = 1;
       return null;
     }
@@ -125,7 +125,7 @@ export class CompletionCommand {
     const generator = CompletionFactory.createGenerator(shell);
     const installer = CompletionFactory.createInstaller(shell);
 
-    const spinner = ora(`Installing ${shell} completion script...`).start();
+    const spinner = ora(`正在安装 ${shell} 补全脚本...`).start();
 
     try {
       // Generate the completion script
@@ -140,9 +140,9 @@ export class CompletionCommand {
         console.log(`✓ ${result.message}`);
 
         if (verbose && result.installedPath) {
-          console.log(`  Installed to: ${result.installedPath}`);
+          console.log(`  安装位置：${result.installedPath}`);
           if (result.backupPath) {
-            console.log(`  Backup created: ${result.backupPath}`);
+            console.log(`  备份位置：${result.backupPath}`);
           }
 
           // Check if any shell config was updated
@@ -156,7 +156,7 @@ export class CompletionCommand {
               powershell: '$PROFILE',
             };
             const configPath = configPaths[shell] || 'config file';
-            console.log(`  ${configPath} configured automatically`);
+            console.log(`  已自动写入 ${configPath}`);
           }
         }
 
@@ -190,7 +190,7 @@ export class CompletionCommand {
             };
             const reloadCmd = reloadCommands[shell] || `restart your ${shell} shell`;
 
-            console.log(`Restart your shell or run: ${reloadCmd}`);
+            console.log(`请重启 shell，或执行：${reloadCmd}`);
           }
         }
       } else {
@@ -199,7 +199,7 @@ export class CompletionCommand {
       }
     } catch (error) {
       spinner.stop();
-      console.error(`✗ Failed to install completion script: ${error instanceof Error ? error.message : String(error)}`);
+      console.error(`✗ 安装补全脚本失败：${error instanceof Error ? error.message : String(error)}`);
       process.exitCode = 1;
     }
   }
@@ -224,17 +224,17 @@ export class CompletionCommand {
       const configPath = configPaths[shell] || `${shell} configuration`;
 
       const confirmed = await confirm({
-        message: `Remove DuowenSpec configuration from ${configPath}?`,
+        message: `确认从 ${configPath} 移除 OpenSpec 配置吗？`,
         default: false,
       });
 
       if (!confirmed) {
-        console.log('Uninstall cancelled.');
+        console.log('已取消卸载。');
         return;
       }
     }
 
-    const spinner = ora(`Uninstalling ${shell} completion script...`).start();
+    const spinner = ora(`正在卸载 ${shell} 补全脚本...`).start();
 
     try {
       const result = await installer.uninstall();
@@ -249,7 +249,7 @@ export class CompletionCommand {
       }
     } catch (error) {
       spinner.stop();
-      console.error(`✗ Failed to uninstall completion script: ${error instanceof Error ? error.message : String(error)}`);
+      console.error(`✗ 卸载补全脚本失败：${error instanceof Error ? error.message : String(error)}`);
       process.exitCode = 1;
     }
   }

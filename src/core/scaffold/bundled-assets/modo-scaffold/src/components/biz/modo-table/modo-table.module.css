@@ -1,0 +1,99 @@
+.modo-table {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 0 16px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+/* Ensure the wrapper filled its parent flex container */
+.modo-table :global(.ant-table-wrapper) {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ant Design Table v5 Flex Chain: Wrapper -> Spin -> Loading -> Container -> Content -> Body */
+.modo-table :global(.ant-table-wrapper),
+.modo-table :global(.ant-table-wrapper)> :global(div),
+.modo-table :global(.ant-table-wrapper) :global(.ant-spin-nested-loading),
+.modo-table :global(.ant-table-wrapper) :global(.ant-spin-container),
+.modo-table :global(.ant-table-wrapper) :global(.ant-table),
+.modo-table :global(.ant-table-wrapper) :global(.ant-table-container),
+.modo-table :global(.ant-table-wrapper) :global(.ant-table-content) {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Header - should NOT grow or shrink */
+.modo-table :global(.ant-table-wrapper .ant-table-header) {
+    flex: 0 0 auto !important;
+}
+
+/* Content Area - should grow to fill height if no header exists */
+.modo-table :global(.ant-table-wrapper .ant-table-content) {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table body - the scrollable heart of the component */
+.modo-table :global(.ant-table-wrapper .ant-table-body) {
+    flex: 1 1 0% !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    min-height: 0;
+    max-height: none !important;
+}
+
+.modo-table :global(.ant-table-wrapper .ant-table-body > table) {
+    width: 100%;
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+/* Theme Overrides - White Header & No Separator */
+.modo-table :global(.ant-table-thead .ant-table-cell) {
+    background-color: #ffffff !important;
+    color: #242E43;
+    border-bottom: 1px solid #EFF4F9 !important;
+    padding: 6px 8px !important;
+    height: 36px;
+}
+
+.modo-table :global(.ant-table-thead .ant-table-cell::before) {
+    display: none !important;
+}
+
+/* Text Color #242E43 for all body cells */
+.modo-table :global(.ant-table-tbody .ant-table-cell) {
+    color: #242E43;
+    border-bottom: 1px solid #EFF4F9 !important;
+}
+
+/* Size Variants */
+
+/* Default Size: Row Height 36px */
+.size-default :global(.ant-table-tbody > tr.ant-table-row > td) {
+    padding: 6px 8px !important;
+    /* Adjust padding to reach ~36px height with content */
+    height: 36px;
+    line-height: 1.5715;
+    /* Standard line-height */
+}
+
+/* Large Size: Row Height 58px */
+.size-large :global(.ant-table-tbody > tr.ant-table-row > td) {
+    padding: 10px 10px !important;
+    /* Adjust padding to reach ~58px height */
+    height: 58px;
+}

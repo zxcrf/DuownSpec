@@ -1,0 +1,45 @@
+.app-nav-container {
+    height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.app-nav-menu {
+    line-height: 44px;
+    border-bottom: none !important;
+    background: transparent !important;
+    width: 100%;
+}
+
+.app-nav-menu :global(.ant-menu-item) {
+    padding: 0 0 !important;
+    margin: 0 20px !important;
+    /* Total 40px gap between items (20px left + 20px right) */
+    transition: all 0.3s;
+    height: 44px !important;
+    line-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-bottom: 2px solid transparent !important;
+    top: 0 !important;
+}
+
+.app-nav-menu :global(.ant-menu-item:first-child) {
+    margin-left: 0 !important;
+}
+
+.app-nav-menu :global(.ant-menu-item-selected) {
+    font-weight: 500 !important;
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--primary-color) !important;
+}
+
+.app-nav-menu :global(.ant-menu-item-active),
+.app-nav-menu :global(.ant-menu-item:hover) {
+    color: var(--primary-color) !important;
+}
+
+/* Remove Ant Design default bottom border animation */
+.app-nav-menu :global(.ant-menu-item::after) {
+    display: none !important;
+}

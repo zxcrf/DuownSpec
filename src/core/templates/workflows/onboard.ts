@@ -9,75 +9,82 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 export function getOnboardSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-onboard',
-    description: 'Guided onboarding for DuowenSpec - walk through a complete workflow cycle with narration and real codebase work.',
+    description: 'OpenSpec 引导式上手流程：带讲解地走完整个工作流，并结合真实代码库操作。',
     instructions: getOnboardInstructions(),
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 function getOnboardInstructions(): string {
-  return `Guide the user through their first complete DuowenSpec workflow cycle. This is a teaching experience—you'll do real work in their codebase while explaining each step.
+  return `带用户完整走一遍他们的第一轮 OpenSpec 工作流。这是一个教学式流程：你会一边在真实代码库里做事，一边解释每一步的作用与节奏。
 
 ---
 
-## Preflight
+## 预检查
 
-Before starting, check if the DuowenSpec CLI is installed:
+开始前，先确认 OpenSpec CLI 是否可用：
 
 \`\`\`bash
 # Unix/macOS
-duowenspec --version 2>&1 || echo "CLI_NOT_INSTALLED"
+openspec --version 2>&1 || echo "CLI_NOT_INSTALLED"
 # Windows (PowerShell)
-# if (Get-Command duowenspec -ErrorAction SilentlyContinue) { duowenspec --version } else { echo "CLI_NOT_INSTALLED" }
+# if (Get-Command openspec -ErrorAction SilentlyContinue) { openspec --version } else { echo "CLI_NOT_INSTALLED" }
 \`\`\`
 
-**If CLI not installed:**
-> DuowenSpec CLI is not installed. Install it first, then come back to \`/dwsp:onboard\`.
+**如果 CLI 未安装：**
+> 当前还没有安装 OpenSpec CLI。请先安装好，再回来执行 \`/dwsp:onboard\`。
 
-Stop here if not installed.
+如果没装好，就到这里停止。
 
 ---
 
-## Phase 1: Welcome
+## 阶段 1：欢迎与说明
 
-Display:
+向用户展示：
 
 \`\`\`
-## Welcome to DuowenSpec!
+## 欢迎使用 OpenSpec
 
-I'll walk you through a complete change cycle—from idea to implementation—using a real task in your codebase. Along the way, you'll learn the workflow by doing it.
+我会带你完整走一遍一次真实的变更流程：从一个想法开始，到实现完成，再到归档收尾。
 
-**What we'll do:**
-1. Pick a small, real task in your codebase
-2. Explore the problem briefly
-3. Create a change (the container for our work)
-4. Build the artifacts: proposal → specs → design → tasks
-5. Implement the tasks
-6. Archive the completed change
+这次你会实际经历：
+1. 在代码库里挑一个真实的小任务
+2. 用 explore 模式快速理解问题
+3. 创建一个 change，作为这次工作的容器
+4. 依次补齐 proposal → specs → design → tasks
+5. 根据任务完成实现
+6. 把完成的 change 归档
 
-**Time:** ~15-20 minutes
+预计时间：约 15 到 20 分钟。
 
-Let's start by finding something to work on.
+我们先从挑一个合适的小任务开始。
 \`\`\`
 
 ---
 
-## Phase 2: Task Selection
+## 阶段 2：选择一个真实的小任务
 
-### Codebase Analysis
+### 代码库扫描
 
-Scan the codebase for small improvement opportunities. Look for:
+先在代码库里找一些适合作为第一次演练的小切口。优先寻找：
 
-1. **TODO/FIXME comments** - Search for \`TODO\`, \`FIXME\`, \`HACK\`, \`XXX\` in code files
-2. **Missing error handling** - \`catch\` blocks that swallow errors, risky operations without try-catch
-3. **Functions without tests** - Cross-reference \`src/\` with test directories
-4. **Type issues** - \`any\` types in TypeScript files (\`: any\`, \`as any\`)
-5. **Debug artifacts** - \`console.log\`, \`console.debug\`, \`debugger\` statements in non-debug code
-6. **Missing validation** - User input handlers without validation
+1. **TODO / FIXME 注释**
+   搜索 \`TODO\`、\`FIXME\`、\`HACK\`、\`XXX\`
+2. **缺少错误处理**
+   例如吞掉异常的 \`catch\`，或高风险操作未做异常保护
+3. **缺少测试的函数**
+   交叉查看 \`src/\` 和测试目录
+4. **类型问题**
+   例如 TypeScript 里的 \`: any\`、\`as any\`
+5. **调试残留**
+   例如 \`console.log\`、\`console.debug\`、\`debugger\`
+6. **缺少输入校验**
+   尤其是用户输入、接口参数、表单处理逻辑
 
-Also check recent git activity:
+也顺手看看近期 git 活动：
+
 \`\`\`bash
 # Unix/macOS
 git log --oneline -10 2>/dev/null || echo "No git history"
@@ -85,197 +92,205 @@ git log --oneline -10 2>/dev/null || echo "No git history"
 # git log --oneline -10 2>$null; if ($LASTEXITCODE -ne 0) { echo "No git history" }
 \`\`\`
 
-### Present Suggestions
+### 给出 3 到 4 个候选项
 
-From your analysis, present 3-4 specific suggestions:
-
-\`\`\`
-## Task Suggestions
-
-Based on scanning your codebase, here are some good starter tasks:
-
-**1. [Most promising task]**
-   Location: \`src/path/to/file.ts:42\`
-   Scope: ~1-2 files, ~20-30 lines
-   Why it's good: [brief reason]
-
-**2. [Second task]**
-   Location: \`src/another/file.ts\`
-   Scope: ~1 file, ~15 lines
-   Why it's good: [brief reason]
-
-**3. [Third task]**
-   Location: [location]
-   Scope: [estimate]
-   Why it's good: [brief reason]
-
-**4. Something else?**
-   Tell me what you'd like to work on.
-
-Which task interests you? (Pick a number or describe your own)
-\`\`\`
-
-**If nothing found:** Fall back to asking what the user wants to build:
-> I didn't find obvious quick wins in your codebase. What's something small you've been meaning to add or fix?
-
-### Scope Guardrail
-
-If the user picks or describes something too large (major feature, multi-day work):
+基于扫描结果，向用户给出具体建议，例如：
 
 \`\`\`
-That's a valuable task, but it's probably larger than ideal for your first DuowenSpec run-through.
+## 可作为首次演练的任务
 
-For learning the workflow, smaller is better—it lets you see the full cycle without getting stuck in implementation details.
+**1. [最值得先做的任务]**
+   位置：\`src/path/to/file.ts:42\`
+   范围：约 1-2 个文件，20-30 行
+   原因：[简要说明为什么适合]
 
-**Options:**
-1. **Slice it smaller** - What's the smallest useful piece of [their task]? Maybe just [specific slice]?
-2. **Pick something else** - One of the other suggestions, or a different small task?
-3. **Do it anyway** - If you really want to tackle this, we can. Just know it'll take longer.
+**2. [第二个任务]**
+   位置：\`src/another/file.ts\`
+   范围：约 1 个文件，15 行
+   原因：[简要说明]
 
-What would you prefer?
+**3. [第三个任务]**
+   位置：[location]
+   范围：[estimate]
+   原因：[简要说明]
+
+**4. 想做别的也可以**
+   你也可以直接告诉我你想处理什么。
+
+你对哪一个感兴趣？也可以直接说你自己的想法。
 \`\`\`
 
-Let the user override if they insist—this is a soft guardrail.
+如果没扫到明显的小切口，就直接问：
+> 我没有在代码库里看到特别明显的快速切口。你最近有没有一个一直想补上、而且规模不大的小改动？
+
+### 范围提醒
+
+如果用户选中的事情明显过大（例如大功能、多天工作量）：
+
+\`\`\`
+这个方向当然有价值，但对第一次完整体验 OpenSpec 来说，范围可能偏大。
+
+如果这次目的是理解工作流，越小的任务越容易走完整个闭环，也更容易把每个产物的作用看清楚。
+
+你可以考虑：
+1. 先切小一点，只做其中最核心的一小块
+2. 换一个更小、更快能闭环的任务
+3. 还是做这个，我就按这个带你走，只是会更久一些
+
+你更倾向哪一种？
+\`\`\`
+
+这是软提醒，不要和用户争。用户坚持的话，可以继续。
 
 ---
 
-## Phase 3: Explore Demo
+## 阶段 3：演示 explore 模式
 
-Once a task is selected, briefly demonstrate explore mode:
-
-\`\`\`
-Before we create a change, let me quickly show you **explore mode**—it's how you think through problems before committing to a direction.
-\`\`\`
-
-Spend 1-2 minutes investigating the relevant code:
-- Read the file(s) involved
-- Draw a quick ASCII diagram if it helps
-- Note any considerations
+任务确定后，先简单演示一下 explore：
 
 \`\`\`
-## Quick Exploration
+在正式创建 change 之前，我先带你快速体验一下 **explore 模式**。它的作用是在承诺方案之前，先把问题摸清楚。
+\`\`\`
 
-[Your brief analysis—what you found, any considerations]
+用 1 到 2 分钟看一下相关代码：
+- 阅读涉及的文件
+- 需要时画一个简单 ASCII 图
+- 记录潜在风险、限制和注意点
+
+然后展示类似结果：
+
+\`\`\`
+## 快速探索
+
+[你的简短分析：发现了什么、哪些地方需要注意]
 
 ┌─────────────────────────────────────────┐
-│   [Optional: ASCII diagram if helpful]  │
+│   [如果有帮助，可以放一个 ASCII 图]     │
 └─────────────────────────────────────────┘
 
-Explore mode (\`/dwsp:explore\`) is for this kind of thinking—investigating before implementing. You can use it anytime you need to think through a problem.
+这就是 \`/dwsp:explore\` 的典型用法：先想清楚，再动手实现。
 
-Now let's create a change to hold our work.
+接下来我们创建一个 change，把这次工作装进去。
 \`\`\`
 
-**PAUSE** - Wait for user acknowledgment before proceeding.
+**暂停**：等用户确认后再继续。
 
 ---
 
-## Phase 4: Create the Change
+## 阶段 4：创建 change
 
-**EXPLAIN:**
+先解释 change 的作用：
+
 \`\`\`
-## Creating a Change
+## 创建 Change
 
-A "change" in DuowenSpec is a container for all the thinking and planning around a piece of work. It lives in \`openspec/changes/<name>/\` and holds your artifacts—proposal, specs, design, tasks.
+在 OpenSpec 里，change 是一次工作的容器。它把这次工作的思考、设计、任务和最终记录都集中在一起。
 
-Let me create one for our task.
+它通常位于 \`openspec/changes/<name>/\`，里面会放 proposal、specs、design、tasks 等产物。
+
+我现在就为这个任务创建一个。
 \`\`\`
 
-**DO:** Create the change with a derived kebab-case name:
+执行：
+
 \`\`\`bash
-duowenspec new change "<derived-name>"
+openspec new change "<derived-name>"
 \`\`\`
 
-**SHOW:**
-\`\`\`
-Created: \`openspec/changes/<name>/\`
+然后展示结果：
 
-The folder structure:
 \`\`\`
+已创建：\`openspec/changes/<name>/\`
+
+目录结构大致如下：
+
 openspec/changes/<name>/
-├── proposal.md    ← Why we're doing this (empty, we'll fill it)
-├── design.md      ← How we'll build it (empty)
-├── specs/         ← Detailed requirements (empty)
-└── tasks.md       ← Implementation checklist (empty)
-\`\`\`
+├── proposal.md    ← 说明为什么做、做什么
+├── design.md      ← 说明准备怎么做
+├── specs/         ← 放细化需求
+└── tasks.md       ← 放实现清单
 
-Now let's fill in the first artifact—the proposal.
+下面先写第一份产物：proposal。
 \`\`\`
 
 ---
 
-## Phase 5: Proposal
+## 阶段 5：Proposal
 
-**EXPLAIN:**
-\`\`\`
-## The Proposal
-
-The proposal captures **why** we're making this change and **what** it involves at a high level. It's the "elevator pitch" for the work.
-
-I'll draft one based on our task.
-\`\`\`
-
-**DO:** Draft the proposal content (don't save yet):
+先解释 proposal 的作用：
 
 \`\`\`
-Here's a draft proposal:
+## Proposal
+
+proposal 负责说明这次变更为什么值得做、整体上会改什么。
+
+你可以把它理解成一次工作的“高层说明”。
+\`\`\`
+
+先起草，不急着落盘：
+
+\`\`\`
+下面是一版 proposal 草稿：
 
 ---
 
 ## Why
 
-[1-2 sentences explaining the problem/opportunity]
+[用 1-2 句话说明问题或机会]
 
 ## What Changes
 
-[Bullet points of what will be different]
+[列出主要变化点]
 
 ## Capabilities
 
 ### New Capabilities
-- \`<capability-name>\`: [brief description]
+- \`<capability-name>\`：[简短说明]
 
 ### Modified Capabilities
-<!-- If modifying existing behavior -->
+<!-- 如果是在改已有能力，就写这里 -->
 
 ## Impact
 
-- \`src/path/to/file.ts\`: [what changes]
-- [other files if applicable]
+- \`src/path/to/file.ts\`：[会改什么]
+- [其他可能受影响的文件]
 
 ---
 
-Does this capture the intent? I can adjust before we save it.
+这版是否准确表达了你的意图？如果你愿意，我可以先调整一下再保存。
 \`\`\`
 
-**PAUSE** - Wait for user approval/feedback.
+**暂停**：等待用户确认或修改意见。
 
-After approval, save the proposal:
+确认后，再获取 proposal 指令并写入：
+
 \`\`\`bash
-duowenspec instructions proposal --change "<name>" --json
+openspec instructions proposal --change "<name>" --json
 \`\`\`
-Then write the content to \`openspec/changes/<name>/proposal.md\`.
 
+将内容保存到 \`openspec/changes/<name>/proposal.md\`。
+
+可以顺手补一句：
 \`\`\`
-Proposal saved. This is your "why" document—you can always come back and refine it as understanding evolves.
-
-Next up: specs.
+Proposal 已保存。这份文档描述的是“为什么做”，后续理解变更背景时会很有用。
 \`\`\`
 
 ---
 
-## Phase 6: Specs
+## 阶段 6：Specs
 
-**EXPLAIN:**
+解释 specs 的作用：
+
 \`\`\`
 ## Specs
 
-Specs define **what** we're building in precise, testable terms. They use a requirement/scenario format that makes expected behavior crystal clear.
+specs 用来精确定义“系统应该怎么表现”。它通常使用 requirement / scenario 的结构，方便验证和测试。
 
-For a small task like this, we might only need one spec file.
+对于一个小任务，往往只需要 1 份 spec。
 \`\`\`
 
-**DO:** Create the spec file:
+创建 spec 所在目录：
+
 \`\`\`bash
 # Unix/macOS
 mkdir -p openspec/changes/<name>/specs/<capability-name>
@@ -283,10 +298,10 @@ mkdir -p openspec/changes/<name>/specs/<capability-name>
 # New-Item -ItemType Directory -Force -Path "openspec/changes/<name>/specs/<capability-name>"
 \`\`\`
 
-Draft the spec content:
+然后起草 spec 内容：
 
 \`\`\`
-Here's the spec:
+下面是一份 spec 草稿：
 
 ---
 
@@ -294,280 +309,286 @@ Here's the spec:
 
 ### Requirement: <Name>
 
-<Description of what the system should do>
+<描述系统应该具备的能力>
 
 #### Scenario: <Scenario name>
 
-- **WHEN** <trigger condition>
-- **THEN** <expected outcome>
-- **AND** <additional outcome if needed>
+- **WHEN** <触发条件>
+- **THEN** <预期结果>
+- **AND** <补充结果，可选>
 
 ---
 
-This format—WHEN/THEN/AND—makes requirements testable. You can literally read them as test cases.
+这种 WHEN / THEN / AND 结构，天生就适合拿来映射测试与验收条件。
 \`\`\`
 
-Save to \`openspec/changes/<name>/specs/<capability>/spec.md\`.
+保存到 \`openspec/changes/<name>/specs/<capability>/spec.md\`。
 
 ---
 
-## Phase 7: Design
+## 阶段 7：Design
 
-**EXPLAIN:**
+解释 design 的作用：
+
 \`\`\`
 ## Design
 
-The design captures **how** we'll build it—technical decisions, tradeoffs, approach.
+design 用来回答“准备怎么做”，包括关键技术决策、方案取舍和实现路径。
 
-For small changes, this might be brief. That's fine—not every change needs deep design discussion.
+小改动的 design 可以很短，不需要为了形式而写得很重。
 \`\`\`
 
-**DO:** Draft design.md:
+起草 design.md：
 
 \`\`\`
-Here's the design:
+下面是一版 design 草稿：
 
 ---
 
 ## Context
 
-[Brief context about the current state]
+[简要说明当前状态]
 
 ## Goals / Non-Goals
 
 **Goals:**
-- [What we're trying to achieve]
+- [本次要达成什么]
 
 **Non-Goals:**
-- [What's explicitly out of scope]
+- [明确什么不在本次范围]
 
 ## Decisions
 
-### Decision 1: [Key decision]
+### Decision 1: [关键决策]
 
-[Explanation of approach and rationale]
+[说明方案与理由]
 
 ---
 
-For a small task, this captures the key decisions without over-engineering.
+对于小任务来说，这样的 design 已经足够表达关键取舍。
 \`\`\`
 
-Save to \`openspec/changes/<name>/design.md\`.
+保存到 \`openspec/changes/<name>/design.md\`。
 
 ---
 
-## Phase 8: Tasks
+## 阶段 8：Tasks
 
-**EXPLAIN:**
+解释 tasks 的作用：
+
 \`\`\`
 ## Tasks
 
-Finally, we break the work into implementation tasks—checkboxes that drive the apply phase.
+接下来把工作拆成一组可以逐项完成的任务。进入 apply 阶段后，就是围绕这些勾选项推进。
 
-These should be small, clear, and in logical order.
+任务应该清晰、可执行，并且顺序合理。
 \`\`\`
 
-**DO:** Generate tasks based on specs and design:
+起草 tasks：
 
 \`\`\`
-Here are the implementation tasks:
+下面是任务清单草稿：
 
 ---
 
-## 1. [Category or file]
+## 1. [类别或文件]
 
-- [ ] 1.1 [Specific task]
-- [ ] 1.2 [Specific task]
+- [ ] 1.1 [具体任务]
+- [ ] 1.2 [具体任务]
 
-## 2. Verify
+## 2. 验证
 
-- [ ] 2.1 [Verification step]
-
----
-
-Each checkbox becomes a unit of work in the apply phase. Ready to implement?
-\`\`\`
-
-**PAUSE** - Wait for user to confirm they're ready to implement.
-
-Save to \`openspec/changes/<name>/tasks.md\`.
+- [ ] 2.1 [验证步骤]
 
 ---
 
-## Phase 9: Apply (Implementation)
-
-**EXPLAIN:**
-\`\`\`
-## Implementation
-
-Now we implement each task, checking them off as we go. I'll announce each one and occasionally note how the specs/design informed the approach.
+这些勾选项会直接成为 apply 阶段的执行单元。准备好进入实现了吗？
 \`\`\`
 
-**DO:** For each task:
+**暂停**：等待用户确认准备进入实现。
 
-1. Announce: "Working on task N: [description]"
-2. Implement the change in the codebase
-3. Reference specs/design naturally: "The spec says X, so I'm doing Y"
-4. Mark complete in tasks.md: \`- [ ]\` → \`- [x]\`
-5. Brief status: "✓ Task N complete"
+然后保存到 \`openspec/changes/<name>/tasks.md\`。
 
-Keep narration light—don't over-explain every line of code.
+---
 
-After all tasks:
+## 阶段 9：Apply（实现）
+
+解释 apply 的作用：
 
 \`\`\`
-## Implementation Complete
+## 开始实现
 
-All tasks done:
-- [x] Task 1
-- [x] Task 2
+现在进入实现阶段。我们会按 tasks.md 一项一项推进，并在完成后打勾。
+
+实现过程中，我会适度引用 specs 和 design，但不会把过程讲得过细。
+\`\`\`
+
+实际执行时：
+
+1. 宣布当前任务：\"正在处理任务 N：[描述]\"
+2. 在代码库里实现改动
+3. 自然引用 specs / design，例如：\"spec 里要求 X，所以这里按 Y 来做\"
+4. 在 tasks.md 中把 \`- [ ]\` 改成 \`- [x]\`
+5. 简短汇报：\"✓ 任务 N 已完成\"
+
+全部完成后，可展示：
+
+\`\`\`
+## 实现完成
+
+所有任务都已完成：
+- [x] 任务 1
+- [x] 任务 2
 - [x] ...
 
-The change is implemented! One more step—let's archive it.
+这个 change 已经实现完毕。最后一步，我们把它归档。
 \`\`\`
 
 ---
 
-## Phase 10: Archive
+## 阶段 10：Archive
 
-**EXPLAIN:**
+解释 archive 的作用：
+
 \`\`\`
-## Archiving
+## 归档
 
-When a change is complete, we archive it. This moves it from \`openspec/changes/\` to \`openspec/changes/archive/YYYY-MM-DD-<name>/\`.
+当一个 change 完成后，就把它从 \`openspec/changes/\` 移到 \`openspec/changes/archive/YYYY-MM-DD-<name>/\`。
 
-Archived changes become your project's decision history—you can always find them later to understand why something was built a certain way.
+归档后的 change 就是项目的决策记录。以后回看时，可以知道当初为什么这样做。
 \`\`\`
 
-**DO:**
+执行：
+
 \`\`\`bash
-duowenspec archive "<name>"
+openspec archive "<name>"
 \`\`\`
 
-**SHOW:**
-\`\`\`
-Archived to: \`openspec/changes/archive/YYYY-MM-DD-<name>/\`
-
-The change is now part of your project's history. The code is in your codebase, the decision record is preserved.
-\`\`\`
-
----
-
-## Phase 11: Recap & Next Steps
+展示结果：
 
 \`\`\`
-## Congratulations!
+已归档到：\`openspec/changes/archive/YYYY-MM-DD-<name>/\`
 
-You just completed a full DuowenSpec cycle:
-
-1. **Explore** - Thought through the problem
-2. **New** - Created a change container
-3. **Proposal** - Captured WHY
-4. **Specs** - Defined WHAT in detail
-5. **Design** - Decided HOW
-6. **Tasks** - Broke it into steps
-7. **Apply** - Implemented the work
-8. **Archive** - Preserved the record
-
-This same rhythm works for any size change—a small fix or a major feature.
-
----
-
-## Command Reference
-
-**Core workflow:**
-
-| Command | What it does |
-|---------|--------------|
-| \`/dwsp:propose\` | Create a change and generate all artifacts |
-| \`/dwsp:explore\` | Think through problems before/during work |
-| \`/dwsp:apply\` | Implement tasks from a change |
-| \`/dwsp:archive\` | Archive a completed change |
-
-**Additional commands:**
-
-| Command | What it does |
-|---------|--------------|
-| \`/dwsp:new\` | Start a new change, step through artifacts one at a time |
-| \`/dwsp:continue\` | Continue working on an existing change |
-| \`/dwsp:ff\` | Fast-forward: create all artifacts at once |
-| \`/dwsp:verify\` | Verify implementation matches artifacts |
-
----
-
-## What's Next?
-
-Try \`/dwsp:propose\` on something you actually want to build. You've got the rhythm now!
+代码已经保留在代码库里，这份 change 也被作为历史记录保留下来了。
 \`\`\`
 
 ---
 
-## Graceful Exit Handling
-
-### User wants to stop mid-way
-
-If the user says they need to stop, want to pause, or seem disengaged:
+## 阶段 11：回顾与下一步
 
 \`\`\`
-No problem! Your change is saved at \`openspec/changes/<name>/\`.
+## 你已经完成了一次完整的 OpenSpec 流程
 
-To pick up where we left off later:
-- \`/dwsp:continue <name>\` - Resume artifact creation
-- \`/dwsp:apply <name>\` - Jump to implementation (if tasks exist)
+这轮你实际经历了：
 
-The work won't be lost. Come back whenever you're ready.
-\`\`\`
+1. **Explore**：先理解问题
+2. **New**：创建 change 容器
+3. **Proposal**：说明为什么做
+4. **Specs**：精确定义要做什么
+5. **Design**：说明准备怎么做
+6. **Tasks**：拆成可执行步骤
+7. **Apply**：逐项实现
+8. **Archive**：把记录沉淀下来
 
-Exit gracefully without pressure.
-
-### User just wants command reference
-
-If the user says they just want to see the commands or skip the tutorial:
-
-\`\`\`
-## DuowenSpec Quick Reference
-
-**Core workflow:**
-
-| Command | What it does |
-|---------|--------------|
-| \`/dwsp:propose <name>\` | Create a change and generate all artifacts |
-| \`/dwsp:explore\` | Think through problems (no code changes) |
-| \`/dwsp:apply <name>\` | Implement tasks |
-| \`/dwsp:archive <name>\` | Archive when done |
-
-**Additional commands:**
-
-| Command | What it does |
-|---------|--------------|
-| \`/dwsp:new <name>\` | Start a new change, step by step |
-| \`/dwsp:continue <name>\` | Continue an existing change |
-| \`/dwsp:ff <name>\` | Fast-forward: all artifacts at once |
-| \`/dwsp:verify <name>\` | Verify implementation |
-
-Try \`/dwsp:propose\` to start your first change.
-\`\`\`
-
-Exit gracefully.
+这个节奏既适用于小修复，也适用于更大的功能。
 
 ---
 
-## Guardrails
+## 常用命令参考
 
-- **Follow the EXPLAIN → DO → SHOW → PAUSE pattern** at key transitions (after explore, after proposal draft, after tasks, after archive)
-- **Keep narration light** during implementation—teach without lecturing
-- **Don't skip phases** even if the change is small—the goal is teaching the workflow
-- **Pause for acknowledgment** at marked points, but don't over-pause
-- **Handle exits gracefully**—never pressure the user to continue
-- **Use real codebase tasks**—don't simulate or use fake examples
-- **Adjust scope gently**—guide toward smaller tasks but respect user choice`;
+**核心流程：**
+
+| 命令 | 作用 |
+|------|------|
+| \`/dwsp:propose\` | 创建 change 并一次生成全部产物 |
+| \`/dwsp:explore\` | 在动手前或过程中梳理问题 |
+| \`/dwsp:apply\` | 根据 change 中的任务推进实现 |
+| \`/dwsp:archive\` | 归档已完成的 change |
+
+**补充命令：**
+
+| 命令 | 作用 |
+|------|------|
+| \`/dwsp:new\` | 新建 change，并按步骤逐个产生产物 |
+| \`/dwsp:continue\` | 继续已有 change |
+| \`/dwsp:ff\` | 快速推进：一次生成实现前所需产物 |
+| \`/dwsp:verify\` | 检查实现是否与产物一致 |
+
+---
+
+## 接下来可以做什么
+
+现在你已经掌握节奏了。接下来可以直接拿一个你真正想做的改动，用 \`/dwsp:propose\` 开始。
+\`\`\`
+
+---
+
+## 中途退出时的处理
+
+### 用户想暂停
+
+如果用户表示想停一下、下次再继续，或显得不想继续当前流程：
+
+\`\`\`
+没问题。当前 change 已经保存在 \`openspec/changes/<name>/\`。
+
+之后你可以这样继续：
+- \`/dwsp:continue <name>\`：继续补齐产物
+- \`/dwsp:apply <name>\`：如果任务已经齐了，就直接进入实现
+
+这次工作不会丢，等你准备好再回来就行。
+\`\`\`
+
+要平稳收尾，不要给用户压力。
+
+### 用户只想看命令，不想走教程
+
+如果用户表示只想看命令列表，或者想跳过整个引导：
+
+\`\`\`
+## OpenSpec 快速参考
+
+**核心流程：**
+
+| 命令 | 作用 |
+|------|------|
+| \`/dwsp:propose <name>\` | 创建 change 并生成全部产物 |
+| \`/dwsp:explore\` | 思考和调查问题（不直接改代码） |
+| \`/dwsp:apply <name>\` | 开始实现任务 |
+| \`/dwsp:archive <name>\` | 完成后归档 |
+
+**补充命令：**
+
+| 命令 | 作用 |
+|------|------|
+| \`/dwsp:new <name>\` | 逐步创建 change |
+| \`/dwsp:continue <name>\` | 继续已有 change |
+| \`/dwsp:ff <name>\` | 一次生成全部实现前产物 |
+| \`/dwsp:verify <name>\` | 核对实现与产物是否一致 |
+
+如果你想直接开始，最推荐先试 \`/dwsp:propose\`。
+\`\`\`
+
+然后平稳退出。
+
+---
+
+## 约束
+
+- 在关键节点遵循 **EXPLAIN → DO → SHOW → PAUSE** 节奏
+- 实现阶段保持轻量说明，不要讲成大段教程
+- 即使任务很小，也不要省掉关键阶段，因为这次目标是让用户看懂完整工作流
+- 在标记了“暂停”的地方等用户确认，但不要过度打断节奏
+- 如果用户中途退出，要平稳收尾，不要施压
+- 尽量使用真实代码库里的任务，不要拿虚构示例走流程
+- 可以柔和地引导用户缩小范围，但最终尊重用户选择`;
 }
 
 export function getOpsxOnboardCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: Onboard',
-    description: 'Guided onboarding - walk through a complete DuowenSpec workflow cycle with narration',
-    category: 'Workflow',
+    name: 'OPSX: Onboard',
+    description: '引导式上手：带讲解走完整个 OpenSpec 工作流',
+    category: '工作流',
     tags: ['workflow', 'onboarding', 'tutorial', 'learning'],
     content: getOnboardInstructions(),
   };

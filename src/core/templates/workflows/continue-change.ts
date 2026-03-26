@@ -5,236 +5,239 @@
  * templates file into workflow-focused modules.
  */
 import type { SkillTemplate, CommandTemplate } from '../types.js';
+import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getContinueChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-continue-change',
-    description: 'Continue working on an DuowenSpec change by creating the next artifact. Use when the user wants to progress their change, create the next artifact, or continue their workflow.',
-    instructions: `Continue working on a change by creating the next artifact.
+    description: '继续推进 OpenSpec 变更，生成下一份产物。适用于用户想继续当前工作流或补齐下一步产物。',
+    instructions: `通过创建下一份产物来继续推进一个变更。
 
-**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**：可以选择性提供变更名。如果没有提供，就从对话上下文中判断；如果仍然模糊或有歧义，必须提示用户从现有变更里选择。
 
-**Steps**
+**步骤**
 
-1. **If no change name provided, prompt for selection**
+1. **如果没有提供变更名，先提示用户选择**
 
-   Run \`duowenspec list --json\` to get available changes sorted by most recently modified. Then use the **AskUserQuestion tool** to let the user select which change to work on.
+   运行 \`openspec list --json\`，获取可用变更并按最近修改时间排序。然后使用 **AskUserQuestion tool** 让用户选择要继续哪个变更。
 
-   Present the top 3-4 most recently modified changes as options, showing:
-   - Change name
-   - Schema (from \`schema\` field if present, otherwise "spec-driven")
-   - Status (e.g., "0/5 tasks", "complete", "no tasks")
-   - How recently it was modified (from \`lastModified\` field)
+   向用户展示最近 3-4 个变更，并说明：
+   - 变更名
+   - Schema（如果有 \`schema\` 字段就显示它，否则显示 "spec-driven"）
+   - 当前状态（例如："0/5 个任务"、"已完成"、"暂无任务"）
+   - 最近修改时间（来自 \`lastModified\` 字段）
 
-   Mark the most recently modified change as "(Recommended)" since it's likely what the user wants to continue.
+   将最近修改的那个标记为 "（推荐）"，因为它通常最可能就是用户想继续的变更。
 
-   **IMPORTANT**: Do NOT guess or auto-select a change. Always let the user choose.
+   **重要**：不要猜，也不要自动选中，必须让用户自己确认。
 
-2. **Check current status**
+2. **检查当前状态**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to understand current state. The response includes:
-   - \`schemaName\`: The workflow schema being used (e.g., "spec-driven")
-   - \`artifacts\`: Array of artifacts with their status ("done", "ready", "blocked")
-   - \`isComplete\`: Boolean indicating if all artifacts are complete
+   解析返回的 JSON，重点看这些字段：
+   - \`schemaName\`：当前使用的工作流 schema（例如 "spec-driven"）
+   - \`artifacts\`：各产物及其状态（"done"、"ready"、"blocked"）
+   - \`isComplete\`：是否所有产物都已完成
 
-3. **Act based on status**:
-
-   ---
-
-   **If all artifacts are complete (\`isComplete: true\`)**:
-   - Congratulate the user
-   - Show final status including the schema used
-   - Suggest: "All artifacts created! You can now implement this change or archive it."
-   - STOP
+3. **根据状态采取行动**
 
    ---
 
-   **If artifacts are ready to create** (status shows artifacts with \`status: "ready"\`):
-   - Pick the FIRST artifact with \`status: "ready"\` from the status output
-   - Get its instructions:
+   **如果所有产物都已完成（\`isComplete: true\`）**：
+   - 告知用户已经全部完成
+   - 展示最终状态，并带上当前 schema
+   - 建议："所有产物都已经创建完成。现在可以开始实现这个变更，或者直接归档。"
+   - 到这里停止
+
+   ---
+
+   **如果存在可创建的产物**（状态里有 \`status: "ready"\` 的产物）：
+   - 从状态输出中选择第一个 \`status: "ready"\` 的产物
+   - 获取它的指令：
      \`\`\`bash
-     duowenspec instructions <artifact-id> --change "<name>" --json
+     openspec instructions <artifact-id> --change "<name>" --json
      \`\`\`
-   - Parse the JSON. The key fields are:
-     - \`context\`: Project background (constraints for you - do NOT include in output)
-     - \`rules\`: Artifact-specific rules (constraints for you - do NOT include in output)
-     - \`template\`: The structure to use for your output file
-     - \`instruction\`: Schema-specific guidance
-     - \`outputPath\`: Where to write the artifact
-     - \`dependencies\`: Completed artifacts to read for context
-   - **Create the artifact file**:
-     - Read any completed dependency files for context
-     - Use \`template\` as the structure - fill in its sections
-     - Apply \`context\` and \`rules\` as constraints when writing - but do NOT copy them into the file
-     - Write to the output path specified in instructions
-   - Show what was created and what's now unlocked
-   - STOP after creating ONE artifact
+   - 解析返回的 JSON，重点看这些字段：
+     - \`context\`：项目背景（给你的约束，不要直接输出）
+     - \`rules\`：产物规则（给你的约束，不要直接输出）
+     - \`template\`：产物文件应使用的结构
+     - \`instruction\`：该产物类型的写作指导
+     - \`outputPath\`：应当写入的位置
+     - \`dependencies\`：可供参考的已完成产物
+   - **创建这份产物文件**：
+     - 先阅读已完成的依赖产物，获取上下文
+     - 以 \`template\` 为结构，把内容填完整
+     - 写作时遵守 \`context\` 与 \`rules\`，但不要把它们原文复制进文件
+     - 写入指令中给出的 \`outputPath\`
+   - 告知用户刚创建了什么，以及现在解锁了哪些后续产物
+   - 每次调用只创建 **一份** 产物，然后停止
 
    ---
 
-   **If no artifacts are ready (all blocked)**:
-   - This shouldn't happen with a valid schema
-   - Show status and suggest checking for issues
+   **如果没有任何产物可创建（全部 blocked）**：
+   - 这通常不应该发生在有效 schema 下
+   - 展示当前状态，并提醒用户检查问题
 
-4. **After creating an artifact, show progress**
+4. **创建完产物后，展示最新进度**
    \`\`\`bash
-   duowenspec status --change "<name>"
+   openspec status --change "<name>"
    \`\`\`
 
-**Output**
+**输出**
 
-After each invocation, show:
-- Which artifact was created
-- Schema workflow being used
-- Current progress (N/M complete)
-- What artifacts are now unlocked
-- Prompt: "Want to continue? Just ask me to continue or tell me what to do next."
+每次调用后，都要说明：
+- 这次创建了哪个产物
+- 当前使用的 schema / 工作流
+- 当前进度（已完成 N/M）
+- 现在又有哪些产物已经解锁
+- 提示："如果想继续，直接让我继续，或者告诉我下一步怎么做。"
 
-**Artifact Creation Guidelines**
+**产物创建指引**
 
-The artifact types and their purpose depend on the schema. Use the \`instruction\` field from the instructions output to understand what to create.
+不同 schema 下的产物类型和作用可能不同，应以 \`openspec instructions\` 返回的 \`instruction\` 为准。
 
-Common artifact patterns:
+常见的 **spec-driven** schema 模式是：proposal → specs → design → tasks。
 
-**spec-driven schema** (proposal → specs → design → tasks):
-- **proposal.md**: Ask user about the change if not clear. Fill in Why, What Changes, Capabilities, Impact.
-  - The Capabilities section is critical - each capability listed will need a spec file.
-- **specs/<capability>/spec.md**: Create one spec per capability listed in the proposal's Capabilities section (use the capability name, not the change name).
-- **design.md**: Document technical decisions, architecture, and implementation approach.
-- **tasks.md**: Break down implementation into checkboxed tasks.
+- **proposal.md**：如果变更目标还不够明确，先继续问清楚。通常需要补充 Why、What Changes、Capabilities、Impact。
+  - 其中 Capabilities 很关键，后续每个 capability 通常都会对应一份 spec 文件。
+- **specs/<capability>/spec.md**：针对 proposal 里列出的每个 capability 各写一份 spec（名字用 capability，不用 change name）。
+- **design.md**：记录技术决策、架构方案和实现思路。
+- **tasks.md**：拆解成可打勾追踪的实现任务。
 
-For other schemas, follow the \`instruction\` field from the CLI output.
+如果是其它 schema，就按 CLI 输出里的 \`instruction\` 来处理，不要自行假设。
 
-**Guardrails**
-- Create ONE artifact per invocation
-- Always read dependency artifacts before creating a new one
-- Never skip artifacts or create out of order
-- If context is unclear, ask the user before creating
-- Verify the artifact file exists after writing before marking progress
-- Use the schema's artifact sequence, don't assume specific artifact names
-- **IMPORTANT**: \`context\` and \`rules\` are constraints for YOU, not content for the file
-  - Do NOT copy \`<context>\`, \`<rules>\`, \`<project_context>\` blocks into the artifact
-  - These guide what you write, but should never appear in the output`,
+**约束**
+- 每次调用只创建 **一份** 产物
+- 创建新产物前一定先读依赖产物
+- 不要跳步骤，也不要打乱顺序
+- 如果上下文仍不清楚，就先问用户
+- 写完后要确认文件确实存在，再汇报进度
+- 按 schema 定义的产物顺序来，不要假设固定文件名
+- **重要**：\`context\` 和 \`rules\` 是给你的约束，不是产物正文
+  - 不要把 \`<context>\`、\`<rules>\`、\`<project_context>\` 原样写进产物
+  - 它们只用来指导你怎么写，不能直接出现在最终文件里
+
+${getModoBEndPlanningHint()}`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxContinueCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: Continue',
-    description: 'Continue working on a change - create the next artifact (Experimental)',
-    category: 'Workflow',
+    name: 'OPSX: Continue',
+    description: '继续推进变更：生成下一份产物（实验工作流）',
+    category: '工作流',
     tags: ['workflow', 'artifacts', 'experimental'],
-    content: `Continue working on a change by creating the next artifact.
+    content: `通过创建下一份产物来继续推进一个变更。
 
-**Input**: Optionally specify a change name after \`/dwsp:continue\` (e.g., \`/dwsp:continue add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**：可以在 \`/dwsp:continue\` 后面带变更名（例如：\`/dwsp:continue add-auth\`）。如果没有提供，就从对话上下文中判断；如果仍然模糊或有歧义，必须提示用户从现有变更里选择。
 
-**Steps**
+**步骤**
 
-1. **If no change name provided, prompt for selection**
+1. **如果没有提供变更名，先提示用户选择**
 
-   Run \`duowenspec list --json\` to get available changes sorted by most recently modified. Then use the **AskUserQuestion tool** to let the user select which change to work on.
+   运行 \`openspec list --json\`，获取可用变更并按最近修改时间排序。然后使用 **AskUserQuestion tool** 让用户选择要继续哪个变更。
 
-   Present the top 3-4 most recently modified changes as options, showing:
-   - Change name
-   - Schema (from \`schema\` field if present, otherwise "spec-driven")
-   - Status (e.g., "0/5 tasks", "complete", "no tasks")
-   - How recently it was modified (from \`lastModified\` field)
+   向用户展示最近 3-4 个变更，并说明：
+   - 变更名
+   - Schema（如果有 \`schema\` 字段就显示它，否则显示 "spec-driven"）
+   - 当前状态（例如："0/5 个任务"、"已完成"、"暂无任务"）
+   - 最近修改时间（来自 \`lastModified\` 字段）
 
-   Mark the most recently modified change as "(Recommended)" since it's likely what the user wants to continue.
+   将最近修改的那个标记为 "（推荐）"，因为它通常最可能就是用户想继续的变更。
 
-   **IMPORTANT**: Do NOT guess or auto-select a change. Always let the user choose.
+   **重要**：不要猜，也不要自动选中，必须让用户自己确认。
 
-2. **Check current status**
+2. **检查当前状态**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to understand current state. The response includes:
-   - \`schemaName\`: The workflow schema being used (e.g., "spec-driven")
-   - \`artifacts\`: Array of artifacts with their status ("done", "ready", "blocked")
-   - \`isComplete\`: Boolean indicating if all artifacts are complete
+   解析返回的 JSON，重点看这些字段：
+   - \`schemaName\`：当前使用的工作流 schema（例如 "spec-driven"）
+   - \`artifacts\`：各产物及其状态（"done"、"ready"、"blocked"）
+   - \`isComplete\`：是否所有产物都已完成
 
-3. **Act based on status**:
-
-   ---
-
-   **If all artifacts are complete (\`isComplete: true\`)**:
-   - Congratulate the user
-   - Show final status including the schema used
-   - Suggest: "All artifacts created! You can now implement this change with \`/dwsp:apply\` or archive it with \`/dwsp:archive\`."
-   - STOP
+3. **根据状态采取行动**
 
    ---
 
-   **If artifacts are ready to create** (status shows artifacts with \`status: "ready"\`):
-   - Pick the FIRST artifact with \`status: "ready"\` from the status output
-   - Get its instructions:
+   **如果所有产物都已完成（\`isComplete: true\`）**：
+   - 告知用户已经全部完成
+   - 展示最终状态，并带上当前 schema
+   - 建议："所有产物都已经创建完成。现在可以用 \`/dwsp:apply\` 开始实现，或者用 \`/dwsp:archive\` 归档。"
+   - 到这里停止
+
+   ---
+
+   **如果存在可创建的产物**（状态里有 \`status: "ready"\` 的产物）：
+   - 从状态输出中选择第一个 \`status: "ready"\` 的产物
+   - 获取它的指令：
      \`\`\`bash
-     duowenspec instructions <artifact-id> --change "<name>" --json
+     openspec instructions <artifact-id> --change "<name>" --json
      \`\`\`
-   - Parse the JSON. The key fields are:
-     - \`context\`: Project background (constraints for you - do NOT include in output)
-     - \`rules\`: Artifact-specific rules (constraints for you - do NOT include in output)
-     - \`template\`: The structure to use for your output file
-     - \`instruction\`: Schema-specific guidance
-     - \`outputPath\`: Where to write the artifact
-     - \`dependencies\`: Completed artifacts to read for context
-   - **Create the artifact file**:
-     - Read any completed dependency files for context
-     - Use \`template\` as the structure - fill in its sections
-     - Apply \`context\` and \`rules\` as constraints when writing - but do NOT copy them into the file
-     - Write to the output path specified in instructions
-   - Show what was created and what's now unlocked
-   - STOP after creating ONE artifact
+   - 解析返回的 JSON，重点看这些字段：
+     - \`context\`：项目背景（给你的约束，不要直接输出）
+     - \`rules\`：产物规则（给你的约束，不要直接输出）
+     - \`template\`：产物文件应使用的结构
+     - \`instruction\`：该产物类型的写作指导
+     - \`outputPath\`：应当写入的位置
+     - \`dependencies\`：可供参考的已完成产物
+   - **创建这份产物文件**：
+     - 先阅读已完成的依赖产物，获取上下文
+     - 以 \`template\` 为结构，把内容填完整
+     - 写作时遵守 \`context\` 与 \`rules\`，但不要把它们原文复制进文件
+     - 写入指令中给出的 \`outputPath\`
+   - 告知用户刚创建了什么，以及现在解锁了哪些后续产物
+   - 每次调用只创建 **一份** 产物，然后停止
 
    ---
 
-   **If no artifacts are ready (all blocked)**:
-   - This shouldn't happen with a valid schema
-   - Show status and suggest checking for issues
+   **如果没有任何产物可创建（全部 blocked）**：
+   - 这通常不应该发生在有效 schema 下
+   - 展示当前状态，并提醒用户检查问题
 
-4. **After creating an artifact, show progress**
+4. **创建完产物后，展示最新进度**
    \`\`\`bash
-   duowenspec status --change "<name>"
+   openspec status --change "<name>"
    \`\`\`
 
-**Output**
+**输出**
 
-After each invocation, show:
-- Which artifact was created
-- Schema workflow being used
-- Current progress (N/M complete)
-- What artifacts are now unlocked
-- Prompt: "Run \`/dwsp:continue\` to create the next artifact"
+每次调用后，都要说明：
+- 这次创建了哪个产物
+- 当前使用的 schema / 工作流
+- 当前进度（已完成 N/M）
+- 现在又有哪些产物已经解锁
+- 提示："运行 \`/dwsp:continue\` 即可继续创建下一份产物。"
 
-**Artifact Creation Guidelines**
+**产物创建指引**
 
-The artifact types and their purpose depend on the schema. Use the \`instruction\` field from the instructions output to understand what to create.
+不同 schema 下的产物类型和作用可能不同，应以 \`openspec instructions\` 返回的 \`instruction\` 为准。
 
-Common artifact patterns:
+常见的 **spec-driven** schema 模式是：proposal → specs → design → tasks。
 
-**spec-driven schema** (proposal → specs → design → tasks):
-- **proposal.md**: Ask user about the change if not clear. Fill in Why, What Changes, Capabilities, Impact.
-  - The Capabilities section is critical - each capability listed will need a spec file.
-- **specs/<capability>/spec.md**: Create one spec per capability listed in the proposal's Capabilities section (use the capability name, not the change name).
-- **design.md**: Document technical decisions, architecture, and implementation approach.
-- **tasks.md**: Break down implementation into checkboxed tasks.
+- **proposal.md**：如果变更目标还不够明确，先继续问清楚。通常需要补充 Why、What Changes、Capabilities、Impact。
+  - 其中 Capabilities 很关键，后续每个 capability 通常都会对应一份 spec 文件。
+- **specs/<capability>/spec.md**：针对 proposal 里列出的每个 capability 各写一份 spec（名字用 capability，不用 change name）。
+- **design.md**：记录技术决策、架构方案和实现思路。
+- **tasks.md**：拆解成可打勾追踪的实现任务。
 
-For other schemas, follow the \`instruction\` field from the CLI output.
+如果是其它 schema，就按 CLI 输出里的 \`instruction\` 来处理，不要自行假设。
 
-**Guardrails**
-- Create ONE artifact per invocation
-- Always read dependency artifacts before creating a new one
-- Never skip artifacts or create out of order
-- If context is unclear, ask the user before creating
-- Verify the artifact file exists after writing before marking progress
-- Use the schema's artifact sequence, don't assume specific artifact names
-- **IMPORTANT**: \`context\` and \`rules\` are constraints for YOU, not content for the file
-  - Do NOT copy \`<context>\`, \`<rules>\`, \`<project_context>\` blocks into the artifact
-  - These guide what you write, but should never appear in the output`
+**约束**
+- 每次调用只创建 **一份** 产物
+- 创建新产物前一定先读依赖产物
+- 不要跳步骤，也不要打乱顺序
+- 如果上下文仍不清楚，就先问用户
+- 写完后要确认文件确实存在，再汇报进度
+- 按 schema 定义的产物顺序来，不要假设固定文件名
+- **重要**：\`context\` 和 \`rules\` 是给你的约束，不是产物正文
+  - 不要把 \`<context>\`、\`<rules>\`、\`<project_context>\` 原样写进产物
+  - 它们只用来指导你怎么写，不能直接出现在最终文件里
+
+${getModoBEndPlanningHint()}`
   };
 }

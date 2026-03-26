@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFileSync } from 'child_process';
-import { existsSync, rmSync } from 'fs';
+import { cpSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
@@ -24,6 +24,15 @@ console.log('Compiling TypeScript...');
 try {
   runTsc(['--version']);
   runTsc();
+
+  const bundledAssetsSource = 'src/core/scaffold/bundled-assets';
+  const bundledAssetsTarget = 'dist/core/scaffold/bundled-assets';
+  if (existsSync(bundledAssetsSource)) {
+    console.log('Copying bundled scaffold assets...');
+    mkdirSync('dist/core/scaffold', { recursive: true });
+    cpSync(bundledAssetsSource, bundledAssetsTarget, { recursive: true });
+  }
+
   console.log('\n✅ Build completed successfully!');
 } catch (error) {
   console.error('\n❌ Build failed!');

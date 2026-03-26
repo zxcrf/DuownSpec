@@ -215,7 +215,7 @@ export async function buildUpdatedSpec(
     if (plan.removed.length > 0) {
       console.log(
         chalk.yellow(
-          `⚠️  Warning: ${specName} - ${plan.removed.length} REMOVED requirement(s) ignored for new spec (nothing to remove).`
+          `⚠️  提示：${specName} - 新 spec 中忽略了 ${plan.removed.length} 个 REMOVED requirement（因为没有可删除的现有内容）。`
         )
       );
     }

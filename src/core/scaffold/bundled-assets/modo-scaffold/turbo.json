@@ -1,0 +1,63 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "build:local": {
+            "dependsOn": [
+                "type-check:local"
+            ],
+            "inputs": [
+                "src/**",
+                "public/**",
+                "next.config.ts",
+                "tsconfig.json",
+                "package.json"
+            ],
+            "outputs": [
+                ".next/**",
+                "!.next/cache/**"
+            ],
+            "env": [
+                "DATABASE_URL",
+                "NEXTAUTH_SECRET",
+                "AUTH_SECRET",
+                "AUTH_URL",
+                "GITHUB_CLIENT_ID",
+                "GITHUB_CLIENT_SECRET",
+                "NEXT_PUBLIC_BASE_PATH",
+                "SESSION_MAX_AGE"
+            ]
+        },
+        "lint:local": {
+            "inputs": [
+                "src/**",
+                "eslint.config.mjs",
+                "package.json"
+            ],
+            "outputs": []
+        },
+        "type-check:local": {
+            "inputs": [
+                "src/**",
+                "tsconfig.json",
+                "package.json"
+            ],
+            "outputs": [],
+            "env": [
+                "DATABASE_URL",
+                "NEXTAUTH_SECRET",
+                "AUTH_SECRET",
+                "AUTH_URL"
+            ]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "db:generate": {
+            "cache": false
+        },
+        "db:push": {
+            "cache": false
+        }
+    }
+}

@@ -45,7 +45,7 @@ export async function instructionsCommand(
   artifactId: string | undefined,
   options: InstructionsOptions
 ): Promise<void> {
-  const spinner = ora('Generating instructions...').start();
+  const spinner = ora('正在生成说明...').start();
 
   try {
     const projectRoot = process.cwd();
@@ -63,7 +63,7 @@ export async function instructionsCommand(
       spinner.stop();
       const validIds = context.graph.getAllArtifacts().map((a) => a.id);
       throw new Error(
-        `Missing required argument <artifact>. Valid artifacts:\n  ${validIds.join('\n  ')}`
+        `缺少必填参数 <artifact>。可用 artifacts：\n  ${validIds.join('\n  ')}`
       );
     }
 
@@ -73,7 +73,7 @@ export async function instructionsCommand(
       spinner.stop();
       const validIds = context.graph.getAllArtifacts().map((a) => a.id);
       throw new Error(
-        `Artifact '${artifactId}' not found in schema '${context.schemaName}'. Valid artifacts:\n  ${validIds.join('\n  ')}`
+        `在 schema '${context.schemaName}' 中未找到 artifact '${artifactId}'。可用 artifacts：\n  ${validIds.join('\n  ')}`
       );
     }
 
@@ -118,15 +118,15 @@ export function printInstructionsText(instructions: ArtifactInstructions, isBloc
   if (isBlocked) {
     const missing = dependencies.filter((d) => !d.done).map((d) => d.id);
     console.log('<warning>');
-    console.log('This artifact has unmet dependencies. Complete them first or proceed with caution.');
-    console.log(`Missing: ${missing.join(', ')}`);
+    console.log('当前 artifact 仍有未完成依赖。建议先补齐，再继续。');
+    console.log(`缺失项：${missing.join(', ')}`);
     console.log('</warning>');
     console.log();
   }
 
   // Task directive
   console.log('<task>');
-  console.log(`Create the ${artifactId} artifact for change "${changeName}".`);
+  console.log(`请为 change "${changeName}" 创建 ${artifactId} artifact。`);
   console.log(description);
   console.log('</task>');
   console.log();
@@ -154,7 +154,7 @@ export function printInstructionsText(instructions: ArtifactInstructions, isBloc
   // Dependencies (files to read for context)
   if (dependencies.length > 0) {
     console.log('<dependencies>');
-    console.log('Read these files for context before creating this artifact:');
+    console.log('创建该 artifact 前，请先阅读以下文件作为上下文：');
     console.log();
     for (const dep of dependencies) {
       const status = dep.done ? 'done' : 'missing';
@@ -170,7 +170,7 @@ export function printInstructionsText(instructions: ArtifactInstructions, isBloc
 
   // Output location
   console.log('<output>');
-  console.log(`Write to: ${path.join(changeDir, outputPath)}`);
+  console.log(`写入位置：${path.join(changeDir, outputPath)}`);
   console.log('</output>');
   console.log();
 
@@ -184,21 +184,21 @@ export function printInstructionsText(instructions: ArtifactInstructions, isBloc
 
   // Template
   console.log('<template>');
-  console.log('<!-- Use this as the structure for your output file. Fill in the sections. -->');
+  console.log('<!-- 请按此结构输出，并补完整各部分内容。 -->');
   console.log(template.trim());
   console.log('</template>');
   console.log();
 
   // Success criteria placeholder
   console.log('<success_criteria>');
-  console.log('<!-- To be defined in schema validation rules -->');
+  console.log('<!-- 由 schema 校验规则定义 -->');
   console.log('</success_criteria>');
   console.log();
 
   // Unlocks
   if (unlocks.length > 0) {
     console.log('<unlocks>');
-    console.log(`Completing this artifact enables: ${unlocks.join(', ')}`);
+    console.log(`完成该 artifact 后将解锁：${unlocks.join(', ')}`);
     console.log('</unlocks>');
     console.log();
   }

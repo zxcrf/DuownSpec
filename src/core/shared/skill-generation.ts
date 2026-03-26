@@ -40,6 +40,11 @@ import {
   getVerificationBeforeCompletionSkillTemplate,
   type SkillTemplate,
 } from '../templates/skill-templates.js';
+import {
+  getBEndDeliverySkillTemplate,
+  getBEndComponentsSkillTemplate,
+  getBEndReviewSkillTemplate,
+} from '../templates/support/modo-b-end.js';
 import type { CommandContent } from '../command-generation/index.js';
 import { getBundledEnterpriseCapabilitySkills } from '../enterprise-capability-skills.js';
 
@@ -59,6 +64,12 @@ export interface CommandTemplateEntry {
   template: ReturnType<typeof getOpsxExploreCommandTemplate>;
   id: string;
 }
+
+export const MODO_SUPPORT_SKILL_DIRS = [
+  'openspec-b-end-delivery',
+  'openspec-b-end-components',
+  'openspec-b-end-review',
+] as const;
 
 /**
  * Gets skill templates with their directory names, optionally filtered by workflow IDs.
@@ -86,6 +97,26 @@ export function getSkillTemplates(workflowFilter?: readonly string[]): SkillTemp
 
   const filterSet = new Set(workflowFilter);
   return all.filter(entry => filterSet.has(entry.workflowId));
+}
+
+export function getModoSupportSkillTemplates(): SkillTemplateEntry[] {
+  return [
+    {
+      template: getBEndDeliverySkillTemplate(),
+      dirName: 'openspec-b-end-delivery',
+      workflowId: 'modo-support-delivery',
+    },
+    {
+      template: getBEndComponentsSkillTemplate(),
+      dirName: 'openspec-b-end-components',
+      workflowId: 'modo-support-components',
+    },
+    {
+      template: getBEndReviewSkillTemplate(),
+      dirName: 'openspec-b-end-review',
+      workflowId: 'modo-support-review',
+    },
+  ];
 }
 
 export function getEnterpriseCapabilitySkillTemplates(
@@ -177,11 +208,11 @@ export function generateSkillContent(
     ? transformInstructions(template.instructions)
     : template.instructions;
 
-  return `---
+return `---
 name: ${template.name}
 description: ${template.description}
 license: ${template.license || 'MIT'}
-compatibility: ${template.compatibility || 'Requires openspec CLI.'}
+compatibility: ${template.compatibility || '需要安装 openspec CLI。'}
 metadata:
   author: ${template.metadata?.author || 'openspec'}
   version: "${template.metadata?.version || '1.0'}"

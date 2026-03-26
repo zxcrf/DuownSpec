@@ -24,7 +24,7 @@ export interface NewChangeOptions {
 
 export async function newChangeCommand(name: string | undefined, options: NewChangeOptions): Promise<void> {
   if (!name) {
-    throw new Error('Missing required argument <name>');
+    throw new Error('缺少必填参数 <name>');
   }
 
   const validation = validateChangeName(name);
@@ -39,8 +39,8 @@ export async function newChangeCommand(name: string | undefined, options: NewCha
     validateSchemaExists(options.schema, projectRoot);
   }
 
-  const schemaDisplay = options.schema ? ` with schema '${options.schema}'` : '';
-  const spinner = ora(`Creating change '${name}'${schemaDisplay}...`).start();
+  const schemaDisplay = options.schema ? `，schema：'${options.schema}'` : '';
+  const spinner = ora(`正在创建 change '${name}'${schemaDisplay}...`).start();
 
   try {
     const result = await createChange(projectRoot, name, { schema: options.schema });
@@ -53,9 +53,9 @@ export async function newChangeCommand(name: string | undefined, options: NewCha
       await fs.writeFile(readmePath, `# ${name}\n\n${options.description}\n`, 'utf-8');
     }
 
-    spinner.succeed(`Created change '${name}' at openspec/changes/${name}/ (schema: ${result.schema})`);
+    spinner.succeed(`已创建 change '${name}'：openspec/changes/${name}/（schema: ${result.schema}）`);
   } catch (error) {
-    spinner.fail(`Failed to create change '${name}'`);
+    spinner.fail(`创建 change '${name}' 失败`);
     throw error;
   }
 }

@@ -22,7 +22,7 @@ export const auggieAdapter: ToolCommandAdapter = {
   formatFile(content: CommandContent): string {
     return `---
 description: ${content.description}
-argument-hint: command arguments
+argument-hint: 命令参数
 ---
 
 ${content.body}

@@ -66,12 +66,12 @@ export class ValidateCommand {
   private async runInteractiveSelector(opts: { strict: boolean; json: boolean; concurrency?: string }): Promise<void> {
     const { select } = await import('@inquirer/prompts');
     const choice = await select({
-      message: 'What would you like to validate?',
+      message: '你要校验什么？',
       choices: [
-        { name: 'All (changes + specs)', value: 'all' },
-        { name: 'All changes', value: 'changes' },
-        { name: 'All specs', value: 'specs' },
-        { name: 'Pick a specific change or spec', value: 'one' },
+        { name: '全部（changes + specs）', value: 'all' },
+        { name: '全部 changes', value: 'changes' },
+        { name: '全部 specs', value: 'specs' },
+        { name: '选择单个 change 或 spec', value: 'one' },
       ],
     });
 
@@ -85,21 +85,21 @@ export class ValidateCommand {
     items.push(...changes.map(id => ({ name: `change/${id}`, value: { type: 'change' as const, id } })));
     items.push(...specs.map(id => ({ name: `spec/${id}`, value: { type: 'spec' as const, id } })));
     if (items.length === 0) {
-      console.error('No items found to validate.');
+      console.error('没有可校验的条目。');
       process.exitCode = 1;
       return;
     }
-    const picked = await select<{ type: ItemType; id: string }>({ message: 'Pick an item', choices: items });
+    const picked = await select<{ type: ItemType; id: string }>({ message: '请选择一个条目', choices: items });
     await this.validateByType(picked.type, picked.id, opts);
   }
 
   private printNonInteractiveHint(): void {
-    console.error('Nothing to validate. Try one of:');
-    console.error('  duowenspec validate --all');
-    console.error('  duowenspec validate --changes');
-    console.error('  duowenspec validate --specs');
-    console.error('  duowenspec validate <item-name>');
-    console.error('Or run in an interactive terminal.');
+    console.error('当前没有可校验的内容。可以尝试：');
+    console.error('  dwsp validate --all');
+    console.error('  dwsp validate --changes');
+    console.error('  dwsp validate --specs');
+    console.error('  dwsp validate <item-name>');
+    console.error('或者在可交互终端中运行。');
   }
 
   private async validateDirectItem(itemName: string, opts: { typeOverride?: ItemType; strict: boolean; json: boolean }): Promise<void> {
@@ -110,16 +110,16 @@ export class ValidateCommand {
     const type = opts.typeOverride ?? (isChange ? 'change' : isSpec ? 'spec' : undefined);
 
     if (!type) {
-      console.error(`Unknown item '${itemName}'`);
+      console.error(`未知条目 '${itemName}'`);
       const suggestions = nearestMatches(itemName, [...changes, ...specs]);
-      if (suggestions.length) console.error(`Did you mean: ${suggestions.join(', ')}?`);
+      if (suggestions.length) console.error(`你是不是想输入：${suggestions.join(', ')}？`);
       process.exitCode = 1;
       return;
     }
 
     if (!opts.typeOverride && isChange && isSpec) {
-      console.error(`Ambiguous item '${itemName}' matches both a change and a spec.`);
-      console.error('Pass --type change|spec, or use: duowenspec change validate / duowenspec spec validate');
+      console.error(`条目 '${itemName}' 同时匹配 change 和 spec，存在歧义。`);
+      console.error('请传入 --type change|spec，或直接使用：dwsp change validate / dwsp spec validate');
       process.exitCode = 1;
       return;
     }
@@ -154,11 +154,11 @@ export class ValidateCommand {
       return;
     }
     if (report.valid) {
-      console.log(`${type === 'change' ? 'Change' : 'Specification'} '${id}' is valid`);
+      console.log(`${type === 'change' ? 'change' : 'spec'} '${id}' 校验通过`);
     } else {
-      console.error(`${type === 'change' ? 'Change' : 'Specification'} '${id}' has issues`);
+      console.error(`${type === 'change' ? 'change' : 'spec'} '${id}' 存在问题`);
       for (const issue of report.issues) {
-        const label = issue.level === 'ERROR' ? 'ERROR' : issue.level;
+        const label = issue.level === 'ERROR' ? '错误' : issue.level === 'WARNING' ? '警告' : issue.level;
         const prefix = issue.level === 'ERROR' ? '✗' : issue.level === 'WARNING' ? '⚠' : 'ℹ';
         console.error(`${prefix} [${label}] ${issue.path}: ${issue.message}`);
       }
@@ -169,15 +169,15 @@ export class ValidateCommand {
   private printNextSteps(type: ItemType): void {
     const bullets: string[] = [];
     if (type === 'change') {
-      bullets.push('- Ensure change has deltas in specs/: use headers ## ADDED/MODIFIED/REMOVED/RENAMED Requirements');
-      bullets.push('- Each requirement MUST include at least one #### Scenario: block');
-      bullets.push('- Debug parsed deltas: duowenspec change show <id> --json --deltas-only');
+      bullets.push('- 确保 change 在 specs/ 中包含变更差异，使用 ## ADDED/MODIFIED/REMOVED/RENAMED Requirements 这些标题');
+      bullets.push('- 每个 requirement 至少要包含一个 #### Scenario: 区块');
+      bullets.push('- 如需调试解析结果，可运行：dwsp change show <id> --json --deltas-only');
     } else {
-      bullets.push('- Ensure spec includes ## Purpose and ## Requirements sections');
-      bullets.push('- Each requirement MUST include at least one #### Scenario: block');
-      bullets.push('- Re-run with --json to see structured report');
+      bullets.push('- 确保 spec 包含 ## Purpose 和 ## Requirements 两个部分');
+      bullets.push('- 每个 requirement 至少要包含一个 #### Scenario: 区块');
+      bullets.push('- 可加上 --json 重新运行，查看结构化结果');
     }
-    console.error('Next steps:');
+    console.error('下一步建议：');
     bullets.forEach(b => console.error(`  ${b}`));
   }
 
@@ -228,7 +228,7 @@ export class ValidateCommand {
         const out = { items: [] as BulkItemResult[], summary, version: '1.0' };
         console.log(JSON.stringify(out, null, 2));
       } else {
-        console.log('No items found to validate.');
+        console.log('没有可校验的条目。');
       }
 
       process.exitCode = 0;
@@ -247,7 +247,7 @@ export class ValidateCommand {
           const currentIndex = index++;
           const task = queue[currentIndex];
           running++;
-          if (spinner) spinner.text = `Validating (${currentIndex + 1}/${queue.length})...`;
+          if (spinner) spinner.text = `正在校验（${currentIndex + 1}/${queue.length}）...`;
           task()
             .then(res => {
               results.push(res);

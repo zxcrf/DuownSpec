@@ -34,17 +34,17 @@ export class ChangeCommand {
       if (canPrompt && changes.length > 0) {
         const { select } = await import('@inquirer/prompts');
         const selected = await select({
-          message: 'Select a change to show',
+          message: '请选择要查看的 change',
           choices: changes.map(id => ({ name: id, value: id })),
         });
         changeName = selected;
       } else {
         if (changes.length === 0) {
-          console.error('No change specified. No active changes found.');
+          console.error('未指定 change，且当前没有进行中的 change。');
         } else {
-          console.error(`No change specified. Available IDs: ${changes.join(', ')}`);
+          console.error(`未指定 change。可用 ID：${changes.join(', ')}`);
         }
-        console.error('Hint: use "duowenspec change list" to view available changes.');
+        console.error('提示：可使用 "openspec change list" 查看可用 change。');
         process.exitCode = 1;
         return;
       }
@@ -55,14 +55,14 @@ export class ChangeCommand {
     try {
       await fs.access(proposalPath);
     } catch {
-      throw new Error(`Change "${changeName}" not found at ${proposalPath}`);
+      throw new Error(`未找到 change "${changeName}"：${proposalPath}`);
     }
 
     if (options?.json) {
       const jsonOutput = await this.converter.convertChangeToJson(proposalPath);
 
       if (options.requirementsOnly) {
-        console.error('Flag --requirements-only is deprecated; use --deltas-only instead.');
+        console.error('参数 --requirements-only 已废弃，请改用 --deltas-only。');
       }
 
       const parsed: Change = JSON.parse(jsonOutput);
@@ -143,7 +143,7 @@ export class ChangeCommand {
       console.log(JSON.stringify(sorted, null, 2));
     } else {
       if (changes.length === 0) {
-        console.log('No items found');
+        console.log('未找到任何条目');
         return;
       }
       const sorted = [...changes].sort();
@@ -191,17 +191,17 @@ export class ChangeCommand {
       if (canPrompt && changes.length > 0) {
         const { select } = await import('@inquirer/prompts');
         const selected = await select({
-          message: 'Select a change to validate',
+          message: '请选择要校验的 change',
           choices: changes.map(id => ({ name: id, value: id })),
         });
         changeName = selected;
       } else {
         if (changes.length === 0) {
-          console.error('No change specified. No active changes found.');
+          console.error('未指定 change，且当前没有进行中的 change。');
         } else {
-          console.error(`No change specified. Available IDs: ${changes.join(', ')}`);
+          console.error(`未指定 change。可用 ID：${changes.join(', ')}`);
         }
-        console.error('Hint: use "duowenspec change list" to view available changes.');
+        console.error('提示：可使用 "openspec change list" 查看可用 change。');
         process.exitCode = 1;
         return;
       }
@@ -212,7 +212,7 @@ export class ChangeCommand {
     try {
       await fs.access(changeDir);
     } catch {
-      throw new Error(`Change "${changeName}" not found at ${changeDir}`);
+      throw new Error(`未找到 change "${changeName}"：${changeDir}`);
     }
     
     const validator = new Validator(options?.strict || false);
@@ -222,11 +222,11 @@ export class ChangeCommand {
       console.log(JSON.stringify(report, null, 2));
     } else {
       if (report.valid) {
-        console.log(`Change "${changeName}" is valid`);
+        console.log(`change "${changeName}" 校验通过`);
       } else {
-        console.error(`Change "${changeName}" has issues`);
+        console.error(`change "${changeName}" 存在问题`);
         report.issues.forEach(issue => {
-          const label = issue.level === 'ERROR' ? 'ERROR' : 'WARNING';
+          const label = issue.level === 'ERROR' ? '错误' : '警告';
           const prefix = issue.level === 'ERROR' ? '✗' : '⚠';
           console.error(`${prefix} [${label}] ${issue.path}: ${issue.message}`);
         });
@@ -285,7 +285,7 @@ export class ChangeCommand {
     const bullets: string[] = [];
     bullets.push('- Ensure change has deltas in specs/: use headers ## ADDED/MODIFIED/REMOVED/RENAMED Requirements');
     bullets.push('- Each requirement MUST include at least one #### Scenario: block');
-    bullets.push('- Debug parsed deltas: duowenspec change show <id> --json --deltas-only');
+    bullets.push('- Debug parsed deltas: openspec change show <id> --json --deltas-only');
     console.error('Next steps:');
     bullets.forEach(b => console.error(`  ${b}`));
   }

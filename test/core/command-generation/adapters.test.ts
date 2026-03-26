@@ -177,7 +177,7 @@ describe('command-generation/adapters', () => {
       const output = auggieAdapter.formatFile(sampleContent);
       expect(output).toContain('---\n');
       expect(output).toContain('description: Enter explore mode for thinking');
-      expect(output).toContain('argument-hint: command arguments');
+      expect(output).toContain('argument-hint: 命令参数');
       expect(output).toContain('---\n\n');
       expect(output).toContain('This is the command body.');
     });
@@ -250,7 +250,7 @@ describe('command-generation/adapters', () => {
       const output = codexAdapter.formatFile(sampleContent);
       expect(output).toContain('---\n');
       expect(output).toContain('description: Enter explore mode for thinking');
-      expect(output).toContain('argument-hint: command arguments');
+      expect(output).toContain('argument-hint: 命令参数');
       expect(output).toContain('---\n\n');
       expect(output).toContain('This is the command body.');
     });
@@ -271,7 +271,7 @@ describe('command-generation/adapters', () => {
       expect(output).toContain('---\n');
       expect(output).toContain('name: OpenSpec Explore');
       expect(output).toContain('description: "Enter explore mode for thinking"');
-      expect(output).toContain('argument-hint: "[command arguments]"');
+      expect(output).toContain('argument-hint: "[命令参数]"');
       expect(output).toContain('---\n\n');
       expect(output).toContain('This is the command body.');
     });
@@ -312,7 +312,7 @@ describe('command-generation/adapters', () => {
       const output = costrictAdapter.formatFile(sampleContent);
       expect(output).toContain('---\n');
       expect(output).toContain('description: "Enter explore mode for thinking"');
-      expect(output).toContain('argument-hint: command arguments');
+      expect(output).toContain('argument-hint: 命令参数');
       expect(output).toContain('---\n\n');
       expect(output).toContain('This is the command body.');
     });
@@ -354,7 +354,7 @@ describe('command-generation/adapters', () => {
       const output = factoryAdapter.formatFile(sampleContent);
       expect(output).toContain('---\n');
       expect(output).toContain('description: Enter explore mode for thinking');
-      expect(output).toContain('argument-hint: command arguments');
+      expect(output).toContain('argument-hint: 命令参数');
       expect(output).toContain('---\n\n');
       expect(output).toContain('This is the command body.');
     });

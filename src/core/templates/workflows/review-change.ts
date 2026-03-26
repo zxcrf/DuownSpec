@@ -1,133 +1,136 @@
 import type { SkillTemplate, CommandTemplate } from '../types.js';
+import { getModoBEndReviewHint } from './shared-b-end.js';
 
 export function getReviewChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-review-change',
-    description: 'Review a completed change before verification and release. Use when the user wants a structured implementation review with explicit findings and a recorded outcome.',
-    instructions: `Review a completed change before release.
+    description: '在验证与发布前审查已完成变更。适用于需要结构化审查、明确问题与结论记录。',
+    instructions: `在发布前审查已完成的变更。
 
-This is a required enterprise checkpoint. Use \`superpowers:requesting-code-review\`
-and \`superpowers:receiving-code-review\` for the review capability, but keep
-DuowenSpec as the source of truth for whether the change moves forward to
-\`/dwsp:verify\` or back to implementation.
+这是企业流程中的必经检查点。可使用 \`superpowers:requesting-code-review\`
+和 \`superpowers:receiving-code-review\` 来完成审查能力，但是否进入
+\`/dwsp:verify\` 或退回实现阶段，仍以 OpenSpec 作为唯一依据。
 
-**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**: 可选传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
-**Steps**
+**步骤**
 
-1. **Select the change**
+1. **选择变更**
 
-   If a name is provided, use it. Otherwise:
-   - Infer from conversation context if the user mentioned a change
-   - Auto-select if only one active change exists
-   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   如果提供了变更名，直接使用；否则：
+   - 从对话中判断用户是否已提到某个变更
+   - 若只有一个活跃变更，可自动选择
+   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
-   Always announce: "Reviewing change: <name>" and how to override (for example \`/dwsp:review <other>\`).
+   始终明确说明："正在审查变更：<name>"，并提示如何覆盖（例如 \`/dwsp:review <other>\`）。
 
-2. **Load the change context**
+2. **加载变更上下文**
 
    \`\`\`bash
-   duowenspec status --change "<name>" --json
-   duowenspec instructions apply --change "<name>" --json
+   openspec status --change "<name>" --json
+   openspec instructions apply --change "<name>" --json
    \`\`\`
 
-   Read every context file returned by the apply instructions before reviewing.
+   在审查前读取 apply 指令返回的全部上下文文件。
 
-3. **Review the implementation**
+3. **审查实现内容**
 
-   Focus on release-blocking concerns first:
-   - Functional regressions
-   - Missing work against the approved tasks
-   - Spec mismatches
-   - Risky edge cases
-   - Missing tests or weak coverage
+   优先关注会阻塞发布的问题：
+   - 功能回归
+   - 已批准任务存在漏做
+   - 与 spec 不一致
+   - 高风险边界场景
+   - 测试缺失或覆盖薄弱
 
-   Use file references when you cite an issue.
+   引用问题时请附文件位置。
 
-4. **Produce a review outcome**
+4. **产出审查结论**
 
-   Create a structured review record with:
-   - \`Change\`
-   - \`Reviewer\`
-   - \`Outcome\`: pass / changes-required
-   - \`Scope Reviewed\`
-   - \`Findings\`
-   - \`Required Follow-ups\`
+   生成结构化审查记录，至少包含：
+   - \`变更\`
+   - \`审查人\`
+   - \`结论\`: pass / changes-required
+   - \`审查范围\`
+   - \`问题发现\`
+   - \`必需后续项\`
 
-   If no issues are found, explicitly say so.
+   如果没有发现问题，要明确说明。
 
-5. **Decide the next step**
+5. **确定下一步**
 
-   - If critical issues exist: stop and send the change back to implementation
-   - If only minor follow-ups exist: state them clearly before verification
-   - If review passes: recommend moving to \`/dwsp:verify\`
+   - 若存在严重问题：停止推进并退回实现阶段
+   - 若仅有轻微后续项：在进入 verify 前明确列出
+   - 若审查通过：建议进入 \`/dwsp:verify\`
 
-**Guardrails**
-- Review for bugs, regressions, and release risk first
-- Do not rewrite the plan during review
-- Do not mark review as passed if release-blocking issues remain
-- If you cannot verify a claim from the available context, say so clearly`,
+**约束**
+- 优先审查缺陷、回归与发布风险
+- 审查阶段不要重写计划
+- 仍有阻塞发布的问题时，不得标记为通过
+- 若无法从现有上下文验证某条结论，必须明确说明
+
+${getModoBEndReviewHint()}`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxReviewCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: Review',
-    description: 'Review a completed change and capture release-blocking findings',
-    category: 'Workflow',
+    name: 'OPSX: Review',
+    description: '审查已完成变更并记录阻塞发布的问题',
+    category: '工作流',
     tags: ['workflow', 'review', 'enterprise'],
-    content: `Review a completed change before release.
+    content: `在发布前审查已完成的变更。
 
-This is a required enterprise checkpoint. Use \`superpowers:requesting-code-review\`
-and \`superpowers:receiving-code-review\` for the review capability, but keep
-DuowenSpec as the source of truth for whether the change moves forward to
-\`/dwsp:verify\` or back to implementation.
+这是企业流程中的必经检查点。可使用 \`superpowers:requesting-code-review\`
+和 \`superpowers:receiving-code-review\` 来完成审查能力，但是否进入
+\`/dwsp:verify\` 或退回实现阶段，仍以 OpenSpec 作为唯一依据。
 
-**Input**: Optionally specify a change name after \`/dwsp:review\` (for example \`/dwsp:review add-auth\`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**输入**: 可选在 \`/dwsp:review\` 后传入变更名（例如 \`/dwsp:review add-auth\`）。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
 
-**Steps**
+**步骤**
 
-1. **Select the change**
+1. **选择变更**
 
-   If a name is provided, use it. Otherwise:
-   - Infer from conversation context if the user mentioned a change
-   - Auto-select if only one active change exists
-   - If ambiguous, run \`duowenspec list --json\` to get available changes and use the **AskUserQuestion tool** to let the user select
+   如果提供了变更名，直接使用；否则：
+   - 从对话中判断用户是否已提到某个变更
+   - 若只有一个活跃变更，可自动选择
+   - 若存在歧义，执行 \`openspec list --json\` 获取可选变更，并使用 **AskUserQuestion tool** 让用户选择
 
-2. **Load the change context**
+2. **加载变更上下文**
 
    \`\`\`bash
-   duowenspec status --change "<name>" --json
-   duowenspec instructions apply --change "<name>" --json
+   openspec status --change "<name>" --json
+   openspec instructions apply --change "<name>" --json
    \`\`\`
 
-   Read every context file returned by the apply instructions before reviewing.
+   在审查前读取 apply 指令返回的全部上下文文件。
 
-3. **Review the implementation**
+3. **审查实现内容**
 
-   Focus on release-blocking concerns first:
-   - Functional regressions
-   - Missing work against the approved tasks
-   - Spec mismatches
-   - Risky edge cases
-   - Missing tests or weak coverage
+   优先关注会阻塞发布的问题：
+   - 功能回归
+   - 已批准任务存在漏做
+   - 与 spec 不一致
+   - 高风险边界场景
+   - 测试缺失或覆盖薄弱
 
-4. **Produce a review outcome**
+4. **产出审查结论**
 
-   Create a structured review record with:
-   - \`Change\`
-   - \`Reviewer\`
-   - \`Outcome\`: pass / changes-required
-   - \`Scope Reviewed\`
-   - \`Findings\`
-   - \`Required Follow-ups\`
+   生成结构化审查记录，至少包含：
+   - \`变更\`
+   - \`审查人\`
+   - \`结论\`: pass / changes-required
+   - \`审查范围\`
+   - \`问题发现\`
+   - \`必需后续项\`
 
-5. **Decide the next step**
+5. **确定下一步**
 
-   - If critical issues exist: stop and send the change back to implementation
-   - If review passes: recommend moving to \`/dwsp:verify\``,
+   - 若存在严重问题：停止推进并退回实现阶段
+- 若审查通过：建议进入 \`/dwsp:verify\`
+
+${getModoBEndReviewHint()}`,
   };
 }

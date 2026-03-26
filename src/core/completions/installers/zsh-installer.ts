@@ -105,7 +105,7 @@ export class ZshInstaller {
    */
   private generateZshrcConfig(completionsDir: string): string {
     return [
-      '# DuowenSpec shell completions configuration',
+      '# OpenSpec shell completions configuration',
       `fpath=("${completionsDir}" $fpath)`,
       'autoload -Uz compinit',
       'compinit',
@@ -152,7 +152,7 @@ export class ZshInstaller {
   }
 
   /**
-   * Check if .zshrc has DuowenSpec configuration markers
+   * Check if .zshrc has OpenSpec configuration markers
    *
    * @returns true if .zshrc exists and has markers
    */
@@ -435,10 +435,10 @@ export class ZshInstaller {
 
       const messages: string[] = [];
       if (scriptRemoved) {
-        messages.push(`Completion script removed from ${targetPath}`);
+        messages.push(`已从 ${targetPath} 移除补全脚本`);
       }
       if (zshrcCleaned && !isOhMyZsh) {
-        messages.push('Removed DuowenSpec configuration from ~/.zshrc');
+        messages.push('已从 ~/.zshrc 移除 OpenSpec 配置');
       }
 
       return {

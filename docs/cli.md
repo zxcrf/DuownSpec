@@ -1,6 +1,6 @@
 # CLI Reference
 
-The OpenSpec CLI (`openspec`) provides terminal commands for project setup, validation, status inspection, and management. These commands complement the AI slash commands (like `/opsx:propose`) documented in [Commands](commands.md).
+The OpenSpec CLI (`openspec`) provides terminal commands for project setup, validation, status inspection, and management. These commands complement the AI slash commands (like `/dwsp:propose`) documented in [Commands](commands.md).
 
 ## Summary
 
@@ -27,9 +27,9 @@ These commands are interactive and designed for terminal use:
 
 | Command | Purpose |
 |---------|---------|
-| `openspec init` | Initialize project (interactive prompts) |
+| `dwsp init` | Initialize project (interactive prompts) |
 | `openspec view` | Interactive dashboard |
-| `openspec config edit` | Open config in editor |
+| `dwsp config edit` | Open config in editor |
 | `openspec feedback` | Submit feedback via GitHub |
 | `openspec completion install` | Install shell completions |
 
@@ -63,14 +63,14 @@ These options work with all commands:
 
 ## Setup Commands
 
-### `openspec init`
+### `dwsp init`
 
 Initialize OpenSpec in your project. Creates the folder structure and configures AI tool integrations.
 
 Default behavior uses global config defaults: profile `core`, delivery `both`, workflows `propose, explore, apply, archive`.
 
 ```
-openspec init [path] [options]
+dwsp init [path] [options]
 ```
 
 **Arguments:**
@@ -87,30 +87,30 @@ openspec init [path] [options]
 | `--force` | Auto-cleanup legacy files without prompting |
 | `--profile <profile>` | Override global profile for this init run (`core` or `custom`) |
 
-`--profile custom` uses whatever workflows are currently selected in global config (`openspec config profile`).
+`--profile custom` uses whatever workflows are currently selected in global config (`dwsp config profile`).
 
-**Supported tool IDs (`--tools`):** `amazon-q`, `antigravity`, `auggie`, `claude`, `cline`, `codex`, `codebuddy`, `continue`, `costrict`, `crush`, `cursor`, `factory`, `gemini`, `github-copilot`, `iflow`, `kilocode`, `kiro`, `opencode`, `pi`, `qoder`, `qwen`, `roocode`, `trae`, `windsurf`
+**Supported tool IDs (`--tools`):** `claude`, `codex`, `codebuddy`, `opencode`, `qoder`, `trae`
 
 **Examples:**
 
 ```bash
 # Interactive initialization
-openspec init
+dwsp init
 
 # Initialize in a specific directory
-openspec init ./my-project
+dwsp init ./my-project
 
-# Non-interactive: configure for Claude and Cursor
-openspec init --tools claude,cursor
+# Non-interactive: configure for Claude and Codex
+dwsp init --tools claude,codex
 
 # Configure for all supported tools
-openspec init --tools all
+dwsp init --tools all
 
 # Override profile for this run
-openspec init --profile core
+dwsp init --profile core
 
 # Skip prompts and auto-cleanup legacy files
-openspec init --force
+dwsp init --force
 ```
 
 **What it creates:**
@@ -122,19 +122,19 @@ openspec/
 └── config.yaml         # Project configuration
 
 .claude/skills/         # Claude Code skills (if claude selected)
-.cursor/skills/         # Cursor skills (if cursor selected)
-.cursor/commands/       # Cursor OPSX commands (if delivery includes commands)
+.opencode/skills/       # OpenCode skills (if opencode selected)
+.opencode/commands/     # OpenCode OPSX commands (if delivery includes commands)
 ... (other tool configs)
 ```
 
 ---
 
-### `openspec update`
+### `dwsp update`
 
 Update OpenSpec instruction files after upgrading the CLI. Re-generates AI tool configuration files using your current global profile, selected workflows, and delivery mode.
 
 ```
-openspec update [path] [options]
+dwsp update [path] [options]
 ```
 
 **Arguments:**
@@ -154,7 +154,7 @@ openspec update [path] [options]
 ```bash
 # Update instruction files after npm upgrade
 npm update @fission-ai/openspec
-openspec update
+dwsp update
 ```
 
 ---
@@ -756,12 +756,12 @@ spec-driven resolves from: package
 
 ## Configuration Commands
 
-### `openspec config`
+### `dwsp config`
 
 View and modify global OpenSpec configuration.
 
 ```
-openspec config <subcommand> [options]
+dwsp config <subcommand> [options]
 ```
 
 **Subcommands:**
@@ -781,57 +781,57 @@ openspec config <subcommand> [options]
 
 ```bash
 # Show config file path
-openspec config path
+dwsp config path
 
 # List all settings
-openspec config list
+dwsp config list
 
 # Get a specific value
-openspec config get telemetry.enabled
+dwsp config get telemetry.enabled
 
 # Set a value
-openspec config set telemetry.enabled false
+dwsp config set telemetry.enabled false
 
 # Set a string value explicitly
-openspec config set user.name "My Name" --string
+dwsp config set user.name "My Name" --string
 
 # Remove a custom setting
-openspec config unset user.name
+dwsp config unset user.name
 
 # Reset all configuration
-openspec config reset --all --yes
+dwsp config reset --all --yes
 
 # Edit config in your editor
-openspec config edit
+dwsp config edit
 
 # Configure profile with action-based wizard
-openspec config profile
+dwsp config profile
 
 # Fast preset: switch workflows to core (keeps delivery mode)
-openspec config profile core
+dwsp config profile core
 ```
 
-`openspec config profile` starts with a current-state summary, then lets you choose:
+`dwsp config profile` starts with a current-state summary, then lets you choose:
 - Change delivery + workflows
 - Change delivery only
 - Change workflows only
 - Keep current settings (exit)
 
 If you keep current settings, no changes are written and no update prompt is shown.
-If there are no config changes but the current project files are out of sync with your global profile/delivery, OpenSpec will show a warning and suggest running `openspec update`.
+If there are no config changes but the current project files are out of sync with your global profile/delivery, OpenSpec will show a warning and suggest running `dwsp update`.
 Pressing `Ctrl+C` also cancels the flow cleanly (no stack trace) and exits with code `130`.
-In the workflow checklist, `[x]` means the workflow is selected in global config. To apply those selections to project files, run `openspec update` (or choose `Apply changes to this project now?` when prompted inside a project).
+In the workflow checklist, `[x]` means the workflow is selected in global config. To apply those selections to project files, run `dwsp update` (or choose `Apply changes to this project now?` when prompted inside a project).
 
 **Interactive examples:**
 
 ```bash
 # Delivery-only update
-openspec config profile
+dwsp config profile
 # choose: Change delivery only
 # choose delivery: Skills only
 
 # Workflows-only update
-openspec config profile
+dwsp config profile
 # choose: Change workflows only
 # toggle workflows in the checklist, then confirm
 ```
@@ -921,14 +921,14 @@ openspec completion uninstall
 | Variable | Description |
 |----------|-------------|
 | `OPENSPEC_CONCURRENCY` | Default concurrency for bulk validation (default: 6) |
-| `EDITOR` or `VISUAL` | Editor for `openspec config edit` |
+| `EDITOR` or `VISUAL` | Editor for `dwsp config edit` |
 | `NO_COLOR` | Disable color output when set |
 
 ---
 
 ## Related Documentation
 
-- [Commands](commands.md) - AI slash commands (`/opsx:propose`, `/opsx:apply`, etc.)
+- [Commands](commands.md) - AI slash commands (`/dwsp:propose`, `/dwsp:apply`, etc.)
 - [Workflows](workflows.md) - Common patterns and when to use each command
 - [Customization](customization.md) - Create custom schemas and templates
 - [Getting Started](getting-started.md) - First-time setup guide

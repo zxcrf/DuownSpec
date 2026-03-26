@@ -5,202 +5,207 @@
  * templates file into workflow-focused modules.
  */
 import type { SkillTemplate, CommandTemplate } from '../types.js';
+import { getModoBEndImplementationHint } from './shared-b-end.js';
 
 export function getFfChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-ff-change',
-    description: 'Fast-forward through DuowenSpec artifact creation. Use when the user wants to quickly create all artifacts needed for implementation without stepping through each one individually.',
-    instructions: `Fast-forward through artifact creation - generate everything needed to start implementation in one go.
+    description: '快速完成 OpenSpec 产物生成。适用于用户想一次性生成实现所需全部产物，而不逐步推进。',
+    instructions: `用“快速推进”方式一次生成开始实现所需的全部产物。
 
-**Input**: The user's request should include a change name (kebab-case) OR a description of what they want to build.
+**输入**：用户的请求应当包含一个变更名（kebab-case），或者描述想要构建/修复的内容。
 
-**Steps**
+**步骤**
 
-1. **If no clear input provided, ask what they want to build**
+1. **如果输入还不够清晰，先问清楚要做什么**
 
-   Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+   使用 **AskUserQuestion tool**（开放式提问，不给预设选项）询问：
+   > "你想处理什么变更？请描述你想新增或修复的内容。"
 
-   From their description, derive a kebab-case name (e.g., "add user authentication" → \`add-user-auth\`).
+   根据用户描述推导一个 kebab-case 名称（例如："新增用户认证" → \`add-user-auth\`）。
 
-   **IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
+   **重要**：在没弄清用户目标前，不要继续。
 
-2. **Create the change directory**
+2. **创建变更目录**
    \`\`\`bash
-   duowenspec new change "<name>"
+   openspec new change "<name>"
    \`\`\`
-   This creates a scaffolded change at \`openspec/changes/<name>/\`.
+   这会在 \`openspec/changes/<name>/\` 下创建变更骨架。
 
-3. **Get the artifact build order**
+3. **获取产物构建顺序**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to get:
-   - \`applyRequires\`: array of artifact IDs needed before implementation (e.g., \`["tasks"]\`)
-   - \`artifacts\`: list of all artifacts with their status and dependencies
+   解析返回的 JSON，重点看：
+   - \`applyRequires\`：开始实现前必须完成的产物 ID（例如 \`["tasks"]\`）
+   - \`artifacts\`：全部产物的状态及依赖关系
 
-4. **Create artifacts in sequence until apply-ready**
+4. **按顺序持续创建产物，直到满足 apply 前置条件**
 
-   Use the **TodoWrite tool** to track progress through the artifacts.
+   使用 **TodoWrite tool** 跟踪产物创建进度。
 
-   Loop through artifacts in dependency order (artifacts with no pending dependencies first):
+   按依赖顺序循环处理产物（优先处理没有未完成依赖的产物）。
 
-   a. **For each artifact that is \`ready\` (dependencies satisfied)**:
-      - Get instructions:
+   a. **针对每个 \`ready\` 状态的产物（依赖已满足）**：
+      - 获取指令：
         \`\`\`bash
-        duowenspec instructions <artifact-id> --change "<name>" --json
+        openspec instructions <artifact-id> --change "<name>" --json
         \`\`\`
-      - The instructions JSON includes:
-        - \`context\`: Project background (constraints for you - do NOT include in output)
-        - \`rules\`: Artifact-specific rules (constraints for you - do NOT include in output)
-        - \`template\`: The structure to use for your output file
-        - \`instruction\`: Schema-specific guidance for this artifact type
-        - \`outputPath\`: Where to write the artifact
-        - \`dependencies\`: Completed artifacts to read for context
-      - Read any completed dependency files for context
-      - Create the artifact file using \`template\` as the structure
-      - Apply \`context\` and \`rules\` as constraints - but do NOT copy them into the file
-      - Show brief progress: "✓ Created <artifact-id>"
+      - 返回的 JSON 中重点字段有：
+        - \`context\`：项目背景（给你的约束，不要直接输出）
+        - \`rules\`：产物规则（给你的约束，不要直接输出）
+        - \`template\`：产物文件应使用的结构
+        - \`instruction\`：该产物类型的写作指导
+        - \`outputPath\`：应当写入的位置
+        - \`dependencies\`：可供参考的已完成产物
+      - 先阅读已完成的依赖产物，获取上下文
+      - 以 \`template\` 为结构创建产物文件
+      - 写作时遵守 \`context\` 与 \`rules\`，但不要把它们原文复制进文件
+      - 简短反馈进度："✓ 已创建 <artifact-id>"
 
-   b. **Continue until all \`applyRequires\` artifacts are complete**
-      - After creating each artifact, re-run \`duowenspec status --change "<name>" --json\`
-      - Check if every artifact ID in \`applyRequires\` has \`status: "done"\` in the artifacts array
-      - Stop when all \`applyRequires\` artifacts are done
+   b. **持续处理，直到 \`applyRequires\` 中的产物全部完成**
+      - 每创建完一份产物，都重新运行 \`openspec status --change "<name>" --json\`
+      - 检查 \`applyRequires\` 中每个产物在 \`artifacts\` 里是否都已是 \`status: "done"\`
+      - 全部完成后停止
 
-   c. **If an artifact requires user input** (unclear context):
-      - Use **AskUserQuestion tool** to clarify
-      - Then continue with creation
+   c. **如果某份产物需要额外用户输入**（上下文仍不够明确）：
+      - 使用 **AskUserQuestion tool** 继续澄清
+      - 然后继续创建
 
-5. **Show final status**
+5. **展示最终状态**
    \`\`\`bash
-   duowenspec status --change "<name>"
+   openspec status --change "<name>"
    \`\`\`
 
-**Output**
+**输出**
 
-After completing all artifacts, summarize:
-- Change name and location
-- List of artifacts created with brief descriptions
-- What's ready: "All artifacts created! Ready for implementation."
-- Prompt: "Run \`/dwsp:apply\` or ask me to implement to start working on the tasks."
+全部产物创建完成后，给出一段总结：
+- 变更名称与所在路径
+- 本次创建了哪些产物，并简要说明
+- 当前是否已经可以进入实现："所有产物已创建完成，可以开始实现。"
+- 提示："运行 \`/dwsp:apply\`，或者直接让我开始实现这些任务。"
 
-**Artifact Creation Guidelines**
+**产物创建指引**
 
-- Follow the \`instruction\` field from \`duowenspec instructions\` for each artifact type
-- The schema defines what each artifact should contain - follow it
-- Read dependency artifacts for context before creating new ones
-- Use \`template\` as the structure for your output file - fill in its sections
-- **IMPORTANT**: \`context\` and \`rules\` are constraints for YOU, not content for the file
-  - Do NOT copy \`<context>\`, \`<rules>\`, \`<project_context>\` blocks into the artifact
-  - These guide what you write, but should never appear in the output
+- 每类产物都以 \`openspec instructions\` 返回的 \`instruction\` 为准
+- schema 已经定义了每份产物该写什么，按它来
+- 创建新产物前先阅读依赖产物
+- 以 \`template\` 作为输出结构，把对应章节补完整
+- **重要**：\`context\` 与 \`rules\` 是给你的约束，不是产物正文
+  - 不要把 \`<context>\`、\`<rules>\`、\`<project_context>\` 这些块复制进产物
+  - 它们只用于指导你写作，不应出现在最终文件中
 
-**Guardrails**
-- Create ALL artifacts needed for implementation (as defined by schema's \`apply.requires\`)
-- Always read dependency artifacts before creating a new one
-- If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
-- If a change with that name already exists, suggest continuing that change instead
-- Verify each artifact file exists after writing before proceeding to next`,
+**约束**
+- 要把开始实现前所需的全部产物都创建完成（即 schema 的 \`apply.requires\`）
+- 创建新产物前一定先读依赖产物
+- 如果上下文确实关键且不清楚，可以问用户；但在大多数情况下应做合理判断，保持推进节奏
+- 如果同名变更已存在，建议继续已有变更，而不是重复创建
+- 每写完一份产物，都要确认文件已经落盘，再进入下一份
+
+${getModoBEndImplementationHint()}`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxFfCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: Fast Forward',
-    description: 'Create a change and generate all artifacts needed for implementation in one go',
-    category: 'Workflow',
+    name: 'OPSX: Fast Forward',
+    description: '一步创建变更并生成实现所需全部产物',
+    category: '工作流',
     tags: ['workflow', 'artifacts', 'experimental'],
-    content: `Fast-forward through artifact creation - generate everything needed to start implementation.
+    content: `用“快速推进”方式一次生成开始实现所需的全部产物。
 
-**Input**: The argument after \`/dwsp:ff\` is the change name (kebab-case), OR a description of what the user wants to build.
+**输入**：\`/dwsp:ff\` 后面的参数可以是变更名（kebab-case），也可以是用户想构建内容的描述。
 
-**Steps**
+**步骤**
 
-1. **If no input provided, ask what they want to build**
+1. **如果还没有输入内容，先问清楚要做什么**
 
-   Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+   使用 **AskUserQuestion tool**（开放式提问，不给预设选项）询问：
+   > "你想处理什么变更？请描述你想新增或修复的内容。"
 
-   From their description, derive a kebab-case name (e.g., "add user authentication" → \`add-user-auth\`).
+   根据用户描述推导一个 kebab-case 名称（例如："新增用户认证" → \`add-user-auth\`）。
 
-   **IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
+   **重要**：在没弄清用户目标前，不要继续。
 
-2. **Create the change directory**
+2. **创建变更目录**
    \`\`\`bash
-   duowenspec new change "<name>"
+   openspec new change "<name>"
    \`\`\`
-   This creates a scaffolded change at \`openspec/changes/<name>/\`.
+   这会在 \`openspec/changes/<name>/\` 下创建变更骨架。
 
-3. **Get the artifact build order**
+3. **获取产物构建顺序**
    \`\`\`bash
-   duowenspec status --change "<name>" --json
+   openspec status --change "<name>" --json
    \`\`\`
-   Parse the JSON to get:
-   - \`applyRequires\`: array of artifact IDs needed before implementation (e.g., \`["tasks"]\`)
-   - \`artifacts\`: list of all artifacts with their status and dependencies
+   解析返回的 JSON，重点看：
+   - \`applyRequires\`：开始实现前必须完成的产物 ID（例如 \`["tasks"]\`）
+   - \`artifacts\`：全部产物的状态及依赖关系
 
-4. **Create artifacts in sequence until apply-ready**
+4. **按顺序持续创建产物，直到满足 apply 前置条件**
 
-   Use the **TodoWrite tool** to track progress through the artifacts.
+   使用 **TodoWrite tool** 跟踪产物创建进度。
 
-   Loop through artifacts in dependency order (artifacts with no pending dependencies first):
+   按依赖顺序循环处理产物（优先处理没有未完成依赖的产物）。
 
-   a. **For each artifact that is \`ready\` (dependencies satisfied)**:
-      - Get instructions:
+   a. **针对每个 \`ready\` 状态的产物（依赖已满足）**：
+      - 获取指令：
         \`\`\`bash
-        duowenspec instructions <artifact-id> --change "<name>" --json
+        openspec instructions <artifact-id> --change "<name>" --json
         \`\`\`
-      - The instructions JSON includes:
-        - \`context\`: Project background (constraints for you - do NOT include in output)
-        - \`rules\`: Artifact-specific rules (constraints for you - do NOT include in output)
-        - \`template\`: The structure to use for your output file
-        - \`instruction\`: Schema-specific guidance for this artifact type
-        - \`outputPath\`: Where to write the artifact
-        - \`dependencies\`: Completed artifacts to read for context
-      - Read any completed dependency files for context
-      - Create the artifact file using \`template\` as the structure
-      - Apply \`context\` and \`rules\` as constraints - but do NOT copy them into the file
-      - Show brief progress: "✓ Created <artifact-id>"
+      - 返回的 JSON 中重点字段有：
+        - \`context\`：项目背景（给你的约束，不要直接输出）
+        - \`rules\`：产物规则（给你的约束，不要直接输出）
+        - \`template\`：产物文件应使用的结构
+        - \`instruction\`：该产物类型的写作指导
+        - \`outputPath\`：应当写入的位置
+        - \`dependencies\`：可供参考的已完成产物
+      - 先阅读已完成的依赖产物，获取上下文
+      - 以 \`template\` 为结构创建产物文件
+      - 写作时遵守 \`context\` 与 \`rules\`，但不要把它们原文复制进文件
+      - 简短反馈进度："✓ 已创建 <artifact-id>"
 
-   b. **Continue until all \`applyRequires\` artifacts are complete**
-      - After creating each artifact, re-run \`duowenspec status --change "<name>" --json\`
-      - Check if every artifact ID in \`applyRequires\` has \`status: "done"\` in the artifacts array
-      - Stop when all \`applyRequires\` artifacts are done
+   b. **持续处理，直到 \`applyRequires\` 中的产物全部完成**
+      - 每创建完一份产物，都重新运行 \`openspec status --change "<name>" --json\`
+      - 检查 \`applyRequires\` 中每个产物在 \`artifacts\` 里是否都已是 \`status: "done"\`
+      - 全部完成后停止
 
-   c. **If an artifact requires user input** (unclear context):
-      - Use **AskUserQuestion tool** to clarify
-      - Then continue with creation
+   c. **如果某份产物需要额外用户输入**（上下文仍不够明确）：
+      - 使用 **AskUserQuestion tool** 继续澄清
+      - 然后继续创建
 
-5. **Show final status**
+5. **展示最终状态**
    \`\`\`bash
-   duowenspec status --change "<name>"
+   openspec status --change "<name>"
    \`\`\`
 
-**Output**
+**输出**
 
-After completing all artifacts, summarize:
-- Change name and location
-- List of artifacts created with brief descriptions
-- What's ready: "All artifacts created! Ready for implementation."
-- Prompt: "Run \`/dwsp:apply\` to start implementing."
+全部产物创建完成后，给出一段总结：
+- 变更名称与所在路径
+- 本次创建了哪些产物，并简要说明
+- 当前是否已经可以进入实现："所有产物已创建完成，可以开始实现。"
+- 提示："运行 \`/dwsp:apply\` 开始实现。"
 
-**Artifact Creation Guidelines**
+**产物创建指引**
 
-- Follow the \`instruction\` field from \`duowenspec instructions\` for each artifact type
-- The schema defines what each artifact should contain - follow it
-- Read dependency artifacts for context before creating new ones
-- Use \`template\` as the structure for your output file - fill in its sections
-- **IMPORTANT**: \`context\` and \`rules\` are constraints for YOU, not content for the file
-  - Do NOT copy \`<context>\`, \`<rules>\`, \`<project_context>\` blocks into the artifact
-  - These guide what you write, but should never appear in the output
+- 每类产物都以 \`openspec instructions\` 返回的 \`instruction\` 为准
+- schema 已经定义了每份产物该写什么，按它来
+- 创建新产物前先阅读依赖产物
+- 以 \`template\` 作为输出结构，把对应章节补完整
+- **重要**：\`context\` 与 \`rules\` 是给你的约束，不是产物正文
+  - 不要把 \`<context>\`、\`<rules>\`、\`<project_context>\` 这些块复制进产物
+  - 它们只用于指导你写作，不应出现在最终文件中
 
-**Guardrails**
-- Create ALL artifacts needed for implementation (as defined by schema's \`apply.requires\`)
-- Always read dependency artifacts before creating a new one
-- If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
-- If a change with that name already exists, ask if user wants to continue it or create a new one
-- Verify each artifact file exists after writing before proceeding to next`
+**约束**
+- 要把开始实现前所需的全部产物都创建完成（即 schema 的 \`apply.requires\`）
+- 创建新产物前一定先读依赖产物
+- 如果上下文确实关键且不清楚，可以问用户；但在大多数情况下应做合理判断，保持推进节奏
+- 如果同名变更已存在，先问用户是继续已有变更还是重新创建
+- 每写完一份产物，都要确认文件已经落盘，再进入下一份
+
+${getModoBEndImplementationHint()}`
   };
 }

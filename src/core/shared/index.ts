@@ -23,7 +23,9 @@ export {
 export {
   type SkillTemplateEntry,
   type CommandTemplateEntry,
+  MODO_SUPPORT_SKILL_DIRS,
   getSkillTemplates,
+  getModoSupportSkillTemplates,
   getCommandTemplates,
   getCommandContents,
   getEnterpriseCapabilitySkillTemplates,

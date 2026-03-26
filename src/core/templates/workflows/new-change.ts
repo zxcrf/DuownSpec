@@ -5,147 +5,152 @@
  * templates file into workflow-focused modules.
  */
 import type { SkillTemplate, CommandTemplate } from '../types.js';
+import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getNewChangeSkillTemplate(): SkillTemplate {
   return {
     name: 'openspec-new-change',
-    description: 'Start a new DuowenSpec change using the experimental artifact workflow. Use when the user wants to create a new feature, fix, or modification with a structured step-by-step approach.',
-    instructions: `Start a new change using the experimental artifact-driven approach.
+    description: '使用实验产物工作流发起新的 OpenSpec 变更。适用于按步骤创建功能、修复或修改。',
+    instructions: `使用实验产物驱动方式发起一个新变更。
 
-**Input**: The user's request should include a change name (kebab-case) OR a description of what they want to build.
+**输入**：用户的请求应当包含一个变更名（kebab-case），或者描述想要构建/修复的内容。
 
-**Steps**
+**步骤**
 
-1. **If no clear input provided, ask what they want to build**
+1. **如果输入还不够清晰，先问清楚要做什么**
 
-   Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+   使用 **AskUserQuestion tool**（开放式提问，不给预设选项）询问：
+   > "你想处理什么变更？请描述你想新增或修复的内容。"
 
-   From their description, derive a kebab-case name (e.g., "add user authentication" → \`add-user-auth\`).
+   根据用户描述推导一个 kebab-case 名称（例如："新增用户认证" → \`add-user-auth\`）。
 
-   **IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
+   **重要**：在没弄清用户目标前，不要继续。
 
-2. **Determine the workflow schema**
+2. **确定要使用的工作流 schema**
 
-   Use the default schema (omit \`--schema\`) unless the user explicitly requests a different workflow.
+   除非用户明确要求其它工作流，否则使用默认 schema（不要传 \`--schema\`）。
 
-   **Use a different schema only if the user mentions:**
-   - A specific schema name → use \`--schema <name>\`
-   - "show workflows" or "what workflows" → run \`duowenspec schemas --json\` and let them choose
+   **只有在这些情况下才使用其它 schema：**
+   - 用户点名某个 schema → 传入 \`--schema <name>\`
+   - 用户说“看看有哪些工作流 / schema” → 运行 \`openspec schemas --json\` 后再让用户选择
 
-   **Otherwise**: Omit \`--schema\` to use the default.
+   **否则**：直接省略 \`--schema\`，走默认流程。
 
-3. **Create the change directory**
+3. **创建变更目录**
    \`\`\`bash
-   duowenspec new change "<name>"
+   openspec new change "<name>"
    \`\`\`
-   Add \`--schema <name>\` only if the user requested a specific workflow.
-   This creates a scaffolded change at \`openspec/changes/<name>/\` with the selected schema.
+   只有当用户明确指定非默认工作流时才追加 \`--schema <name>\`。
+   这会在 \`openspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
 
-4. **Show the artifact status**
+4. **查看产物状态**
    \`\`\`bash
-   duowenspec status --change "<name>"
+   openspec status --change "<name>"
    \`\`\`
-   This shows which artifacts need to be created and which are ready (dependencies satisfied).
+   这会显示哪些产物还未创建，哪些产物已经就绪（依赖满足）。
 
-5. **Get instructions for the first artifact**
-   The first artifact depends on the schema (e.g., \`proposal\` for spec-driven).
-   Check the status output to find the first artifact with status "ready".
+5. **获取第一份产物的指令**
+   第一份产物取决于 schema（例如 spec-driven 通常先写 \`proposal\`）。
+   从状态输出中找到第一个状态为 "ready" 的产物。
    \`\`\`bash
-   duowenspec instructions <first-artifact-id> --change "<name>"
+   openspec instructions <first-artifact-id> --change "<name>"
    \`\`\`
-   This outputs the template and context for creating the first artifact.
+   该命令会输出创建第一份产物所需的模板与上下文。
 
-6. **STOP and wait for user direction**
+6. **到这里先停下，等待用户下一步指示**
 
-**Output**
+**输出**
 
-After completing the steps, summarize:
-- Change name and location
-- Schema/workflow being used and its artifact sequence
-- Current status (0/N artifacts complete)
-- The template for the first artifact
-- Prompt: "Ready to create the first artifact? Just describe what this change is about and I'll draft it, or ask me to continue."
+完成上述步骤后，给出一段总结：
+- 变更名称与所在路径
+- 当前使用的 schema / 工作流，以及它的产物顺序
+- 当前状态（0/N 个产物已完成）
+- 第一份产物的模板
+- 提示："准备好创建第一份产物了吗？直接告诉我这次变更主要是做什么，我就可以帮你起草；或者你也可以让我继续。"
 
-**Guardrails**
-- Do NOT create any artifacts yet - just show the instructions
-- Do NOT advance beyond showing the first artifact template
-- If the name is invalid (not kebab-case), ask for a valid name
-- If a change with that name already exists, suggest continuing that change instead
-- Pass --schema if using a non-default workflow`,
+**约束**
+- 现在不要创建任何产物，只展示指令
+- 不要继续推进到第一份产物模板之后的阶段
+- 如果名称不合法（不是 kebab-case），先让用户提供合法名称
+- 如果同名变更已存在，建议继续那个变更，而不是重复创建
+- 只有在使用非默认工作流时才传 \`--schema\`
+
+${getModoBEndPlanningHint()}`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }
 
 export function getOpsxNewCommandTemplate(): CommandTemplate {
   return {
-    name: 'DWSP: New',
-    description: 'Start a new change using the experimental artifact workflow (OPSX)',
-    category: 'Workflow',
+    name: 'OPSX: New',
+    description: '使用实验产物工作流发起新变更（OPSX）',
+    category: '工作流',
     tags: ['workflow', 'artifacts', 'experimental'],
-    content: `Start a new change using the experimental artifact-driven approach.
+    content: `使用实验产物驱动方式发起一个新变更。
 
-**Input**: The argument after \`/dwsp:new\` is the change name (kebab-case), OR a description of what the user wants to build.
+**输入**：\`/dwsp:new\` 后面的参数可以是变更名（kebab-case），也可以是用户想构建内容的描述。
 
-**Steps**
+**步骤**
 
-1. **If no input provided, ask what they want to build**
+1. **如果还没有输入内容，先问清楚要做什么**
 
-   Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+   使用 **AskUserQuestion tool**（开放式提问，不给预设选项）询问：
+   > "你想处理什么变更？请描述你想新增或修复的内容。"
 
-   From their description, derive a kebab-case name (e.g., "add user authentication" → \`add-user-auth\`).
+   根据用户描述推导一个 kebab-case 名称（例如："新增用户认证" → \`add-user-auth\`）。
 
-   **IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
+   **重要**：在没弄清用户目标前，不要继续。
 
-2. **Determine the workflow schema**
+2. **确定要使用的工作流 schema**
 
-   Use the default schema (omit \`--schema\`) unless the user explicitly requests a different workflow.
+   除非用户明确要求其它工作流，否则使用默认 schema（不要传 \`--schema\`）。
 
-   **Use a different schema only if the user mentions:**
-   - A specific schema name → use \`--schema <name>\`
-   - "show workflows" or "what workflows" → run \`duowenspec schemas --json\` and let them choose
+   **只有在这些情况下才使用其它 schema：**
+   - 用户点名某个 schema → 传入 \`--schema <name>\`
+   - 用户说“看看有哪些工作流 / schema” → 运行 \`openspec schemas --json\` 后再让用户选择
 
-   **Otherwise**: Omit \`--schema\` to use the default.
+   **否则**：直接省略 \`--schema\`，走默认流程。
 
-3. **Create the change directory**
+3. **创建变更目录**
    \`\`\`bash
-   duowenspec new change "<name>"
+   openspec new change "<name>"
    \`\`\`
-   Add \`--schema <name>\` only if the user requested a specific workflow.
-   This creates a scaffolded change at \`openspec/changes/<name>/\` with the selected schema.
+   只有当用户明确指定非默认工作流时才追加 \`--schema <name>\`。
+   这会在 \`openspec/changes/<name>/\` 下创建带对应 schema 的变更骨架。
 
-4. **Show the artifact status**
+4. **查看产物状态**
    \`\`\`bash
-   duowenspec status --change "<name>"
+   openspec status --change "<name>"
    \`\`\`
-   This shows which artifacts need to be created and which are ready (dependencies satisfied).
+   这会显示哪些产物还未创建，哪些产物已经就绪（依赖满足）。
 
-5. **Get instructions for the first artifact**
-   The first artifact depends on the schema. Check the status output to find the first artifact with status "ready".
+5. **获取第一份产物的指令**
+   第一份产物取决于 schema。先从状态输出里找到第一个状态为 "ready" 的产物。
    \`\`\`bash
-   duowenspec instructions <first-artifact-id> --change "<name>"
+   openspec instructions <first-artifact-id> --change "<name>"
    \`\`\`
-   This outputs the template and context for creating the first artifact.
+   该命令会输出创建第一份产物所需的模板与上下文。
 
-6. **STOP and wait for user direction**
+6. **到这里先停下，等待用户下一步指示**
 
-**Output**
+**输出**
 
-After completing the steps, summarize:
-- Change name and location
-- Schema/workflow being used and its artifact sequence
-- Current status (0/N artifacts complete)
-- The template for the first artifact
-- Prompt: "Ready to create the first artifact? Run \`/dwsp:continue\` or just describe what this change is about and I'll draft it."
+完成上述步骤后，给出一段总结：
+- 变更名称与所在路径
+- 当前使用的 schema / 工作流，以及它的产物顺序
+- 当前状态（0/N 个产物已完成）
+- 第一份产物的模板
+- 提示："准备好创建第一份产物了吗？运行 \`/dwsp:continue\`，或者直接告诉我这次变更主要是做什么，我就可以帮你起草。"
 
-**Guardrails**
-- Do NOT create any artifacts yet - just show the instructions
-- Do NOT advance beyond showing the first artifact template
-- If the name is invalid (not kebab-case), ask for a valid name
-- If a change with that name already exists, suggest using \`/dwsp:continue\` instead
-- Pass --schema if using a non-default workflow`
+**约束**
+- 现在不要创建任何产物，只展示指令
+- 不要继续推进到第一份产物模板之后的阶段
+- 如果名称不合法（不是 kebab-case），先让用户提供合法名称
+- 如果同名变更已存在，建议改用 \`/dwsp:continue\`
+- 只有在使用非默认工作流时才传 \`--schema\`
+
+${getModoBEndPlanningHint()}`
   };
 }

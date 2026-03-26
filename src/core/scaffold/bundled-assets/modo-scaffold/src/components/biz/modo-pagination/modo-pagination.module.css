@@ -1,0 +1,21 @@
+.pagination-container {
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-start;
+    padding: 6px 16px;
+    background: #F9FBFD;
+}
+
+.pagination-container :global(.ant-pagination) {
+    height: 24px;
+}
+
+.pagination-container :global(.ant-pagination .ant-select-selector),
+.pagination-container :global(.ant-pagination input) {
+    height: 24px !important;
+}
+
+.pagination-container :global(.ant-pagination .ant-select) {
+    height: 24px;
+}

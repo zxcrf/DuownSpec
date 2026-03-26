@@ -1,0 +1,36 @@
+/* MODO Checkbox - 12px Size Only Override */
+
+/* 1. Size Enforcement */
+/* 1. Size Enforcement */
+.modo-checkbox :global(.ant-checkbox .ant-checkbox-inner) {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 2px !important;
+}
+
+/* 2. Tick Mark Position Fix (for 12px) */
+/* Colors are inherited from Ant Design Theme */
+.modo-checkbox :global(.ant-checkbox-checked .ant-checkbox-inner::after) {
+    width: 4px !important;
+    height: 7px !important;
+    top: 5.5px !important;
+    left: 3px !important;
+    /* Maintain tick shape but let color be inherited/default */
+    border: 2px solid #fff !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    transform: rotate(45deg) scale(1) translate(-50%, -50%) !important;
+    position: absolute !important;
+    display: table !important;
+    opacity: 1 !important;
+}
+
+/* 3. Indeterminate Block Size Fix */
+.modo-checkbox :global(.ant-checkbox-indeterminate .ant-checkbox-inner::after) {
+    width: 6px !important;
+    height: 6px !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    /* Do NOT set background-color here, let it use token */
+}

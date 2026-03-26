@@ -98,7 +98,7 @@ export class ListCommand {
         if (json) {
           console.log(JSON.stringify({ changes: [] }));
         } else {
-          console.log('No active changes found.');
+          console.log('当前没有进行中的 change。');
         }
         return;
       }

@@ -1,0 +1,42 @@
+/* ModoSteps: 步骤条定制样式 */
+
+/* 连接线颜色 */
+.modo-steps :global(.ant-steps-item-rail) {
+    border-color: #E3E9EF !important;
+    /* --color-border-2 */
+}
+
+/* 步骤标题颜色 */
+.modo-steps :global(.ant-steps-item-title) {
+    color: #242E43 !important;
+    /* --color-text-1 */
+}
+
+/* 步骤图标文字颜色（等待，非 active、非 custom、非 dot 模式） */
+.modo-steps :global(.ant-steps-item-wait:not(.ant-steps-item-custom) .ant-steps-item-icon) {
+    --ant-cmp-steps-item-icon-text-color: #4D5E7D;
+    color: #4D5E7D !important;
+    /* --color-text-2 */
+}
+
+/* active 状态图标文字保持白色 */
+.modo-steps :global(.ant-steps-item-active:not(.ant-steps-item-custom) .ant-steps-item-icon) {
+    --ant-cmp-steps-item-icon-text-color: #ffffff;
+    color: #ffffff !important;
+}
+
+/* finish 状态图标：背景 primary-1，字色 primary-6 */
+.modo-steps :global(.ant-steps-item-finish:not(.ant-steps-item-custom) .ant-steps-item-icon),
+.modo-steps :global(.ant-steps-item-finish:not(.ant-steps-item-custom) .ant-steps-item-icon.ant-wave-target) {
+    --ant-cmp-steps-item-icon-bg-color: #E8F3FF;
+    /* primary-1 */
+    --ant-cmp-steps-item-icon-text-color: #3261CE;
+    /* primary-6 */
+    background-color: #E8F3FF !important;
+    border-color: #E8F3FF !important;
+    color: #3261CE !important;
+}
+
+.modo-steps :global(.ant-steps-item-finish:not(.ant-steps-item-custom) .ant-steps-item-icon .ant-steps-icon) {
+    color: #3261CE !important;
+}

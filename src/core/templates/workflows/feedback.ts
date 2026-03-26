@@ -9,47 +9,47 @@ import type { SkillTemplate } from '../types.js';
 export function getFeedbackSkillTemplate(): SkillTemplate {
   return {
     name: 'feedback',
-    description: 'Collect and submit user feedback about DuowenSpec with context enrichment and anonymization.',
-    instructions: `Help the user submit feedback about DuowenSpec.
+    description: '收集并提交关于 OpenSpec 的用户反馈，附带上下文补充与匿名化处理。',
+    instructions: `帮助用户提交关于 OpenSpec 的反馈。
 
-**Goal**: Guide the user through collecting, enriching, and submitting feedback while ensuring privacy through anonymization.
+**目标**：在保护隐私的前提下，引导用户收集、补充并提交反馈内容。
 
-**Process**
+**流程**
 
-1. **Gather context from the conversation**
-   - Review recent conversation history for context
-   - Identify what task was being performed
-   - Note what worked well or poorly
-   - Capture specific friction points or praise
+1. **从对话里收集上下文**
+   - 回看最近的对话内容，理解背景
+   - 识别用户当时在做什么任务
+   - 记录哪些地方顺利，哪些地方不顺利
+   - 抓出具体的阻塞点、摩擦点或正向反馈
 
-2. **Draft enriched feedback**
-   - Create a clear, descriptive title (single sentence, no "Feedback:" prefix needed)
-   - Write a body that includes:
-     - What the user was trying to do
-     - What happened (good or bad)
-     - Relevant context from the conversation
-     - Any specific suggestions or requests
+2. **起草一版更完整的反馈**
+   - 先写一个清晰、具体的标题（单句即可，不需要 "Feedback:" 前缀）
+   - 再写正文，至少包含：
+     - 用户原本想做什么
+     - 实际发生了什么（好或坏都可以）
+     - 与此相关的对话背景
+     - 具体建议、期望或诉求
 
-3. **Anonymize sensitive information**
-   - Replace file paths with \`<path>\` or generic descriptions
-   - Replace API keys, tokens, secrets with \`<redacted>\`
-   - Replace company/organization names with \`<company>\`
-   - Replace personal names with \`<user>\`
-   - Replace specific URLs with \`<url>\` unless public/relevant
-   - Keep technical details that help understand the issue
+3. **匿名化敏感信息**
+   - 把文件路径替换成 \`<path>\` 或更泛化的描述
+   - 把 API key、token、secret 等替换成 \`<redacted>\`
+   - 把公司或组织名替换成 \`<company>\`
+   - 把个人姓名替换成 \`<user>\`
+   - 非公开或无关的具体 URL 替换成 \`<url>\`
+   - 但要保留有助于理解问题的技术细节
 
-4. **Present draft for approval**
-   - Show the complete draft to the user
-   - Display both title and body clearly
-   - Ask for explicit approval before submitting
-   - Allow the user to request modifications
+4. **把草稿给用户确认**
+   - 把完整草稿展示给用户
+   - 标题和正文都要清楚展示
+   - 在提交前必须明确征得用户同意
+   - 如果用户想改，就继续调整
 
-5. **Submit on confirmation**
-   - Use the \`duowenspec feedback\` command to submit
-   - Format: \`duowenspec feedback "title" --body "body content"\`
-   - The command will automatically add metadata (version, platform, timestamp)
+5. **在用户确认后提交**
+   - 使用 \`openspec feedback\` 命令提交
+   - 格式：\`openspec feedback "title" --body "body content"\`
+   - 命令会自动附加版本、平台、时间戳等元信息
 
-**Example Draft**
+**示例草稿**
 
 \`\`\`
 Title: Error handling in artifact workflow needs improvement
@@ -67,7 +67,7 @@ because specs are not complete (0/2 done)."
 Context: Using the spec-driven schema with <path>/my-project
 \`\`\`
 
-**Anonymization Examples**
+**匿名化示例**
 
 Before:
 \`\`\`
@@ -83,33 +83,33 @@ Failed with API key: <redacted>
 Working at <company>
 \`\`\`
 
-**Guardrails**
+**约束**
 
-- MUST show complete draft before submitting
-- MUST ask for explicit approval
-- MUST anonymize sensitive information
-- ALLOW user to modify draft before submitting
-- DO NOT submit without user confirmation
-- DO include relevant technical context
-- DO keep conversation-specific insights
+- 提交前必须展示完整草稿
+- 提交前必须明确征得用户同意
+- 必须先做好敏感信息匿名化
+- 允许用户在提交前继续修改草稿
+- 未经确认不得直接提交
+- 需要保留与问题相关的技术上下文
+- 可以保留对当前对话有价值的具体观察
 
-**User Confirmation Required**
+**用户确认是必需步骤**
 
-Always ask:
+始终这样询问：
 \`\`\`
-Here's the feedback I've drafted:
+这是我起草的反馈：
 
 Title: [title]
 
 Body:
 [body]
 
-Does this look good? I can modify it if you'd like, or submit it as-is.
+你看这样是否合适？如果你想改，我可以继续调整；也可以直接按这版提交。
 \`\`\`
 
-Only proceed with submission after user confirms.`,
+只有在用户明确确认后，才继续提交。`,
     license: 'MIT',
-    compatibility: 'Requires duowenspec CLI.',
+    compatibility: '需要安装 openspec CLI。',
     metadata: { author: 'openspec', version: '1.0' },
   };
 }

@@ -174,34 +174,34 @@ export class ArchiveCommand {
     // Show progress and check for incomplete tasks
     const progress = await getTaskProgressForChange(changesDir, changeName);
     const status = formatTaskStatus(progress);
-    console.log(`Task status: ${status}`);
+    console.log(`任务状态：${status}`);
 
     const incompleteTasks = Math.max(progress.total - progress.completed, 0);
     if (incompleteTasks > 0) {
       if (!options.yes) {
         const { confirm } = await import('@inquirer/prompts');
         const proceed = await confirm({
-          message: `Warning: ${incompleteTasks} incomplete task(s) found. Continue?`,
+          message: `发现 ${incompleteTasks} 个未完成任务，仍要继续吗？`,
           default: false
         });
         if (!proceed) {
-          console.log('Archive cancelled.');
+          console.log('已取消归档。');
           return;
         }
       } else {
-        console.log(`Warning: ${incompleteTasks} incomplete task(s) found. Continuing due to --yes flag.`);
+        console.log(`发现 ${incompleteTasks} 个未完成任务，但由于使用了 --yes，仍继续执行。`);
       }
     }
 
     // Handle spec updates unless skipSpecs flag is set
     if (options.skipSpecs) {
-      console.log('Skipping spec updates (--skip-specs flag provided).');
+      console.log('已跳过 spec 更新（因为传入了 --skip-specs）。');
     } else {
       // Find specs to update
       const specUpdates = await findSpecUpdates(changeDir, mainSpecsDir);
       
       if (specUpdates.length > 0) {
-        console.log('\nSpecs to update:');
+        console.log('\n待更新的 specs：');
         for (const update of specUpdates) {
           const status = update.exists ? 'update' : 'create';
           const capability = path.basename(path.dirname(update.target));
@@ -212,11 +212,11 @@ export class ArchiveCommand {
         if (!options.yes) {
           const { confirm } = await import('@inquirer/prompts');
           shouldUpdateSpecs = await confirm({
-            message: 'Proceed with spec updates?',
+            message: '继续更新 specs 吗？',
             default: true
           });
           if (!shouldUpdateSpecs) {
-            console.log('Skipping spec updates. Proceeding with archive.');
+            console.log('已跳过 spec 更新，继续执行归档。');
           }
         }
 
@@ -230,7 +230,7 @@ export class ArchiveCommand {
             }
           } catch (err: any) {
             console.log(String(err.message || err));
-            console.log('Aborted. No files were changed.');
+            console.log('已中止，未修改任何文件。');
             return;
           }
 
@@ -241,12 +241,12 @@ export class ArchiveCommand {
             if (!skipValidation) {
               const report = await new Validator().validateSpecContent(specName, p.rebuilt);
               if (!report.valid) {
-                console.log(chalk.red(`\nValidation errors in rebuilt spec for ${specName} (will not write changes):`));
+                console.log(chalk.red(`\n${specName} 的重建 spec 校验失败（不会写入任何改动）：`));
                 for (const issue of report.issues) {
                   if (issue.level === 'ERROR') console.log(chalk.red(`  ✗ ${issue.message}`));
                   else if (issue.level === 'WARNING') console.log(chalk.yellow(`  ⚠ ${issue.message}`));
                 }
-                console.log('Aborted. No files were changed.');
+                console.log('已中止，未修改任何文件。');
                 return;
               }
             }
@@ -257,9 +257,9 @@ export class ArchiveCommand {
             totals.renamed += p.counts.renamed;
           }
           console.log(
-            `Totals: + ${totals.added}, ~ ${totals.modified}, - ${totals.removed}, → ${totals.renamed}`
+            `合计：+ ${totals.added}, ~ ${totals.modified}, - ${totals.removed}, → ${totals.renamed}`
           );
-          console.log('Specs updated successfully.');
+          console.log('Specs 更新完成。');
         }
       }
     }
@@ -271,7 +271,7 @@ export class ArchiveCommand {
     // Check if archive already exists
     try {
       await fs.access(archivePath);
-      throw new Error(`Archive '${archiveName}' already exists.`);
+      throw new Error(`归档 '${archiveName}' 已存在。`);
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
         throw error;
@@ -284,7 +284,7 @@ export class ArchiveCommand {
     // Move change to archive (uses copy+remove on EPERM/EXDEV, e.g. Windows)
     await moveDirectory(changeDir, archivePath);
 
-    console.log(`Change '${changeName}' archived as '${archiveName}'.`);
+    console.log(`change '${changeName}' 已归档为 '${archiveName}'。`);
   }
 
   private async selectChange(changesDir: string): Promise<string | null> {
@@ -297,7 +297,7 @@ export class ArchiveCommand {
       .sort();
 
     if (changeDirs.length === 0) {
-      console.log('No active changes found.');
+      console.log('当前没有进行中的 change。');
       return null;
     }
 

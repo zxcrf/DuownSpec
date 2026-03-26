@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   getSkillTemplates,
+  getModoSupportSkillTemplates,
+  MODO_SUPPORT_SKILL_DIRS,
   getCommandTemplates,
   getCommandContents,
   getEnterpriseCapabilitySkillTemplates,
@@ -87,6 +89,26 @@ describe('skill-generation', () => {
       expect(filtered).toHaveLength(1);
       expect(filtered[0].workflowId).toBe('propose');
       expect(filtered[0].dirName).toBe('openspec-propose');
+    });
+  });
+
+  describe('getModoSupportSkillTemplates', () => {
+    it('should return all modo support skill templates', () => {
+      const templates = getModoSupportSkillTemplates();
+      expect(templates).toHaveLength(3);
+      expect(templates.map((item) => item.dirName)).toEqual(
+        [...MODO_SUPPORT_SKILL_DIRS]
+      );
+    });
+
+    it('should include valid support template content', () => {
+      const templates = getModoSupportSkillTemplates();
+      for (const { template, dirName } of templates) {
+        expect(template.name).toContain('openspec-b-end-');
+        expect(template.description).toBeTruthy();
+        expect(template.instructions).toBeTruthy();
+        expect(dirName).toContain('openspec-b-end-');
+      }
     });
   });
 
@@ -253,7 +275,7 @@ describe('skill-generation', () => {
       const content = generateSkillContent(template, '0.24.0');
 
       expect(content).toContain('license: MIT');
-      expect(content).toContain('compatibility: Requires openspec CLI.');
+      expect(content).toContain('compatibility: 需要安装 openspec CLI。');
       expect(content).toContain('author: openspec');
       expect(content).toContain('version: "1.0"');
       expect(content).toContain('generatedBy: "0.24.0"');

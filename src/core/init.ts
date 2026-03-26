@@ -1,7 +1,7 @@
 /**
  * Init Command
  *
- * Sets up DuowenSpec with Agent Skills and /dwsp:* slash commands.
+ * Sets up OpenSpec with Agent Skills and /opsx:* slash commands.
  * This is the unified setup command that replaces both the old init and experimental commands.
  */
 
@@ -38,6 +38,7 @@ import {
   getToolStates,
   getSkillTemplates,
   getEnterpriseCapabilitySkillTemplates,
+  getModoSupportSkillTemplates,
   getCommandContents,
   generateSkillContent,
   type ToolSkillStatus,
@@ -46,11 +47,20 @@ import { getGlobalConfig, type Delivery, type Profile } from './global-config.js
 import { getProfileWorkflows, CORE_WORKFLOWS, ALL_WORKFLOWS } from './profiles.js';
 import { getAvailableTools } from './available-tools.js';
 import { migrateIfNeeded } from './migration.js';
+import { CLI_COMMAND } from './app-info.js';
 import { assertEnterpriseCapabilitiesAvailable } from './enterprise-capability-preflight.js';
+import { syncProjectInstructionFiles, type SyncProjectInstructionFilesResult } from './project-instruction-files.js';
 import {
   getAllEnterpriseCapabilitySkillDirNames,
   getBundledEnterpriseCapabilitySkillDirNames,
 } from './enterprise-capability-skills.js';
+import {
+  assembleModoScaffold,
+  createModoScaffoldOptions,
+  isModoScaffoldProject,
+  readModoAgentsTemplate,
+  type ModoScaffoldAssemblyResult,
+} from './scaffold/index.js';
 
 const require = createRequire(import.meta.url);
 const { version: OPENSPEC_VERSION } = require('../../package.json');
@@ -91,7 +101,18 @@ type InitCommandOptions = {
   force?: boolean;
   interactive?: boolean;
   profile?: string;
+  scaffold?: boolean;
 };
+
+type InitScaffoldStatus =
+  | {
+    enabled: false;
+  }
+  | {
+    enabled: true;
+    assembly: ModoScaffoldAssemblyResult;
+    instructionFiles: SyncProjectInstructionFilesResult;
+  };
 
 // -----------------------------------------------------------------------------
 // Init Command Class
@@ -102,12 +123,14 @@ export class InitCommand {
   private readonly force: boolean;
   private readonly interactiveOption?: boolean;
   private readonly profileOverride?: string;
+  private readonly scaffold: boolean;
 
   constructor(options: InitCommandOptions = {}) {
     this.toolsArg = options.tools;
     this.force = options.force ?? false;
     this.interactiveOption = options.interactive;
     this.profileOverride = options.profile;
+    this.scaffold = options.scaffold ?? false;
   }
 
   async execute(targetPath: string): Promise<void> {
@@ -152,17 +175,19 @@ export class InitCommand {
     // Enterprise workflow capability preflight must run before any files are written
     await this.assertRequiredEnterpriseCapabilities(projectPath, validatedTools);
 
-    // Create directory structure and config
+    // Create directory structure and scaffold assets if requested
     await this.createDirectoryStructure(openspecPath, extendMode);
+    const scaffoldStatus = await this.setupScaffold(projectPath);
 
     // Generate skills and commands for each tool
-    const results = await this.generateSkillsAndCommands(projectPath, validatedTools);
+    const modoProject = await isModoScaffoldProject(projectPath);
+    const results = await this.generateSkillsAndCommands(projectPath, validatedTools, modoProject);
 
     // Create config.yaml if needed
     const configStatus = await this.createConfig(openspecPath, extendMode);
 
     // Display success message
-    this.displaySuccessMessage(projectPath, validatedTools, results, configStatus);
+    this.displaySuccessMessage(projectPath, validatedTools, results, configStatus, scaffoldStatus, modoProject);
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -177,7 +202,7 @@ export class InitCommand {
 
     // Check write permissions
     if (!(await FileSystemUtils.ensureWritePermissions(projectPath))) {
-      throw new Error(`Insufficient permissions to write to ${projectPath}`);
+      throw new Error(`没有写入权限：${projectPath}`);
     }
     return extendMode;
   }
@@ -197,7 +222,19 @@ export class InitCommand {
       return this.profileOverride;
     }
 
-    throw new Error(`Invalid profile "${this.profileOverride}". Available profiles: core, custom`);
+    throw new Error(`无效的 profile：${this.profileOverride}。可选值：core、custom`);
+  }
+
+  private async assertRequiredEnterpriseCapabilities(
+    _projectPath: string,
+    tools: Array<{ value: string; name: string; skillsDir: string }>
+  ): Promise<void> {
+    void tools;
+    const globalConfig = getGlobalConfig();
+    const profile: Profile = this.resolveProfileOverride() ?? globalConfig.profile ?? 'custom';
+    const workflows = getProfileWorkflows(profile, globalConfig.workflows);
+
+    assertEnterpriseCapabilitiesAvailable(workflows);
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -221,7 +258,7 @@ export class InitCommand {
 
     if (this.force || !canPrompt) {
       // --force flag or non-interactive mode: proceed with cleanup automatically.
-      // Legacy slash commands are 100% DuowenSpec-managed, and config file cleanup
+      // Legacy slash commands are 100% OpenSpec-managed, and config file cleanup
       // only removes markers (never deletes files), so auto-cleanup is safe.
       await this.performLegacyCleanup(projectPath, detection);
       return;
@@ -230,13 +267,13 @@ export class InitCommand {
     // Interactive mode: prompt for confirmation
     const { confirm } = await import('@inquirer/prompts');
     const shouldCleanup = await confirm({
-      message: 'Upgrade and clean up legacy files?',
+      message: '是否升级并清理旧版遗留文件？',
       default: true,
     });
 
     if (!shouldCleanup) {
-      console.log(chalk.dim('Initialization cancelled.'));
-      console.log(chalk.dim('Run with --force to skip this prompt, or manually remove legacy files.'));
+      console.log(chalk.dim('已取消初始化。'));
+      console.log(chalk.dim('可使用 --force 跳过此提示，或手动清理旧版文件。'));
       process.exit(0);
     }
 
@@ -244,11 +281,11 @@ export class InitCommand {
   }
 
   private async performLegacyCleanup(projectPath: string, detection: LegacyDetectionResult): Promise<void> {
-    const spinner = ora('Cleaning up legacy files...').start();
+    const spinner = ora('正在清理旧版遗留文件...').start();
 
     const result = await cleanupLegacyArtifacts(projectPath, detection);
 
-    spinner.succeed('Legacy files cleaned up');
+    spinner.succeed('旧版遗留文件已清理');
 
     const summary = formatCleanupSummary(result);
     if (summary) {
@@ -291,14 +328,12 @@ export class InitCommand {
         return [...detectedToolIds];
       }
       throw new Error(
-        `No tools detected and no --tools flag provided. Valid tools:\n  ${validTools.join('\n  ')}\n\nUse --tools all, --tools none, or --tools claude,cursor,...`
+        `未检测到可用工具，且未传入 --tools。\n可选工具：\n  ${validTools.join('\n  ')}\n\n请使用 --tools all、--tools none，或传入逗号分隔的工具 ID。`
       );
     }
 
     if (validTools.length === 0) {
-      throw new Error(
-        `No tools available for skill generation.`
-      );
+      throw new Error('当前没有可用于生成技能文件的工具。');
     }
 
     // Interactive mode: show searchable multi-select
@@ -334,7 +369,7 @@ export class InitCommand {
       .map((toolId) => AI_TOOLS.find((t) => t.value === toolId)?.name || toolId);
 
     if (configuredNames.length > 0) {
-      console.log(`DuowenSpec configured: ${configuredNames.join(', ')} (pre-selected)`);
+      console.log(`已配置 OpenSpec 的工具：${configuredNames.join(', ')}（已预选）`);
     }
 
     const detectedOnlyNames = detectedTools
@@ -343,20 +378,20 @@ export class InitCommand {
 
     if (detectedOnlyNames.length > 0) {
       const detectionLabel = shouldPreselectDetected
-        ? 'pre-selected for first-time setup'
-        : 'not pre-selected';
-      console.log(`Detected tool directories: ${detectedOnlyNames.join(', ')} (${detectionLabel})`);
+        ? '首次初始化，已自动预选'
+        : '仅检测到目录，未自动预选';
+      console.log(`检测到以下工具目录：${detectedOnlyNames.join(', ')}（${detectionLabel}）`);
     }
 
     const selectedTools = await searchableMultiSelect({
-      message: `Select tools to set up (${validTools.length} available)`,
+      message: `请选择要初始化的工具（共 ${validTools.length} 个）`,
       pageSize: 15,
       choices: sortedChoices,
-      validate: (selected: string[]) => selected.length > 0 || 'Select at least one tool',
+      validate: (selected: string[]) => selected.length > 0 || '至少选择一个工具',
     });
 
     if (selectedTools.length === 0) {
-      throw new Error('At least one tool must be selected');
+      throw new Error('至少选择一个工具。');
     }
 
     return selectedTools;
@@ -370,7 +405,7 @@ export class InitCommand {
     const raw = this.toolsArg.trim();
     if (raw.length === 0) {
       throw new Error(
-        'The --tools option requires a value. Use "all", "none", or a comma-separated list of tool IDs.'
+        '--tools 需要传入值。可使用 "all"、"none"，或传入逗号分隔的工具 ID。'
       );
     }
 
@@ -394,14 +429,14 @@ export class InitCommand {
 
     if (tokens.length === 0) {
       throw new Error(
-        'The --tools option requires at least one tool ID when not using "all" or "none".'
+        '当 --tools 不使用 "all" 或 "none" 时，至少需要传入一个工具 ID。'
       );
     }
 
     const normalizedTokens = tokens.map((token) => token.toLowerCase());
 
     if (normalizedTokens.some((token) => token === 'all' || token === 'none')) {
-      throw new Error('Cannot combine reserved values "all" or "none" with specific tool IDs.');
+      throw new Error('不能将 "all" 或 "none" 与具体工具 ID 混用。');
     }
 
     const invalidTokens = tokens.filter(
@@ -410,7 +445,7 @@ export class InitCommand {
 
     if (invalidTokens.length > 0) {
       throw new Error(
-        `Invalid tool(s): ${invalidTokens.join(', ')}. Available values: ${availableList}`
+        `无效工具：${invalidTokens.join(', ')}。可选值：${availableList}`
       );
     }
 
@@ -436,14 +471,14 @@ export class InitCommand {
       if (!tool) {
         const validToolIds = getToolsWithSkillsDir();
         throw new Error(
-          `Unknown tool '${toolId}'. Valid tools:\n  ${validToolIds.join('\n  ')}`
+          `未知工具：${toolId}。\n可选工具：\n  ${validToolIds.join('\n  ')}`
         );
       }
 
       if (!tool.skillsDir) {
         const validToolsWithSkills = getToolsWithSkillsDir();
         throw new Error(
-          `Tool '${toolId}' does not support skill generation.\nTools with skill generation support:\n  ${validToolsWithSkills.join('\n  ')}`
+          `工具 ${toolId} 不支持技能文件生成。\n支持的工具：\n  ${validToolsWithSkills.join('\n  ')}`
         );
       }
 
@@ -457,18 +492,6 @@ export class InitCommand {
     }
 
     return validatedTools;
-  }
-
-  private async assertRequiredEnterpriseCapabilities(
-    _projectPath: string,
-    tools: Array<{ value: string; name: string; skillsDir: string }>
-  ): Promise<void> {
-    void tools;
-    const globalConfig = getGlobalConfig();
-    const profile: Profile = this.resolveProfileOverride() ?? globalConfig.profile ?? 'custom';
-    const workflows = getProfileWorkflows(profile, globalConfig.workflows);
-
-    assertEnterpriseCapabilitiesAvailable(workflows);
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -491,7 +514,7 @@ export class InitCommand {
       return;
     }
 
-    const spinner = this.startSpinner('Creating DuowenSpec structure...');
+    const spinner = this.startSpinner('正在创建 OpenSpec 目录结构...');
 
     const directories = [
       openspecPath,
@@ -506,8 +529,37 @@ export class InitCommand {
 
     spinner.stopAndPersist({
       symbol: PALETTE.white('▌'),
-      text: PALETTE.white('DuowenSpec structure created'),
+      text: PALETTE.white('OpenSpec 目录结构已创建'),
     });
+  }
+
+  private async setupScaffold(projectPath: string): Promise<InitScaffoldStatus> {
+    if (!this.scaffold) {
+      return { enabled: false };
+    }
+
+    const spinner = this.startSpinner('正在初始化 MODO 脚手架...');
+
+    try {
+      const assembly = await assembleModoScaffold(createModoScaffoldOptions(projectPath));
+      const agentsContent = await readModoAgentsTemplate();
+      const instructionFiles = await syncProjectInstructionFiles(projectPath, agentsContent);
+
+      spinner.stopAndPersist({
+        symbol: PALETTE.white('▌'),
+        text: PALETTE.white('MODO 脚手架已初始化'),
+      });
+
+      return {
+        enabled: true,
+        assembly,
+        instructionFiles,
+      };
+    } catch (error) {
+      spinner.fail('MODO 脚手架初始化失败');
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`初始化 MODO 脚手架失败：${message}`);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -516,7 +568,8 @@ export class InitCommand {
 
   private async generateSkillsAndCommands(
     projectPath: string,
-    tools: Array<{ value: string; name: string; skillsDir: string; wasConfigured: boolean }>
+    tools: Array<{ value: string; name: string; skillsDir: string; wasConfigured: boolean }>,
+    modoProject: boolean
   ): Promise<{
     createdTools: typeof tools;
     refreshedTools: typeof tools;
@@ -538,23 +591,25 @@ export class InitCommand {
     const delivery: Delivery = globalConfig.delivery ?? 'both';
     const workflows = getProfileWorkflows(profile, globalConfig.workflows);
 
-    // Get skill and command templates filtered by profile workflows
+    // Workflow skills follow delivery; enterprise capabilities and MODO support stay available.
     const shouldGenerateSkills = delivery !== 'commands';
     const shouldGenerateCommands = delivery !== 'skills';
     const workflowSkillTemplates = shouldGenerateSkills ? getSkillTemplates(workflows) : [];
     const capabilitySkillTemplates = getEnterpriseCapabilitySkillTemplates(workflows);
-    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates];
+    const modoSupportSkillTemplates = modoProject ? getModoSupportSkillTemplates() : [];
+    const skillTemplates = [...workflowSkillTemplates, ...capabilitySkillTemplates, ...modoSupportSkillTemplates];
     const commandContents = shouldGenerateCommands ? getCommandContents(workflows) : [];
 
     // Process each tool
     for (const tool of tools) {
-      const spinner = ora(`Setting up ${tool.name}...`).start();
+      const spinner = ora(`正在配置 ${tool.name}...`).start();
 
       try {
-        const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
-
-        // Generate skill files if delivery includes skills
+        // Generate workflow skills, enterprise capability skills, and any MODO support skills.
         if (skillTemplates.length > 0) {
+          // Use tool-specific skillsDir
+          const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
+
           // Create skill directories and SKILL.md files
           for (const { template, dirName } of skillTemplates) {
             const skillDir = path.join(skillsDir, dirName);
@@ -569,6 +624,7 @@ export class InitCommand {
             await FileSystemUtils.writeFile(skillFile, skillContent);
           }
         }
+        const skillsDir = path.join(projectPath, tool.skillsDir, 'skills');
         if (!shouldGenerateSkills) {
           removedSkillCount += await this.removeSkillDirs(skillsDir);
         }
@@ -592,7 +648,7 @@ export class InitCommand {
           removedCommandCount += await this.removeCommandFiles(projectPath, tool.value);
         }
 
-        spinner.succeed(`Setup complete for ${tool.name}`);
+        spinner.succeed(`${tool.name} 配置完成`);
 
         if (tool.wasConfigured) {
           refreshedTools.push(tool);
@@ -600,7 +656,7 @@ export class InitCommand {
           createdTools.push(tool);
         }
       } catch (error) {
-        spinner.fail(`Failed for ${tool.name}`);
+        spinner.fail(`${tool.name} 配置失败`);
         failedTools.push({ name: tool.name, error: error as Error });
       }
     }
@@ -658,18 +714,20 @@ export class InitCommand {
       removedCommandCount: number;
       removedSkillCount: number;
     },
-    configStatus: 'created' | 'exists' | 'skipped'
+    configStatus: 'created' | 'exists' | 'skipped',
+    scaffoldStatus: InitScaffoldStatus,
+    modoProject: boolean
   ): void {
     console.log();
-    console.log(chalk.bold('DuowenSpec Setup Complete'));
+    console.log(chalk.bold('DuowenSpec 初始化完成'));
     console.log();
 
     // Show created vs refreshed tools
     if (results.createdTools.length > 0) {
-      console.log(`Created: ${results.createdTools.map((t) => t.name).join(', ')}`);
+      console.log(`已新增：${results.createdTools.map((t) => t.name).join(', ')}`);
     }
     if (results.refreshedTools.length > 0) {
-      console.log(`Refreshed: ${results.refreshedTools.map((t) => t.name).join(', ')}`);
+      console.log(`已刷新：${results.refreshedTools.map((t) => t.name).join(', ')}`);
     }
 
     // Show counts (respecting profile filter)
@@ -680,46 +738,64 @@ export class InitCommand {
       const delivery: Delivery = globalConfig.delivery ?? 'both';
       const workflows = getProfileWorkflows(profile, globalConfig.workflows);
       const toolDirs = [...new Set(successfulTools.map((t) => t.skillsDir))].join(', ');
-      const workflowSkillCount = delivery !== 'commands' ? getSkillTemplates(workflows).length : 0;
       const capabilitySkillCount = getEnterpriseCapabilitySkillTemplates(workflows).length;
-      const skillCount = workflowSkillCount + capabilitySkillCount;
+      const supportSkillCount = modoProject ? getModoSupportSkillTemplates().length : 0;
+      const workflowSkillCount = delivery !== 'commands' ? getSkillTemplates(workflows).length : 0;
+      const skillCount = workflowSkillCount + capabilitySkillCount + supportSkillCount;
       const commandCount = delivery !== 'skills' ? getCommandContents(workflows).length : 0;
       if (skillCount > 0 && commandCount > 0) {
-        console.log(`${skillCount} skills and ${commandCount} commands in ${toolDirs}/`);
+        console.log(`${toolDirs}/ 中已写入 ${skillCount} 个技能文件和 ${commandCount} 个命令提示`);
       } else if (skillCount > 0) {
-        console.log(`${skillCount} skills in ${toolDirs}/`);
+        console.log(`${toolDirs}/ 中已写入 ${skillCount} 个技能文件`);
       } else if (commandCount > 0) {
-        console.log(`${commandCount} commands in ${toolDirs}/`);
+        console.log(`${toolDirs}/ 中已写入 ${commandCount} 个命令提示`);
+      }
+    }
+
+    if (scaffoldStatus.enabled) {
+      const copiedCount = scaffoldStatus.assembly.copiedFiles.length;
+      const skippedCount = scaffoldStatus.assembly.skippedFiles.length;
+      console.log(`脚手架：已初始化 MODO 空骨架（新增 ${copiedCount} 项，跳过 ${skippedCount} 项）`);
+
+      if (scaffoldStatus.instructionFiles.status === 'created') {
+        console.log('说明文件：已创建 AGENTS.md，并建立 CLAUDE.md 软链');
+      } else {
+        const reasonMap = {
+          'agents-exists': '已保留现有 AGENTS.md',
+          'claude-exists': '已保留现有 CLAUDE.md',
+          'both-exist': '已保留现有 AGENTS.md 和 CLAUDE.md',
+        } as const;
+        console.log(`说明文件：${reasonMap[scaffoldStatus.instructionFiles.reason]}`);
       }
     }
 
     // Show failures
     if (results.failedTools.length > 0) {
-      console.log(chalk.red(`Failed: ${results.failedTools.map((f) => `${f.name} (${f.error.message})`).join(', ')}`));
+      console.log(chalk.red(`失败：${results.failedTools.map((f) => `${f.name}（${f.error.message}）`).join(', ')}`));
     }
 
     // Show skipped commands
     if (results.commandsSkipped.length > 0) {
-      console.log(chalk.dim(`Commands skipped for: ${results.commandsSkipped.join(', ')} (no adapter)`));
+      console.log(chalk.dim(`以下工具未生成命令提示：${results.commandsSkipped.join(', ')}（暂未提供适配器）`));
     }
     if (results.removedCommandCount > 0) {
-      console.log(chalk.dim(`Removed: ${results.removedCommandCount} command files (delivery: skills)`));
+      console.log(chalk.dim(`已移除 ${results.removedCommandCount} 个命令提示文件（当前仅保留技能文件）`));
     }
     if (results.removedSkillCount > 0) {
-      console.log(chalk.dim(`Removed: ${results.removedSkillCount} skill directories (delivery: commands)`));
+      console.log(chalk.dim(`已移除 ${results.removedSkillCount} 个技能目录（当前仅保留命令提示）`));
     }
 
     // Config status
     if (configStatus === 'created') {
-      console.log(`Config: openspec/config.yaml (schema: ${DEFAULT_SCHEMA})`);
+      console.log(`配置：openspec/config.yaml（schema: ${DEFAULT_SCHEMA}）`);
     } else if (configStatus === 'exists') {
       // Show actual filename (config.yaml or config.yml)
       const configYaml = path.join(projectPath, OPENSPEC_DIR_NAME, 'config.yaml');
       const configYml = path.join(projectPath, OPENSPEC_DIR_NAME, 'config.yml');
       const configName = fs.existsSync(configYaml) ? 'config.yaml' : fs.existsSync(configYml) ? 'config.yml' : 'config.yaml';
-      console.log(`Config: openspec/${configName} (exists)`);
+      console.log(`配置：openspec/${configName}（已存在）`);
     } else {
-      console.log(chalk.dim(`Config: skipped (non-interactive mode)`));
+      console.log(chalk.dim('配置：已跳过（当前为非交互模式）'));
     }
 
     // Getting started (task 7.6: show propose if in profile)
@@ -728,24 +804,24 @@ export class InitCommand {
     const activeWorkflows = [...getProfileWorkflows(activeProfile, globalCfg.workflows)];
     console.log();
     if (activeWorkflows.includes('propose')) {
-      console.log(chalk.bold('Getting started:'));
-      console.log('  Start your first enterprise proposal: /dwsp:propose "your idea"');
+      console.log(chalk.bold('开始使用：'));
+      console.log(`  发起第一份提案：/${CLI_COMMAND}:propose "你的想法"`);
     } else if (activeWorkflows.includes('new')) {
-      console.log(chalk.bold('Getting started:'));
-      console.log('  Start your first change: /dwsp:new "your idea"');
+      console.log(chalk.bold('开始使用：'));
+      console.log(`  创建第一项变更：/${CLI_COMMAND}:new "你的想法"`);
     } else {
-      console.log("Done. Run 'duowenspec config profile' to configure your workflows.");
+      console.log(`已完成。可运行 '${CLI_COMMAND} config profile' 配置工作流。`);
     }
 
     // Links
     console.log();
-    console.log(`Learn more: ${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
-    console.log(`Feedback:   ${chalk.cyan('https://github.com/Fission-AI/DuowenSpec/issues')}`);
+    console.log(`了解更多：${chalk.cyan('https://github.com/Fission-AI/DuowenSpec')}`);
+    console.log(`问题反馈：${chalk.cyan('https://github.com/Fission-AI/DuowenSpec/issues')}`);
 
     // Restart instruction if any tools were configured
     if (results.createdTools.length > 0 || results.refreshedTools.length > 0) {
       console.log();
-      console.log(chalk.white('Restart your IDE for slash commands to take effect.'));
+      console.log(chalk.white('请重启你的 IDE，让斜杠命令生效。'));
     }
 
     console.log();
