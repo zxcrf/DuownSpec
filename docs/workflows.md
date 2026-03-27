@@ -224,10 +224,10 @@ Bulk archive detects when multiple changes touch the same specs and resolves con
 The recommended completion flow:
 
 ```text
-/dwsp:apply ──► /dwsp:verify ──► /dwsp:archive
-                    │                 │
-              validates          prompts to sync
-              implementation     if needed
+/dwsp:apply ──► dwsp validate ──► /dwsp:verify ──► /dwsp:archive
+                    │                  │                 │
+              closes apply        validates          prompts to sync
+              successfully        implementation     if needed
 ```
 
 #### Verify: Check Your Work

@@ -29,26 +29,26 @@ describe('tool-detection', () => {
   describe('SKILL_NAMES', () => {
     it('should contain all skill names matching COMMAND_IDS', () => {
       expect(SKILL_NAMES).toHaveLength(20);
-      expect(SKILL_NAMES).toContain('duowenspec-explore');
-      expect(SKILL_NAMES).toContain('duowenspec-new-change');
-      expect(SKILL_NAMES).toContain('duowenspec-continue-change');
-      expect(SKILL_NAMES).toContain('duowenspec-apply-change');
-      expect(SKILL_NAMES).toContain('duowenspec-review-change');
-      expect(SKILL_NAMES).toContain('duowenspec-ff-change');
-      expect(SKILL_NAMES).toContain('duowenspec-sync-specs');
-      expect(SKILL_NAMES).toContain('duowenspec-archive-change');
-      expect(SKILL_NAMES).toContain('duowenspec-bulk-archive-change');
-      expect(SKILL_NAMES).toContain('duowenspec-verify-change');
-      expect(SKILL_NAMES).toContain('duowenspec-document-change');
-      expect(SKILL_NAMES).toContain('duowenspec-onboard');
-      expect(SKILL_NAMES).toContain('duowenspec-propose');
-      expect(SKILL_NAMES).toContain('brainstorming');
-      expect(SKILL_NAMES).toContain('executing-plans');
-      expect(SKILL_NAMES).toContain('test-driven-development');
-      expect(SKILL_NAMES).toContain('subagent-driven-development');
-      expect(SKILL_NAMES).toContain('requesting-code-review');
-      expect(SKILL_NAMES).toContain('receiving-code-review');
-      expect(SKILL_NAMES).toContain('verification-before-completion');
+      expect(SKILL_NAMES).toContain('dwsp-explore');
+      expect(SKILL_NAMES).toContain('dwsp-new-change');
+      expect(SKILL_NAMES).toContain('dwsp-continue-change');
+      expect(SKILL_NAMES).toContain('dwsp-apply-change');
+      expect(SKILL_NAMES).toContain('dwsp-review-change');
+      expect(SKILL_NAMES).toContain('dwsp-ff-change');
+      expect(SKILL_NAMES).toContain('dwsp-sync-specs');
+      expect(SKILL_NAMES).toContain('dwsp-archive-change');
+      expect(SKILL_NAMES).toContain('dwsp-bulk-archive-change');
+      expect(SKILL_NAMES).toContain('dwsp-verify-change');
+      expect(SKILL_NAMES).toContain('dwsp-document-change');
+      expect(SKILL_NAMES).toContain('dwsp-onboard');
+      expect(SKILL_NAMES).toContain('dwsp-propose');
+      expect(SKILL_NAMES).toContain('dwsp-brainstorming');
+      expect(SKILL_NAMES).toContain('dwsp-executing-plans');
+      expect(SKILL_NAMES).toContain('dwsp-test-driven-development');
+      expect(SKILL_NAMES).toContain('dwsp-subagent-driven-development');
+      expect(SKILL_NAMES).toContain('dwsp-requesting-code-review');
+      expect(SKILL_NAMES).toContain('dwsp-receiving-code-review');
+      expect(SKILL_NAMES).toContain('dwsp-verification-before-completion');
     });
   });
 
@@ -56,8 +56,8 @@ describe('tool-detection', () => {
     it('should return tools that have skillsDir configured', () => {
       const tools = getToolsWithSkillsDir();
       expect(tools).toContain('claude');
-      expect(tools).toContain('cursor');
-      expect(tools).toContain('windsurf');
+      expect(tools).toContain('codex');
+      expect(tools).toContain('opencode');
       expect(tools.length).toBeGreaterThan(0);
     });
   });
@@ -78,7 +78,7 @@ describe('tool-detection', () => {
     });
 
     it('should detect when one skill exists', async () => {
-      const skillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const skillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), 'test content');
 
@@ -106,20 +106,20 @@ describe('tool-detection', () => {
     it('should return status for all tools with skillsDir', () => {
       const states = getToolStates(testDir);
       expect(states.has('claude')).toBe(true);
-      expect(states.has('cursor')).toBe(true);
+      expect(states.has('codex')).toBe(true);
 
       const claudeStatus = states.get('claude');
       expect(claudeStatus?.configured).toBe(false);
     });
 
     it('should detect configured tools', async () => {
-      const skillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const skillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), 'test content');
 
       const states = getToolStates(testDir);
       expect(states.get('claude')?.configured).toBe(true);
-      expect(states.get('cursor')?.configured).toBe(false);
+      expect(states.get('codex')?.configured).toBe(false);
     });
   });
 
@@ -132,7 +132,7 @@ describe('tool-detection', () => {
     it('should return null when generatedBy is not present', async () => {
       const filePath = path.join(testDir, 'skill.md');
       await fs.writeFile(filePath, `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   author: duowenspec
   version: "1.0"
@@ -148,7 +148,7 @@ Content here
     it('should extract generatedBy version with double quotes', async () => {
       const filePath = path.join(testDir, 'skill.md');
       await fs.writeFile(filePath, `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   author: duowenspec
   version: "1.0"
@@ -165,7 +165,7 @@ Content here
     it('should extract generatedBy version with single quotes', async () => {
       const filePath = path.join(testDir, 'skill.md');
       await fs.writeFile(filePath, `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   generatedBy: '0.24.0'
 ---
@@ -180,7 +180,7 @@ Content here
     it('should extract generatedBy version without quotes', async () => {
       const filePath = path.join(testDir, 'skill.md');
       await fs.writeFile(filePath, `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   generatedBy: 0.25.0
 ---
@@ -209,10 +209,10 @@ Content here
     });
 
     it('should detect needsUpdate when generatedBy is missing', async () => {
-      const skillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const skillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   author: duowenspec
   version: "1.0"
@@ -228,10 +228,10 @@ Content here
     });
 
     it('should detect needsUpdate when version differs', async () => {
-      const skillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const skillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   author: duowenspec
   version: "1.0"
@@ -248,10 +248,10 @@ Content here
     });
 
     it('should not need update when version matches', async () => {
-      const skillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const skillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   author: duowenspec
   version: "1.0"
@@ -268,7 +268,7 @@ Content here
     });
 
     it('should include tool name in status', async () => {
-      const skillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const skillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), 'content');
 
@@ -286,18 +286,18 @@ Content here
 
     it('should return configured tools', async () => {
       // Setup Claude
-      const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(claudeSkillDir, { recursive: true });
       await fs.writeFile(path.join(claudeSkillDir, 'SKILL.md'), 'content');
 
-      // Setup Cursor
-      const cursorSkillDir = path.join(testDir, '.cursor', 'skills', 'duowenspec-explore');
-      await fs.mkdir(cursorSkillDir, { recursive: true });
-      await fs.writeFile(path.join(cursorSkillDir, 'SKILL.md'), 'content');
+      // Setup Codex
+      const codexSkillDir = path.join(testDir, '.codex', 'skills', 'dwsp-explore');
+      await fs.mkdir(codexSkillDir, { recursive: true });
+      await fs.writeFile(path.join(codexSkillDir, 'SKILL.md'), 'content');
 
       const tools = getConfiguredTools(testDir);
       expect(tools).toContain('claude');
-      expect(tools).toContain('cursor');
+      expect(tools).toContain('codex');
       expect(tools).toHaveLength(2);
     });
   });
@@ -310,7 +310,7 @@ Content here
 
     it('should return version status for all configured tools', async () => {
       // Setup Claude with old version
-      const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(claudeSkillDir, { recursive: true });
       await fs.writeFile(path.join(claudeSkillDir, 'SKILL.md'), `---
 metadata:
@@ -318,10 +318,10 @@ metadata:
 ---
 `);
 
-      // Setup Cursor with current version
-      const cursorSkillDir = path.join(testDir, '.cursor', 'skills', 'duowenspec-explore');
-      await fs.mkdir(cursorSkillDir, { recursive: true });
-      await fs.writeFile(path.join(cursorSkillDir, 'SKILL.md'), `---
+      // Setup Codex with current version
+      const codexSkillDir = path.join(testDir, '.codex', 'skills', 'dwsp-explore');
+      await fs.mkdir(codexSkillDir, { recursive: true });
+      await fs.writeFile(path.join(codexSkillDir, 'SKILL.md'), `---
 metadata:
   generatedBy: "0.23.0"
 ---
@@ -334,9 +334,9 @@ metadata:
       expect(claudeStatus?.generatedByVersion).toBe('0.22.0');
       expect(claudeStatus?.needsUpdate).toBe(true);
 
-      const cursorStatus = statuses.find(s => s.toolId === 'cursor');
-      expect(cursorStatus?.generatedByVersion).toBe('0.23.0');
-      expect(cursorStatus?.needsUpdate).toBe(false);
+      const codexStatus = statuses.find(s => s.toolId === 'codex');
+      expect(codexStatus?.generatedByVersion).toBe('0.23.0');
+      expect(codexStatus?.needsUpdate).toBe(false);
     });
   });
 });

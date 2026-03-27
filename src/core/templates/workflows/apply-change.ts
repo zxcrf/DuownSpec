@@ -9,7 +9,7 @@ import { getModoBEndImplementationHint } from './shared-b-end.js';
 
 export function getApplyChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-apply-change',
+    name: 'dwsp-apply-change',
     description: '执行 DuowenSpec 变更中的任务。适用于开始实现、继续实现或逐项完成任务。',
     instructions: `执行 DuowenSpec 变更中的任务。
 
@@ -47,7 +47,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
    - 基于当前状态生成的动态指引
 
    **状态处理：**
-   - 若 \`state: "blocked"\`（缺少前置产物）：提示受阻，并建议使用 duowenspec-continue-change
+   - 若 \`state: "blocked"\`（缺少前置产物）：提示受阻，并建议使用 dwsp-continue-change
    - 若 \`state: "all_done"\`：提示已全部完成，并建议归档
    - 其他情况：进入实现流程
 
@@ -68,8 +68,8 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 
 6. **执行任务（循环直到完成或受阻）**
 
-   在这个企业优先分支中，\`superpowers:executing-plans\` 是此阶段默认的实现增强能力；
-   \`superpowers:test-driven-development\` 和 \`superpowers:subagent-driven-development\`
+   在这个企业优先分支中，\`dwsp-executing-plans\` 是此阶段默认的实现增强能力；
+   \`dwsp-test-driven-development\` 和 \`dwsp-subagent-driven-development\`
    也可在合适时使用。DuowenSpec 仍是任务完成状态与阶段推进的唯一依据。
 
    对每个待完成任务：
@@ -85,7 +85,19 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
    - 遇到错误或阻塞：先汇报，再等待指示
    - 用户主动打断
 
-7. **完成或暂停时展示状态**
+7. **任务全部完成后先运行 validate**
+
+   在报告“实现完成”之前，必须执行：
+   \`\`\`bash
+   dwsp validate "<name>"
+   \`\`\`
+
+   **若 validate 失败：**
+   - 不得宣称 apply 已完成
+   - 必须将其视为仍在实现阶段
+   - 明确列出失败点并继续修正，直到 validate 通过或遇到阻塞
+
+8. **完成或暂停时展示状态**
 
    展示：
    - 本次会话完成的任务
@@ -121,7 +133,7 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 - [x] 任务 2
 ...
 
-所有任务已完成，可以归档这个变更。
+所有任务已完成，且 \`dwsp validate <change-name>\` 已通过。可以继续进入审查或归档流程。
 \`\`\`
 
 **暂停时输出（遇到问题）**
@@ -153,7 +165,8 @@ export function getApplyChangeSkillTemplate(): SkillTemplate {
 - 每完成一项任务立即更新对应勾选状态
 - 遇到错误、阻塞或需求不清晰时必须暂停并汇报
 - 以 CLI 输出的 contextFiles 为准，不要假设固定文件名
-- \`superpowers:executing-plans\` 仅是阶段内辅助能力，不是工作流所有者
+- \`dwsp-executing-plans\` 仅是阶段内辅助能力，不是工作流所有者
+- 任务勾选完成不等于 apply 完成；必须以 \`dwsp validate <name>\` 通过作为收尾条件
 
 **流式工作流集成**
 
@@ -232,8 +245,8 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
 
 6. **执行任务（循环直到完成或受阻）**
 
-   在这个企业优先分支中，\`superpowers:executing-plans\` 是此阶段默认的实现增强能力；
-   \`superpowers:test-driven-development\` 和 \`superpowers:subagent-driven-development\`
+   在这个企业优先分支中，\`dwsp-executing-plans\` 是此阶段默认的实现增强能力；
+   \`dwsp-test-driven-development\` 和 \`dwsp-subagent-driven-development\`
    也可在合适时使用。DuowenSpec 仍是任务完成状态与阶段推进的唯一依据。
 
    对每个待完成任务：
@@ -249,7 +262,19 @@ export function getOpsxApplyCommandTemplate(): CommandTemplate {
    - 遇到错误或阻塞：先汇报，再等待指示
    - 用户主动打断
 
-7. **完成或暂停时展示状态**
+7. **任务全部完成后先运行 validate**
+
+   在报告“实现完成”之前，必须执行：
+   \`\`\`bash
+   dwsp validate "<name>"
+   \`\`\`
+
+   **若 validate 失败：**
+   - 不得宣称 apply 已完成
+   - 必须将其视为仍在实现阶段
+   - 明确列出失败点并继续修正，直到 validate 通过或遇到阻塞
+
+8. **完成或暂停时展示状态**
 
    展示：
    - 本次会话完成的任务

@@ -109,12 +109,12 @@ describe('UpdateCommand', () => {
     it('should update skill files for configured Claude tool', async () => {
       // Set up a configured Claude tool by creating skill directories
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      const exploreSkillDir = path.join(skillsDir, 'duowenspec-explore');
+      const exploreSkillDir = path.join(skillsDir, 'dwsp-explore');
       await fs.mkdir(exploreSkillDir, { recursive: true });
 
       // Create an existing skill file
       const oldSkillContent = `---
-name: duowenspec-explore (old)
+name: dwsp-explore (old)
 description: Old description
 license: MIT
 compatibility: Requires duowenspec CLI.
@@ -139,7 +139,7 @@ Old instructions content
         path.join(exploreSkillDir, 'SKILL.md'),
         'utf-8'
       );
-      expect(updatedSkill).toContain('name: duowenspec-explore');
+      expect(updatedSkill).toContain('name: dwsp-explore');
       expect(updatedSkill).not.toContain('Old instructions content');
       expect(updatedSkill).toContain('license: MIT');
 
@@ -156,24 +156,24 @@ Old instructions content
       const skillsDir = path.join(testDir, '.claude', 'skills');
 
       // Create at least one skill to mark tool as configured
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old content'
       );
 
       await updateCommand.execute(testDir);
 
       const defaultSkillNames = [
-        'duowenspec-explore',
-        'duowenspec-apply-change',
-        'duowenspec-review-change',
-        'duowenspec-archive-change',
-        'duowenspec-propose',
-        'duowenspec-verify-change',
-        'duowenspec-document-change',
+        'dwsp-explore',
+        'dwsp-apply-change',
+        'dwsp-review-change',
+        'dwsp-archive-change',
+        'dwsp-propose',
+        'dwsp-verify-change',
+        'dwsp-document-change',
       ];
 
       for (const skillName of defaultSkillNames) {
@@ -188,11 +188,11 @@ Old instructions content
       }
 
       const nonDefaultSkillNames = [
-        'duowenspec-new-change',
-        'duowenspec-continue-change',
-        'duowenspec-ff-change',
-        'duowenspec-sync-specs',
-        'duowenspec-bulk-archive-change',
+        'dwsp-new-change',
+        'dwsp-continue-change',
+        'dwsp-ff-change',
+        'dwsp-sync-specs',
+        'dwsp-bulk-archive-change',
       ];
 
       for (const skillName of nonDefaultSkillNames) {
@@ -207,11 +207,11 @@ Old instructions content
     it('should update opsx commands for configured Claude tool', async () => {
       // Set up a configured Claude tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old content'
       );
 
@@ -234,11 +234,11 @@ Old instructions content
     it('should update enterprise-default opsx commands when tool is configured', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old content'
       );
 
@@ -265,21 +265,21 @@ Old instructions content
     it('should update multiple configured tools', async () => {
       // Set up Claude
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
       // Set up Qoder
       const cursorSkillsDir = path.join(testDir, '.qoder', 'skills');
-      await fs.mkdir(path.join(cursorSkillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(cursorSkillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(cursorSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(cursorSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -294,17 +294,17 @@ Old instructions content
 
       // Verify Claude skills updated
       const claudeSkill = await fs.readFile(
-        path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'utf-8'
       );
-      expect(claudeSkill).toContain('name: duowenspec-explore');
+      expect(claudeSkill).toContain('name: dwsp-explore');
 
       // Verify Qoder skills updated
       const cursorSkill = await fs.readFile(
-        path.join(cursorSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(cursorSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'utf-8'
       );
-      expect(cursorSkill).toContain('name: duowenspec-explore');
+      expect(cursorSkill).toContain('name: dwsp-explore');
 
       consoleSpy.mockRestore();
     });
@@ -312,11 +312,11 @@ Old instructions content
     it('should update CodeBuddy tool with correct command format', async () => {
       // Set up CodeBuddy
       const qwenSkillsDir = path.join(testDir, '.codebuddy', 'skills');
-      await fs.mkdir(path.join(qwenSkillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(qwenSkillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(qwenSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(qwenSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -341,11 +341,11 @@ Old instructions content
     it('should update OpenCode tool with correct command format', async () => {
       // Set up OpenCode
       const windsurfSkillsDir = path.join(testDir, '.opencode', 'skills');
-      await fs.mkdir(path.join(windsurfSkillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(windsurfSkillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(windsurfSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(windsurfSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -371,11 +371,11 @@ Old instructions content
     it('should handle tool update failures gracefully', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -407,20 +407,20 @@ Old instructions content
     it('should continue updating other tools when one fails', async () => {
       // Set up Claude and Qoder
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
       const cursorSkillsDir = path.join(testDir, '.qoder', 'skills');
-      await fs.mkdir(path.join(cursorSkillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(cursorSkillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(cursorSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(cursorSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -478,7 +478,7 @@ Old instructions content
         testDir,
         '.claude',
         'skills',
-        'duowenspec-archive-change'
+        'dwsp-archive-change'
       );
       await fs.mkdir(skillDir, { recursive: true });
       await fs.writeFile(path.join(skillDir, 'SKILL.md'), 'old');
@@ -500,18 +500,18 @@ Old instructions content
     it('should generate valid YAML frontmatter in skill files', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
       await updateCommand.execute(testDir);
 
       const skillContent = await fs.readFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'utf-8'
       );
 
@@ -530,18 +530,18 @@ Old instructions content
     it('should include proper instructions in skill files', async () => {
       // Set up a configured tool with apply-change skill (which is in core profile)
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-apply-change'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-apply-change'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-apply-change', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-apply-change', 'SKILL.md'),
         'old'
       );
 
       await updateCommand.execute(testDir);
 
       const skillContent = await fs.readFile(
-        path.join(skillsDir, 'duowenspec-apply-change', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-apply-change', 'SKILL.md'),
         'utf-8'
       );
 
@@ -554,11 +554,11 @@ Old instructions content
     it('should display success message with tool name', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -577,11 +577,11 @@ Old instructions content
     it('should suggest IDE restart after update', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -620,13 +620,13 @@ Old instructions content
     it('should detect update needed when generatedBy is missing', async () => {
       // Set up a configured tool without generatedBy
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   author: duowenspec
   version: "1.0"
@@ -651,13 +651,13 @@ Legacy content without generatedBy
     it('should detect update needed when version differs', async () => {
       // Set up a configured tool with old version
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   generatedBy: "0.1.0"
 ---
@@ -681,18 +681,18 @@ Old version content
     it('should embed generatedBy in updated skill files', async () => {
       // Set up a configured tool without generatedBy
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old content without version'
       );
 
       await updateCommand.execute(testDir);
 
       const updatedContent = await fs.readFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'utf-8'
       );
 
@@ -705,13 +705,13 @@ Old version content
     it('should update when force is true even if up to date', async () => {
       // Set up a configured tool with current version
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
 
       const { version } = await import('../../package.json');
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         `---
 metadata:
   generatedBy: "${version}"
@@ -742,11 +742,11 @@ Content
     it('should not show --force hint when force is used', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old content'
       );
 
@@ -770,7 +770,7 @@ Content
     it('should update all tools when force is used with mixed versions', async () => {
       // Set up Claude with current version
       const { version } = await import('../../package.json');
-      const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+      const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
       await fs.mkdir(claudeSkillDir, { recursive: true });
       await fs.writeFile(
         path.join(claudeSkillDir, 'SKILL.md'),
@@ -782,7 +782,7 @@ metadata:
       );
 
       // Set up Qoder with old version
-      const cursorSkillDir = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore');
+      const cursorSkillDir = path.join(testDir, '.qoder', 'skills', 'dwsp-explore');
       await fs.mkdir(cursorSkillDir, { recursive: true });
       await fs.writeFile(
         path.join(cursorSkillDir, 'SKILL.md'),
@@ -811,11 +811,11 @@ metadata:
     it('should show version in success message', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -838,7 +838,7 @@ metadata:
       await initCommand.execute(testDir);
 
       // Make Claude stale to force a version update.
-      const claudeSkillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const claudeSkillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
       const claudeContent = await fs.readFile(claudeSkillFile, 'utf-8');
       await fs.writeFile(
         claudeSkillFile,
@@ -867,11 +867,11 @@ metadata:
     it('should detect and auto-cleanup legacy files with --force flag', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -917,11 +917,11 @@ ${DUOWENSPEC_MARKERS.end}
     it('should warn but continue with update when legacy files found in non-interactive mode', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -964,11 +964,11 @@ ${DUOWENSPEC_MARKERS.end}
     it('should cleanup legacy slash command directories with --force', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -1001,11 +1001,11 @@ ${DUOWENSPEC_MARKERS.end}
     it('should cleanup legacy duowenspec/AGENTS.md with --force', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -1038,11 +1038,11 @@ ${DUOWENSPEC_MARKERS.end}
     it('should not show legacy cleanup messages when no legacy files exist', async () => {
       // Set up a configured tool with no legacy files
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -1065,11 +1065,11 @@ ${DUOWENSPEC_MARKERS.end}
     it('should remove DuowenSpec marker block from mixed content files', async () => {
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), {
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), {
         recursive: true,
       });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old'
       );
 
@@ -1155,7 +1155,7 @@ More user content after markers.
       );
 
       // Skills should be created
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
       const skillExists = await FileSystemUtils.fileExists(skillFile);
       expect(skillExists).toBe(true);
 
@@ -1192,8 +1192,8 @@ More user content after markers.
       );
 
       // Both tools should have skills created
-      const claudeSkillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-      const cursorSkillFile = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const claudeSkillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+      const cursorSkillFile = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
 
       expect(await FileSystemUtils.fileExists(claudeSkillFile)).toBe(true);
       expect(await FileSystemUtils.fileExists(cursorSkillFile)).toBe(true);
@@ -1204,9 +1204,9 @@ More user content after markers.
     it('should not upgrade legacy tools already configured', async () => {
       // Set up a configured Claude tool with skills
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'existing skill'
       );
 
@@ -1249,9 +1249,9 @@ More user content after markers.
     it('should upgrade only unconfigured legacy tools when mixed', async () => {
       // Set up configured Claude tool with skills
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), { recursive: true });
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), { recursive: true });
       await fs.writeFile(
-        path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'),
         'existing skill'
       );
 
@@ -1280,7 +1280,7 @@ More user content after markers.
       );
 
       // Qoder skills should be created
-      const cursorSkillFile = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const cursorSkillFile = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
       expect(await FileSystemUtils.fileExists(cursorSkillFile)).toBe(true);
 
       // Should show "Getting started" for newly configured Qoder
@@ -1294,9 +1294,9 @@ More user content after markers.
     it('should not show getting started message when no new tools configured', async () => {
       // Set up a configured tool (no legacy artifacts)
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         'old skill'
       );
 
@@ -1330,10 +1330,10 @@ More user content after markers.
 
       // Default profile is core, so only core workflows should be generated.
       const skillNames = [
-        'duowenspec-propose',
-        'duowenspec-explore',
-        'duowenspec-apply-change',
-        'duowenspec-archive-change',
+        'dwsp-propose',
+        'dwsp-explore',
+        'dwsp-apply-change',
+        'dwsp-archive-change',
       ];
 
       const skillsDir = path.join(testDir, '.claude', 'skills');
@@ -1343,7 +1343,7 @@ More user content after markers.
         expect(exists).toBe(true);
       }
 
-      const nonCoreSkill = path.join(skillsDir, 'duowenspec-new-change', 'SKILL.md');
+      const nonCoreSkill = path.join(skillsDir, 'dwsp-new-change', 'SKILL.md');
       expect(await FileSystemUtils.fileExists(nonCoreSkill)).toBe(false);
     });
 
@@ -1385,10 +1385,10 @@ More user content after markers.
 
       const skillsDir = path.join(testDir, '.claude', 'skills');
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md')
       )).toBe(true);
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-propose', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-propose', 'SKILL.md')
       )).toBe(false);
 
       const commandsDir = path.join(testDir, '.claude', 'commands', 'dwsp');
@@ -1413,25 +1413,25 @@ More user content after markers.
 
       // Set up a configured tool
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       await updateCommand.execute(testDir);
 
       // Should create explore and new skills
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md')
       )).toBe(true);
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-new-change', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-new-change', 'SKILL.md')
       )).toBe(true);
 
       // Should NOT create non-profile skills
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-apply-change', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-apply-change', 'SKILL.md')
       )).toBe(false);
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-propose', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-propose', 'SKILL.md')
       )).toBe(false);
     });
 
@@ -1443,14 +1443,14 @@ More user content after markers.
       });
 
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       await updateCommand.execute(testDir);
 
       // Skills should be created
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md')
       )).toBe(true);
 
       // Commands should NOT be created
@@ -1468,8 +1468,8 @@ More user content after markers.
       });
 
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       await updateCommand.execute(testDir);
 
@@ -1481,7 +1481,7 @@ More user content after markers.
 
       // Skills should be removed for commands-only delivery
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md')
       )).toBe(false);
     });
 
@@ -1501,13 +1501,13 @@ More user content after markers.
       }
 
       const skillsDir = path.join(testDir, adapterlessTool.skillsDir, 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       await expect(updateCommand.execute(testDir)).resolves.toBeUndefined();
 
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md')
       )).toBe(false);
     });
 
@@ -1519,13 +1519,13 @@ More user content after markers.
       });
 
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
       const packageJsonPath = path.join(process.cwd(), 'package.json');
       const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8')) as { version: string };
       await fs.writeFile(
-        path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'),
+        path.join(skillsDir, 'dwsp-explore', 'SKILL.md'),
         `---
-name: duowenspec-explore
+name: dwsp-explore
 metadata:
   generatedBy: "${packageJson.version}"
 ---
@@ -1587,12 +1587,12 @@ content
 
       // Set up tool with extra workflows beyond core profile
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       // Add a non-core workflow
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-new-change'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-new-change', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-new-change'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-new-change', 'SKILL.md'), 'old');
       const extraCommandFile = path.join(testDir, '.claude', 'commands', 'dwsp', 'new.md');
       await fs.mkdir(path.dirname(extraCommandFile), { recursive: true });
       await fs.writeFile(extraCommandFile, 'old');
@@ -1603,7 +1603,7 @@ content
 
       // Deselected workflow artifacts should be removed for both delivery surfaces.
       expect(await FileSystemUtils.fileExists(
-        path.join(skillsDir, 'duowenspec-new-change', 'SKILL.md')
+        path.join(skillsDir, 'dwsp-new-change', 'SKILL.md')
       )).toBe(false);
       expect(await FileSystemUtils.fileExists(extraCommandFile)).toBe(false);
 
@@ -1624,8 +1624,8 @@ content
     it('should detect new tool directories not currently configured', async () => {
       // Set up a configured Claude tool
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       // Create a Qoder directory (not configured — no skills)
       await fs.mkdir(path.join(testDir, '.qoder'), { recursive: true });
@@ -1649,8 +1649,8 @@ content
     it('should consolidate multiple new tools into one message', async () => {
       // Set up a configured Claude tool
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       // Create two unconfigured tool directories
       await fs.mkdir(path.join(testDir, '.trae'), { recursive: true });
@@ -1678,8 +1678,8 @@ content
     it('should not show new tool message when no new tools detected', async () => {
       // Set up a configured tool (only Claude, no other tool directories)
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       const consoleSpy = vi.spyOn(console, 'log');
 
@@ -1701,10 +1701,10 @@ content
     it('should detect installed workflows across tools', async () => {
       // Create skills for Claude
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'), 'content');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-apply-change'), { recursive: true });
-      await fs.writeFile(path.join(claudeSkillsDir, 'duowenspec-apply-change', 'SKILL.md'), 'content');
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'), 'content');
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-apply-change'), { recursive: true });
+      await fs.writeFile(path.join(claudeSkillsDir, 'dwsp-apply-change', 'SKILL.md'), 'content');
 
       const workflows = scanInstalledWorkflows(testDir, ['claude']);
       expect(workflows).toContain('explore');
@@ -1715,13 +1715,13 @@ content
     it('should return union of workflows across multiple tools', async () => {
       // Claude has explore
       const claudeSkillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(claudeSkillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(claudeSkillsDir, 'duowenspec-explore', 'SKILL.md'), 'content');
+      await fs.mkdir(path.join(claudeSkillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(claudeSkillsDir, 'dwsp-explore', 'SKILL.md'), 'content');
 
       // Qoder has apply
       const cursorSkillsDir = path.join(testDir, '.qoder', 'skills');
-      await fs.mkdir(path.join(cursorSkillsDir, 'duowenspec-apply-change'), { recursive: true });
-      await fs.writeFile(path.join(cursorSkillsDir, 'duowenspec-apply-change', 'SKILL.md'), 'content');
+      await fs.mkdir(path.join(cursorSkillsDir, 'dwsp-apply-change'), { recursive: true });
+      await fs.writeFile(path.join(cursorSkillsDir, 'dwsp-apply-change', 'SKILL.md'), 'content');
 
       const workflows = scanInstalledWorkflows(testDir, ['claude', 'qoder']);
       expect(workflows).toContain('explore');
@@ -1756,8 +1756,8 @@ content
   describe('tools output', () => {
     it('should list affected tools in output', async () => {
       const skillsDir = path.join(testDir, '.claude', 'skills');
-      await fs.mkdir(path.join(skillsDir, 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(skillsDir, 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(skillsDir, 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(skillsDir, 'dwsp-explore', 'SKILL.md'), 'old');
 
       const consoleSpy = vi.spyOn(console, 'log');
 
@@ -1781,8 +1781,8 @@ content
       process.env.DUOWENSPEC_MODO_SCAFFOLD_ASSET_ROOT = await createFakeModoAgentsAssetRoot(testDir, agentsContent);
 
       await fs.writeFile(path.join(testDir, '.b-end-adapter'), 'modo\n', 'utf-8');
-      await fs.mkdir(path.join(testDir, '.claude', 'skills', 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(testDir, '.claude', 'skills', 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md'), 'old');
 
       const consoleSpy = vi.spyOn(console, 'log');
 
@@ -1791,9 +1791,9 @@ content
       expect(await fs.readFile(path.join(testDir, 'AGENTS.md'), 'utf-8')).toBe(agentsContent);
       expect((await fs.lstat(path.join(testDir, 'CLAUDE.md'))).isSymbolicLink()).toBe(true);
       expect(await fs.readlink(path.join(testDir, 'CLAUDE.md'))).toBe('AGENTS.md');
-      expect(await FileSystemUtils.fileExists(path.join(testDir, '.claude', 'skills', 'duowenspec-b-end-delivery', 'SKILL.md'))).toBe(true);
-      expect(await FileSystemUtils.fileExists(path.join(testDir, '.claude', 'skills', 'duowenspec-b-end-components', 'SKILL.md'))).toBe(true);
-      expect(await FileSystemUtils.fileExists(path.join(testDir, '.claude', 'skills', 'duowenspec-b-end-review', 'SKILL.md'))).toBe(true);
+      expect(await FileSystemUtils.fileExists(path.join(testDir, '.claude', 'skills', 'dwsp-b-end-delivery', 'SKILL.md'))).toBe(true);
+      expect(await FileSystemUtils.fileExists(path.join(testDir, '.claude', 'skills', 'dwsp-b-end-components', 'SKILL.md'))).toBe(true);
+      expect(await FileSystemUtils.fileExists(path.join(testDir, '.claude', 'skills', 'dwsp-b-end-review', 'SKILL.md'))).toBe(true);
 
       const calls = consoleSpy.mock.calls.flat().map(String);
       expect(calls.some((entry) => entry.includes('脚手架说明文件：已创建 AGENTS.md，并建立 CLAUDE.md 软链'))).toBe(true);
@@ -1806,8 +1806,8 @@ content
 
       await fs.writeFile(path.join(testDir, '.b-end-adapter'), 'modo\n', 'utf-8');
       await fs.writeFile(path.join(testDir, 'AGENTS.md'), '# 旧说明\n', 'utf-8');
-      await fs.mkdir(path.join(testDir, '.claude', 'skills', 'duowenspec-explore'), { recursive: true });
-      await fs.writeFile(path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md'), 'old');
+      await fs.mkdir(path.join(testDir, '.claude', 'skills', 'dwsp-explore'), { recursive: true });
+      await fs.writeFile(path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md'), 'old');
 
       const consoleSpy = vi.spyOn(console, 'log');
 

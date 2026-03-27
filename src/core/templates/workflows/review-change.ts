@@ -3,12 +3,12 @@ import { getModoBEndReviewHint } from './shared-b-end.js';
 
 export function getReviewChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-review-change',
+    name: 'dwsp-review-change',
     description: '在验证与发布前审查已完成变更。适用于需要结构化审查、明确问题与结论记录。',
     instructions: `在发布前审查已完成的变更。
 
-这是企业流程中的必经检查点。可使用 \`superpowers:requesting-code-review\`
-和 \`superpowers:receiving-code-review\` 来完成审查能力，但是否进入
+这是企业流程中的必经检查点。可使用 \`dwsp-requesting-code-review\`
+和 \`dwsp-receiving-code-review\` 来完成审查能力，但是否进入
 \`/dwsp:verify\` 或退回实现阶段，仍以 DuowenSpec 作为唯一依据。
 
 **输入**: 可选传入变更名。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。
@@ -83,8 +83,8 @@ export function getOpsxReviewCommandTemplate(): CommandTemplate {
     tags: ['workflow', 'review', 'enterprise'],
     content: `在发布前审查已完成的变更。
 
-这是企业流程中的必经检查点。可使用 \`superpowers:requesting-code-review\`
-和 \`superpowers:receiving-code-review\` 来完成审查能力，但是否进入
+这是企业流程中的必经检查点。可使用 \`dwsp-requesting-code-review\`
+和 \`dwsp-receiving-code-review\` 来完成审查能力，但是否进入
 \`/dwsp:verify\` 或退回实现阶段，仍以 DuowenSpec 作为唯一依据。
 
 **输入**: 可选在 \`/dwsp:review\` 后传入变更名（例如 \`/dwsp:review add-auth\`）。若未传入，请根据对话上下文判断；若信息含糊，必须提示用户从可用变更中选择。

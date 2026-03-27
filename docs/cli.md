@@ -510,6 +510,7 @@ dwsp instructions design --change add-dark-mode --json
 - Project context from config
 - Content from dependency artifacts
 - Per-artifact rules from config
+- For `dwsp instructions apply --json`, includes `developmentMode` (`superpowers-tdd` or `null`)
 
 ---
 

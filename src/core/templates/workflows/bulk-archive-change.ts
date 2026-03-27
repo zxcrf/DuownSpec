@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getBulkArchiveChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-bulk-archive-change',
+    name: 'dwsp-bulk-archive-change',
     description: '一次归档多个已完成变更。适用于并行变更统一收尾归档。',
     instructions: getBulkArchiveInstructions(),
     license: 'MIT',
@@ -132,7 +132,7 @@ function getBulkArchiveInstructions(): string {
    依据前面确定好的顺序处理 change（包含冲突解决后的同步顺序）：
 
    a. **如果存在 delta specs，就先同步 specs**
-      - 使用 duowenspec-sync-specs 的方式做智能同步
+      - 使用 dwsp-sync-specs 的方式做智能同步
       - 遇到冲突时按已确定顺序应用
       - 记录是否同步成功
 

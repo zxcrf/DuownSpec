@@ -9,7 +9,7 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getOpsxProposeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-propose',
+    name: 'dwsp-propose',
     description: '一步生成完整变更提案。适用于用户快速描述目标并产出 proposal、design、specs、tasks。',
     instructions: `提出一个新变更：一步创建并生成全部产物。
 

@@ -9,7 +9,7 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getContinueChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-continue-change',
+    name: 'dwsp-continue-change',
     description: '继续推进 DuowenSpec 变更，生成下一份产物。适用于用户想继续当前工作流或补齐下一步产物。',
     instructions: `通过创建下一份产物来继续推进一个变更。
 

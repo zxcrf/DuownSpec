@@ -116,7 +116,7 @@ export function getDefaultModoScaffoldManifest(): ModoScaffoldManifest {
       'src/app/(main)/dashboard',
       'src/db',
       'src/lib',
-      'src/test',
+      'tests',
       'src/types',
     ],
     exclusions: {

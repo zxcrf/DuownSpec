@@ -2,7 +2,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getDocumentChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-document-change',
+    name: 'dwsp-document-change',
     description: '在发布与归档前记录交付文档已完成。适用于确认文档与实际交付一致。',
     instructions: `在发布和归档前记录变更的最终交付状态。
 

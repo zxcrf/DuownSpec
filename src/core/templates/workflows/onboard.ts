@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getOnboardSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-onboard',
+    name: 'dwsp-onboard',
     description: 'DuowenSpec 引导式上手流程：带讲解地走完整个工作流，并结合真实代码库操作。',
     instructions: getOnboardInstructions(),
     license: 'MIT',

@@ -2,7 +2,7 @@ import type { SkillTemplate } from '../types.js';
 
 export function getBEndDeliverySkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-b-end-delivery',
+    name: 'dwsp-b-end-delivery',
     description: 'MODO B 端界面交付总控。负责识别页面模式、锁定模板入口，并把 DuowenSpec 产物转成稳定一致的前端交付方案。',
     instructions: `在 MODO 项目里处理 B 端页面或控制台界面时，使用这个技能作为总控入口。
 
@@ -23,7 +23,7 @@ export function getBEndDeliverySkillTemplate(): SkillTemplate {
 3. **组件优先用项目内 Biz 组件**
    - 组件映射与降级规则统一以 \`duowenspec/b-end/MANIFEST.md\` 为准
 4. **最终输出必须经过一致性复核**
-   - 真正结束前，调用 \`duowenspec-b-end-review\`
+   - 真正结束前，调用 \`dwsp-b-end-review\`
 
 ## 固定流程
 
@@ -44,9 +44,9 @@ export function getBEndDeliverySkillTemplate(): SkillTemplate {
    - 对应模板路径
    - 需要的核心角色 / 组件
    - 需要保持的一致性约束
-   - 是否需要额外调用 \`duowenspec-b-end-components\`
-8. 若进入实现或代码修改阶段，继续调用 \`duowenspec-b-end-components\`
-9. 完成前必须调用 \`duowenspec-b-end-review\`
+   - 是否需要额外调用 \`dwsp-b-end-components\`
+8. 若进入实现或代码修改阶段，继续调用 \`dwsp-b-end-components\`
+9. 完成前必须调用 \`dwsp-b-end-review\`
 
 ## 输出格式
 
@@ -75,7 +75,7 @@ B-End Delivery Brief
 
 export function getBEndComponentsSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-b-end-components',
+    name: 'dwsp-b-end-components',
     description: 'MODO B 端组件解析与降级规则。优先使用项目内 Biz 组件，必要时再按文档做降级实现。',
     instructions: `当页面需要具体组件时，使用这个技能把“页面角色”解析成真正可落地的组件与导入路径。
 
@@ -134,7 +134,7 @@ Component Resolution
 
 export function getBEndReviewSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-b-end-review',
+    name: 'dwsp-b-end-review',
     description: 'MODO B 端界面一致性门禁。在页面代码输出前检查布局、组件、交互和视觉规范是否统一。',
     instructions: `在输出页面代码或宣布完成前，必须执行这份复核。
 

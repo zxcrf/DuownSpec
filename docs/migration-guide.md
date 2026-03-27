@@ -398,10 +398,10 @@ OPSX uses the emerging **skills** standard:
 
 ```
 .claude/skills/
-├── duowenspec-explore/SKILL.md
-├── duowenspec-new-change/SKILL.md
-├── duowenspec-continue-change/SKILL.md
-├── duowenspec-apply-change/SKILL.md
+├── dwsp-explore/SKILL.md
+├── dwsp-new-change/SKILL.md
+├── dwsp-continue-change/SKILL.md
+├── dwsp-apply-change/SKILL.md
 └── ...
 ```
 
@@ -558,9 +558,9 @@ project/
 │   └── config.yaml               # NEW: Project configuration
 ├── .claude/
 │   └── skills/                   # NEW: OPSX skills
-│       ├── duowenspec-propose/     # default core profile
-│       ├── duowenspec-explore/
-│       ├── duowenspec-apply-change/
+│       ├── dwsp-propose/     # default core profile
+│       ├── dwsp-explore/
+│       ├── dwsp-apply-change/
 │       └── ...                   # expanded profile adds new/continue/ff/etc.
 ├── CLAUDE.md                     # DuowenSpec markers removed, your content preserved
 └── AGENTS.md                     # DuowenSpec markers removed, your content preserved

@@ -66,9 +66,9 @@ export interface CommandTemplateEntry {
 }
 
 export const MODO_SUPPORT_SKILL_DIRS = [
-  'duowenspec-b-end-delivery',
-  'duowenspec-b-end-components',
-  'duowenspec-b-end-review',
+  'dwsp-b-end-delivery',
+  'dwsp-b-end-components',
+  'dwsp-b-end-review',
 ] as const;
 
 /**
@@ -78,19 +78,19 @@ export const MODO_SUPPORT_SKILL_DIRS = [
  */
 export function getSkillTemplates(workflowFilter?: readonly string[]): SkillTemplateEntry[] {
   const all: SkillTemplateEntry[] = [
-    { template: getExploreSkillTemplate(), dirName: 'duowenspec-explore', workflowId: 'explore' },
-    { template: getNewChangeSkillTemplate(), dirName: 'duowenspec-new-change', workflowId: 'new' },
-    { template: getContinueChangeSkillTemplate(), dirName: 'duowenspec-continue-change', workflowId: 'continue' },
-    { template: getApplyChangeSkillTemplate(), dirName: 'duowenspec-apply-change', workflowId: 'apply' },
-    { template: getReviewChangeSkillTemplate(), dirName: 'duowenspec-review-change', workflowId: 'review' },
-    { template: getFfChangeSkillTemplate(), dirName: 'duowenspec-ff-change', workflowId: 'ff' },
-    { template: getSyncSpecsSkillTemplate(), dirName: 'duowenspec-sync-specs', workflowId: 'sync' },
-    { template: getArchiveChangeSkillTemplate(), dirName: 'duowenspec-archive-change', workflowId: 'archive' },
-    { template: getBulkArchiveChangeSkillTemplate(), dirName: 'duowenspec-bulk-archive-change', workflowId: 'bulk-archive' },
-    { template: getVerifyChangeSkillTemplate(), dirName: 'duowenspec-verify-change', workflowId: 'verify' },
-    { template: getDocumentChangeSkillTemplate(), dirName: 'duowenspec-document-change', workflowId: 'document' },
-    { template: getOnboardSkillTemplate(), dirName: 'duowenspec-onboard', workflowId: 'onboard' },
-    { template: getOpsxProposeSkillTemplate(), dirName: 'duowenspec-propose', workflowId: 'propose' },
+    { template: getExploreSkillTemplate(), dirName: 'dwsp-explore', workflowId: 'explore' },
+    { template: getNewChangeSkillTemplate(), dirName: 'dwsp-new-change', workflowId: 'new' },
+    { template: getContinueChangeSkillTemplate(), dirName: 'dwsp-continue-change', workflowId: 'continue' },
+    { template: getApplyChangeSkillTemplate(), dirName: 'dwsp-apply-change', workflowId: 'apply' },
+    { template: getReviewChangeSkillTemplate(), dirName: 'dwsp-review-change', workflowId: 'review' },
+    { template: getFfChangeSkillTemplate(), dirName: 'dwsp-ff-change', workflowId: 'ff' },
+    { template: getSyncSpecsSkillTemplate(), dirName: 'dwsp-sync-specs', workflowId: 'sync' },
+    { template: getArchiveChangeSkillTemplate(), dirName: 'dwsp-archive-change', workflowId: 'archive' },
+    { template: getBulkArchiveChangeSkillTemplate(), dirName: 'dwsp-bulk-archive-change', workflowId: 'bulk-archive' },
+    { template: getVerifyChangeSkillTemplate(), dirName: 'dwsp-verify-change', workflowId: 'verify' },
+    { template: getDocumentChangeSkillTemplate(), dirName: 'dwsp-document-change', workflowId: 'document' },
+    { template: getOnboardSkillTemplate(), dirName: 'dwsp-onboard', workflowId: 'onboard' },
+    { template: getOpsxProposeSkillTemplate(), dirName: 'dwsp-propose', workflowId: 'propose' },
   ];
 
   if (!workflowFilter) return all;
@@ -103,17 +103,17 @@ export function getModoSupportSkillTemplates(): SkillTemplateEntry[] {
   return [
     {
       template: getBEndDeliverySkillTemplate(),
-      dirName: 'duowenspec-b-end-delivery',
+      dirName: 'dwsp-b-end-delivery',
       workflowId: 'modo-support-delivery',
     },
     {
       template: getBEndComponentsSkillTemplate(),
-      dirName: 'duowenspec-b-end-components',
+      dirName: 'dwsp-b-end-components',
       workflowId: 'modo-support-components',
     },
     {
       template: getBEndReviewSkillTemplate(),
-      dirName: 'duowenspec-b-end-review',
+      dirName: 'dwsp-b-end-review',
       workflowId: 'modo-support-review',
     },
   ];
@@ -123,13 +123,13 @@ export function getEnterpriseCapabilitySkillTemplates(
   workflowFilter: readonly string[]
 ): SkillTemplateEntry[] {
   const templateById = new Map([
-    ['brainstorming', getBrainstormingSkillTemplate],
-    ['executing-plans', getExecutingPlansSkillTemplate],
-    ['test-driven-development', getTestDrivenDevelopmentSkillTemplate],
-    ['subagent-driven-development', getSubagentDrivenDevelopmentSkillTemplate],
-    ['requesting-code-review', getRequestingCodeReviewSkillTemplate],
-    ['receiving-code-review', getReceivingCodeReviewSkillTemplate],
-    ['verification-before-completion', getVerificationBeforeCompletionSkillTemplate],
+    ['dwsp-brainstorming', getBrainstormingSkillTemplate],
+    ['dwsp-executing-plans', getExecutingPlansSkillTemplate],
+    ['dwsp-test-driven-development', getTestDrivenDevelopmentSkillTemplate],
+    ['dwsp-subagent-driven-development', getSubagentDrivenDevelopmentSkillTemplate],
+    ['dwsp-requesting-code-review', getRequestingCodeReviewSkillTemplate],
+    ['dwsp-receiving-code-review', getReceivingCodeReviewSkillTemplate],
+    ['dwsp-verification-before-completion', getVerificationBeforeCompletionSkillTemplate],
   ] as const);
 
   return getBundledEnterpriseCapabilitySkills(workflowFilter).map((skill) => {

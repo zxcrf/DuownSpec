@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getSyncSpecsSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-sync-specs',
+    name: 'dwsp-sync-specs',
     description: '将变更中的 delta specs 同步回主 specs。适用于不归档变更、只同步规格内容时使用。',
     instructions: `将某个变更里的 delta specs 同步回主 specs。
 

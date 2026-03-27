@@ -84,18 +84,18 @@ describe('config profile interactive flow', () => {
 
   function setupDriftedProjectArtifacts(projectDir: string): void {
     fs.mkdirSync(path.join(projectDir, 'duowenspec'), { recursive: true });
-    const exploreSkillPath = path.join(projectDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+    const exploreSkillPath = path.join(projectDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
     fs.mkdirSync(path.dirname(exploreSkillPath), { recursive: true });
-    fs.writeFileSync(exploreSkillPath, 'name: duowenspec-explore\n', 'utf-8');
+    fs.writeFileSync(exploreSkillPath, 'name: dwsp-explore\n', 'utf-8');
   }
 
   function setupSyncedCoreBothArtifacts(projectDir: string): void {
     fs.mkdirSync(path.join(projectDir, 'duowenspec'), { recursive: true });
     const coreSkillDirs = [
-      'duowenspec-propose',
-      'duowenspec-explore',
-      'duowenspec-apply-change',
-      'duowenspec-archive-change',
+      'dwsp-propose',
+      'dwsp-explore',
+      'dwsp-apply-change',
+      'dwsp-archive-change',
     ];
     for (const dirName of coreSkillDirs) {
       const skillPath = path.join(projectDir, '.claude', 'skills', dirName, 'SKILL.md');
@@ -112,9 +112,9 @@ describe('config profile interactive flow', () => {
   }
 
   function addExtraSyncWorkflowArtifacts(projectDir: string): void {
-    const syncSkillPath = path.join(projectDir, '.claude', 'skills', 'duowenspec-sync-specs', 'SKILL.md');
+    const syncSkillPath = path.join(projectDir, '.claude', 'skills', 'dwsp-sync-specs', 'SKILL.md');
     fs.mkdirSync(path.dirname(syncSkillPath), { recursive: true });
-    fs.writeFileSync(syncSkillPath, 'name: duowenspec-sync-specs\n', 'utf-8');
+    fs.writeFileSync(syncSkillPath, 'name: dwsp-sync-specs\n', 'utf-8');
 
     const syncCommandPath = path.join(projectDir, '.claude', 'commands', 'dwsp', 'sync.md');
     fs.mkdirSync(path.dirname(syncCommandPath), { recursive: true });

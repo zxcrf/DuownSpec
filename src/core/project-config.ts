@@ -38,11 +38,25 @@ export const ProjectConfigSchema = z.object({
     )
     .optional()
     .describe('Per-artifact rules, keyed by artifact ID'),
+
+  // Optional: apply-phase behavior
+  apply: z
+    .object({
+      developmentMode: z
+        .enum(['superpowers-tdd'])
+        .nullable()
+        .optional()
+        .describe('Apply development mode. Use "superpowers-tdd" or null/omitted for default behavior'),
+    })
+    .optional()
+    .describe('Apply-phase optional settings'),
 });
 
 export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
 
 const MAX_CONTEXT_SIZE = 50 * 1024; // 50KB hard limit
+export const SUPPORTED_APPLY_DEVELOPMENT_MODES = ['superpowers-tdd'] as const;
+export type ApplyDevelopmentMode = (typeof SUPPORTED_APPLY_DEVELOPMENT_MODES)[number];
 
 /**
  * Read and parse duowenspec/config.yaml from project root.
@@ -152,12 +166,77 @@ export function readProjectConfig(projectRoot: string): ProjectConfig | null {
       }
     }
 
+    // Parse apply.developmentMode (optional)
+    if (raw.apply !== undefined) {
+      if (typeof raw.apply === 'object' && raw.apply !== null && !Array.isArray(raw.apply)) {
+        const applyConfig: { developmentMode?: ApplyDevelopmentMode | null } = {};
+        if ('developmentMode' in raw.apply) {
+          const modeValue = (raw.apply as Record<string, unknown>).developmentMode;
+          if (modeValue === null || modeValue === undefined) {
+            applyConfig.developmentMode = null;
+          } else if (
+            typeof modeValue === 'string'
+            && SUPPORTED_APPLY_DEVELOPMENT_MODES.includes(modeValue as ApplyDevelopmentMode)
+          ) {
+            applyConfig.developmentMode = modeValue as ApplyDevelopmentMode;
+          } else {
+            console.warn(
+              `Invalid 'apply.developmentMode' field in config (must be one of: ${SUPPORTED_APPLY_DEVELOPMENT_MODES.join(', ')})`
+            );
+          }
+        }
+        if (Object.keys(applyConfig).length > 0) {
+          (config as ProjectConfig).apply = applyConfig;
+        }
+      } else {
+        console.warn(`Invalid 'apply' field in config (must be object)`);
+      }
+    }
+
     // Return partial config even if some fields failed
     return Object.keys(config).length > 0 ? (config as ProjectConfig) : null;
   } catch (error) {
     console.warn(`Failed to parse duowenspec/config.yaml:`, error);
     return null;
   }
+}
+
+/**
+ * Resolve apply development mode from project config with strict validation.
+ * Returns null when config or mode is absent. Throws on invalid mode value.
+ */
+export function resolveApplyDevelopmentMode(projectRoot: string): ApplyDevelopmentMode | null {
+  let configPath = path.join(projectRoot, 'duowenspec', 'config.yaml');
+  if (!existsSync(configPath)) {
+    configPath = path.join(projectRoot, 'duowenspec', 'config.yml');
+    if (!existsSync(configPath)) {
+      return null;
+    }
+  }
+
+  const content = readFileSync(configPath, 'utf-8');
+  const raw = parseYaml(content);
+  if (!raw || typeof raw !== 'object') {
+    return null;
+  }
+
+  const rawApply = (raw as Record<string, unknown>).apply;
+  if (!rawApply || typeof rawApply !== 'object' || Array.isArray(rawApply)) {
+    return null;
+  }
+
+  const rawMode = (rawApply as Record<string, unknown>).developmentMode;
+  if (rawMode === undefined || rawMode === null) {
+    return null;
+  }
+
+  if (typeof rawMode === 'string' && SUPPORTED_APPLY_DEVELOPMENT_MODES.includes(rawMode as ApplyDevelopmentMode)) {
+    return rawMode as ApplyDevelopmentMode;
+  }
+
+  throw new Error(
+    `Invalid apply.developmentMode: ${String(rawMode)}. Supported modes: ${SUPPORTED_APPLY_DEVELOPMENT_MODES.join(', ')}`
+  );
 }
 
 /**

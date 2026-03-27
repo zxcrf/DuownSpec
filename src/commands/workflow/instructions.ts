@@ -14,6 +14,7 @@ import {
   resolveSchema,
   type ArtifactInstructions,
 } from '../../core/artifact-graph/index.js';
+import { resolveApplyDevelopmentMode } from '../../core/project-config.js';
 import {
   validateChangeExists,
   validateSchemaExists,
@@ -316,6 +317,7 @@ export async function generateApplyInstructions(
   // Get the full schema to access the apply phase configuration
   const schema = resolveSchema(context.schemaName, projectRoot);
   const applyConfig = schema.apply;
+  const developmentMode = resolveApplyDevelopmentMode(projectRoot);
 
   // Determine required artifacts and tracking file from schema
   // Fallback: if no apply block, require all artifacts
@@ -363,20 +365,20 @@ export async function generateApplyInstructions(
 
   if (missingArtifacts.length > 0) {
     state = 'blocked';
-    instruction = `Cannot apply this change yet. Missing artifacts: ${missingArtifacts.join(', ')}.\nUse the duowenspec-continue-change skill to create the missing artifacts first.`;
+    instruction = `Cannot apply this change yet. Missing artifacts: ${missingArtifacts.join(', ')}.\nUse the dwsp-continue-change skill to create the missing artifacts first.`;
   } else if (tracksFile && !tracksFileExists) {
     // Tracking file configured but doesn't exist yet
     const tracksFilename = path.basename(tracksFile);
     state = 'blocked';
-    instruction = `The ${tracksFilename} file is missing and must be created.\nUse duowenspec-continue-change to generate the tracking file.`;
+    instruction = `The ${tracksFilename} file is missing and must be created.\nUse dwsp-continue-change to generate the tracking file.`;
   } else if (tracksFile && tracksFileExists && total === 0) {
     // Tracking file exists but contains no tasks
     const tracksFilename = path.basename(tracksFile);
     state = 'blocked';
-    instruction = `The ${tracksFilename} file exists but contains no tasks.\nAdd tasks to ${tracksFilename} or regenerate it with duowenspec-continue-change.`;
+    instruction = `The ${tracksFilename} file exists but contains no tasks.\nAdd tasks to ${tracksFilename} or regenerate it with dwsp-continue-change.`;
   } else if (tracksFile && remaining === 0 && total > 0) {
     state = 'all_done';
-    instruction = 'All tasks are complete! This change is ready to be archived.\nConsider running tests and reviewing the changes before archiving.';
+    instruction = `All tasks are complete, but apply is not complete until validation passes.\nRun: dwsp validate ${changeName}\nOnly move on when validation succeeds. If validation fails, return to implementation and fix the reported issues.`;
   } else if (!tracksFile) {
     // No tracking file configured in schema - ready to apply
     state = 'ready';
@@ -384,6 +386,10 @@ export async function generateApplyInstructions(
   } else {
     state = 'ready';
     instruction = schemaInstruction?.trim() ?? 'Read context files, work through pending tasks, mark complete as you go.\nPause if you hit blockers or need clarification.';
+  }
+
+  if (state === 'ready' && developmentMode === 'superpowers-tdd') {
+    instruction = `${instruction}\n\nActive development mode: superpowers-tdd\n1. Start by adding or updating tests so they fail for the expected behavior.\n2. Implement the smallest code change that makes the new tests pass.\n3. Run full verification before marking tasks complete.`;
   }
 
   return {
@@ -396,6 +402,7 @@ export async function generateApplyInstructions(
     state,
     missingArtifacts: missingArtifacts.length > 0 ? missingArtifacts : undefined,
     instruction,
+    developmentMode,
   };
 }
 
@@ -429,10 +436,21 @@ export async function applyInstructionsCommand(options: ApplyInstructionsOptions
 }
 
 export function printApplyInstructionsText(instructions: ApplyInstructions): void {
-  const { changeName, schemaName, contextFiles, progress, tasks, state, missingArtifacts, instruction } = instructions;
+  const {
+    changeName,
+    schemaName,
+    contextFiles,
+    progress,
+    tasks,
+    state,
+    missingArtifacts,
+    instruction,
+    developmentMode,
+  } = instructions;
 
   console.log(`## Apply: ${changeName}`);
   console.log(`Schema: ${schemaName}`);
+  console.log(`Development Mode: ${developmentMode ?? 'default'}`);
   console.log();
 
   // Warning for blocked state
@@ -440,7 +458,7 @@ export function printApplyInstructionsText(instructions: ApplyInstructions): voi
     console.log('### ⚠️ Blocked');
     console.log();
     console.log(`Missing artifacts: ${missingArtifacts.join(', ')}`);
-    console.log('Use the duowenspec-continue-change skill to create these first.');
+    console.log('Use the dwsp-continue-change skill to create these first.');
     console.log();
   }
 

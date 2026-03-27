@@ -9,7 +9,7 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getExploreSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-explore',
+    name: 'dwsp-explore',
     description: '进入探索模式：用于梳理想法、调查问题、澄清需求，适用于变更前或变更中的思考阶段。',
     instructions: `进入探索模式。以思考为主，自然推进，充分可视化。
 
@@ -80,7 +80,7 @@ export function getExploreSkillTemplate(): SkillTemplate {
 你拥有 DuowenSpec 全局上下文，请自然使用，不要生硬套用。
 
 DuowenSpec 负责工作流阶段管理。若当前问题描述或上下文不足，你可以建议
-\`superpowers:brainstorming\` 来拓宽选项或比较方案；但最终结论仍应沉淀回
+\`dwsp-brainstorming\` 来拓宽选项或比较方案；但最终结论仍应沉淀回
 DuowenSpec 产物（proposal/design/specs/tasks）。
 
 ### 先检查上下文

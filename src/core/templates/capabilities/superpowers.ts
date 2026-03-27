@@ -2,7 +2,7 @@ import type { SkillTemplate } from '../types.js';
 
 export function getBrainstormingSkillTemplate(): SkillTemplate {
   return {
-    name: 'brainstorming',
+    name: 'dwsp-brainstorming',
     description: 'Broaden the option space when the problem statement is still incomplete or fuzzy.',
     instructions: `Explore a problem by generating and comparing strong options.
 
@@ -31,7 +31,7 @@ committing to a proposal.
 
 export function getExecutingPlansSkillTemplate(): SkillTemplate {
   return {
-    name: 'executing-plans',
+    name: 'dwsp-executing-plans',
     description: 'Carry an approved implementation plan through to working code with steady task-by-task progress.',
     instructions: `Execute an approved implementation plan.
 
@@ -61,7 +61,7 @@ losing scope discipline.
 
 export function getTestDrivenDevelopmentSkillTemplate(): SkillTemplate {
   return {
-    name: 'test-driven-development',
+    name: 'dwsp-test-driven-development',
     description: 'Drive implementation with focused failing tests before the production fix.',
     instructions: `Use a test-first loop to implement a change.
 
@@ -88,7 +88,7 @@ locking behavior down with tests before or alongside production code changes.
 
 export function getSubagentDrivenDevelopmentSkillTemplate(): SkillTemplate {
   return {
-    name: 'subagent-driven-development',
+    name: 'dwsp-subagent-driven-development',
     description: 'Split bounded implementation work into coordinated sub-tasks without losing the main plan.',
     instructions: `Use bounded delegation to speed up implementation work.
 
@@ -115,7 +115,7 @@ be decomposed into independent slices that can be carried in parallel.
 
 export function getRequestingCodeReviewSkillTemplate(): SkillTemplate {
   return {
-    name: 'requesting-code-review',
+    name: 'dwsp-requesting-code-review',
     description: 'Prepare a focused code review request that points reviewers at the real risk in a change.',
     instructions: `Request a focused code review before release verification.
 
@@ -142,7 +142,7 @@ already collected.
 
 export function getReceivingCodeReviewSkillTemplate(): SkillTemplate {
   return {
-    name: 'receiving-code-review',
+    name: 'dwsp-receiving-code-review',
     description: 'Process review feedback in a disciplined way so required fixes are resolved before verification.',
     instructions: `Process review feedback before moving on to verification.
 
@@ -170,7 +170,7 @@ addressed.
 
 export function getVerificationBeforeCompletionSkillTemplate(): SkillTemplate {
   return {
-    name: 'verification-before-completion',
+    name: 'dwsp-verification-before-completion',
     description: 'Run final release-readiness verification against the approved scope before calling work complete.',
     instructions: `Verify release readiness before completion.
 

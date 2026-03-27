@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "test": "bun test --preload ./src/test/setup.ts",
+    "test": "bun test --preload ./tests/setup.ts",
     "build": "turbo build:local",
     "build:local": "next build",
     "start": "next start",

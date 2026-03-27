@@ -85,9 +85,14 @@ describe('modo scaffold helper', () => {
     expect(await pathExists(path.join(targetDir, 'src', 'app', 'api'))).toBe(true);
     expect(await pathExists(path.join(targetDir, 'src', 'db'))).toBe(true);
     expect(await pathExists(path.join(targetDir, 'src', 'types'))).toBe(true);
+    expect(await pathExists(path.join(targetDir, 'tests'))).toBe(true);
+    expect(await pathExists(path.join(targetDir, 'src', 'test'))).toBe(false);
+    expect(await pathExists(path.join(targetDir, 'src', 'tests'))).toBe(false);
 
     expect(result.copiedFiles.length).toBeGreaterThan(0);
     expect(result.createdDirs).toContain('src/app/actions');
+    expect(result.createdDirs).toContain('tests');
+    expect(result.createdDirs).not.toContain('src/test');
   });
 
   it('excludes banned files when copying a broad directory', async () => {

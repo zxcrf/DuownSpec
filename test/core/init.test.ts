@@ -83,13 +83,13 @@ describe('InitCommand', () => {
       await initCommand.execute(testDir);
 
       const defaultSkillNames = [
-        'duowenspec-propose',
-        'duowenspec-explore',
-        'duowenspec-apply-change',
-        'duowenspec-review-change',
-        'duowenspec-verify-change',
-        'duowenspec-document-change',
-        'duowenspec-archive-change',
+        'dwsp-propose',
+        'dwsp-explore',
+        'dwsp-apply-change',
+        'dwsp-review-change',
+        'dwsp-verify-change',
+        'dwsp-document-change',
+        'dwsp-archive-change',
       ];
 
       for (const skillName of defaultSkillNames) {
@@ -103,11 +103,11 @@ describe('InitCommand', () => {
       }
 
       const nonDefaultSkillNames = [
-        'duowenspec-new-change',
-        'duowenspec-continue-change',
-        'duowenspec-ff-change',
-        'duowenspec-sync-specs',
-        'duowenspec-bulk-archive-change',
+        'dwsp-new-change',
+        'dwsp-continue-change',
+        'dwsp-ff-change',
+        'dwsp-sync-specs',
+        'dwsp-bulk-archive-change',
       ];
 
       for (const skillName of nonDefaultSkillNames) {
@@ -155,7 +155,7 @@ describe('InitCommand', () => {
 
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
       expect(await fileExists(skillFile)).toBe(true);
     });
 
@@ -164,7 +164,7 @@ describe('InitCommand', () => {
 
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.opencode', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.opencode', 'skills', 'dwsp-explore', 'SKILL.md');
       expect(await fileExists(skillFile)).toBe(true);
     });
 
@@ -173,8 +173,8 @@ describe('InitCommand', () => {
 
       await initCommand.execute(testDir);
 
-      const claudeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const claudeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
       expect(await fileExists(cursorSkill)).toBe(true);
@@ -186,9 +186,9 @@ describe('InitCommand', () => {
       await initCommand.execute(testDir);
 
       // Check a few representative tools
-      const claudeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
-      const windsurfSkill = path.join(testDir, '.opencode', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const claudeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
+      const windsurfSkill = path.join(testDir, '.opencode', 'skills', 'dwsp-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
       expect(await fileExists(cursorSkill)).toBe(true);
@@ -220,8 +220,8 @@ describe('InitCommand', () => {
 
       await initCommand.execute(testDir);
 
-      const claudeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const claudeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
       expect(await fileExists(cursorSkill)).toBe(true);
@@ -269,8 +269,8 @@ describe('InitCommand', () => {
       await initCommand2.execute(testDir);
 
       // Both tools should have skills
-      const claudeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const claudeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+      const cursorSkill = path.join(testDir, '.qoder', 'skills', 'dwsp-explore', 'SKILL.md');
 
       expect(await fileExists(claudeSkill)).toBe(true);
       expect(await fileExists(cursorSkill)).toBe(true);
@@ -280,7 +280,7 @@ describe('InitCommand', () => {
       const initCommand1 = new InitCommand({ tools: 'claude', force: true });
       await initCommand1.execute(testDir);
 
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
       const originalContent = await fs.readFile(skillFile, 'utf-8');
 
       // Modify the file
@@ -300,12 +300,12 @@ describe('InitCommand', () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
       const content = await fs.readFile(skillFile, 'utf-8');
 
       // Should have YAML frontmatter
       expect(content).toMatch(/^---\n/);
-      expect(content).toContain('name: duowenspec-explore');
+      expect(content).toContain('name: dwsp-explore');
       expect(content).toContain('description:');
       expect(content).toContain('license:');
       expect(content).toContain('compatibility:');
@@ -317,7 +317,7 @@ describe('InitCommand', () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
       const content = await fs.readFile(skillFile, 'utf-8');
 
       expect(content).toContain('进入探索模式');
@@ -328,27 +328,27 @@ describe('InitCommand', () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-propose', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-propose', 'SKILL.md');
       const content = await fs.readFile(skillFile, 'utf-8');
 
-      expect(content).toContain('name: duowenspec-propose');
+      expect(content).toContain('name: dwsp-propose');
     });
 
     it('should include apply-change skill instructions', async () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-apply-change', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-apply-change', 'SKILL.md');
       const content = await fs.readFile(skillFile, 'utf-8');
 
-      expect(content).toContain('name: duowenspec-apply-change');
+      expect(content).toContain('name: dwsp-apply-change');
     });
 
     it('should embed generatedBy version in skill files', async () => {
       const initCommand = new InitCommand({ tools: 'claude', force: true });
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
       const content = await fs.readFile(skillFile, 'utf-8');
 
       // Should contain generatedBy field with a version string
@@ -393,11 +393,14 @@ describe('InitCommand', () => {
       expect(await fileExists(path.join(testDir, '.b-end-adapter'))).toBe(true);
       expect(await fileExists(path.join(testDir, '.prd', 'main.md'))).toBe(false);
       expect(await fileExists(path.join(testDir, 'duowenspec', 'b-end', 'MANIFEST.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, 'tests'))).toBe(true);
+      expect(await fileExists(path.join(testDir, 'src', 'test'))).toBe(false);
+      expect(await fileExists(path.join(testDir, 'src', 'tests'))).toBe(false);
       expect(await fileExists(path.join(testDir, 'src', 'theme', 'modo-algorithm.ts'))).toBe(true);
       expect(await fileExists(path.join(testDir, 'src', 'components', 'biz', 'modo-button', 'index.tsx'))).toBe(true);
-      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'duowenspec-b-end-delivery', 'SKILL.md'))).toBe(true);
-      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'duowenspec-b-end-components', 'SKILL.md'))).toBe(true);
-      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'duowenspec-b-end-review', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'dwsp-b-end-delivery', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'dwsp-b-end-components', 'SKILL.md'))).toBe(true);
+      expect(await fileExists(path.join(testDir, '.claude', 'skills', 'dwsp-b-end-review', 'SKILL.md'))).toBe(true);
 
       const agentsPath = path.join(testDir, 'AGENTS.md');
       const claudePath = path.join(testDir, 'CLAUDE.md');
@@ -502,7 +505,7 @@ describe('InitCommand', () => {
       const initCommand = new InitCommand({ tools: 'trae', force: true });
       await initCommand.execute(testDir);
 
-      const skillFile = path.join(testDir, '.trae', 'skills', 'duowenspec-explore', 'SKILL.md');
+      const skillFile = path.join(testDir, '.trae', 'skills', 'dwsp-explore', 'SKILL.md');
       const cmdFile = path.join(testDir, '.trae', 'commands', 'dwsp', 'explore.md');
       expect(await fileExists(skillFile)).toBe(true);
       expect(await fileExists(cmdFile)).toBe(false);
@@ -551,11 +554,11 @@ describe('InitCommand - profile and detection features', () => {
     await initCommand.execute(testDir);
 
     // Core profile skills should be created
-    const proposeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-propose', 'SKILL.md');
+    const proposeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-propose', 'SKILL.md');
     expect(await fileExists(proposeSkill)).toBe(true);
 
     // Non-core skills (from the custom profile) should NOT be created
-    const newChangeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-new-change', 'SKILL.md');
+    const newChangeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-new-change', 'SKILL.md');
     expect(await fileExists(newChangeSkill)).toBe(false);
   });
 
@@ -579,7 +582,7 @@ describe('InitCommand - profile and detection features', () => {
     await initCommand.execute(testDir);
 
     // Should have used claude (detected)
-    const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+    const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
     expect(await fileExists(skillFile)).toBe(true);
   });
 
@@ -606,7 +609,7 @@ describe('InitCommand - profile and detection features', () => {
     await fs.mkdir(path.join(testDir, 'duowenspec'), { recursive: true });
 
     // Configured with DuowenSpec
-    const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'duowenspec-explore');
+    const claudeSkillDir = path.join(testDir, '.claude', 'skills', 'dwsp-explore');
     await fs.mkdir(claudeSkillDir, { recursive: true });
     await fs.writeFile(path.join(claudeSkillDir, 'SKILL.md'), 'configured');
 
@@ -661,13 +664,13 @@ describe('InitCommand - profile and detection features', () => {
     await initCommand.execute(testDir);
 
     // Custom profile skills should be created
-    const exploreSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-    const newChangeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-new-change', 'SKILL.md');
+    const exploreSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+    const newChangeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-new-change', 'SKILL.md');
     expect(await fileExists(exploreSkill)).toBe(true);
     expect(await fileExists(newChangeSkill)).toBe(true);
 
     // Non-selected skills should NOT be created
-    const proposeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-propose', 'SKILL.md');
+    const proposeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-propose', 'SKILL.md');
     expect(await fileExists(proposeSkill)).toBe(false);
   });
 
@@ -689,8 +692,8 @@ describe('InitCommand - profile and detection features', () => {
     expect(await fileExists(exploreCommand)).toBe(true);
     expect(await fileExists(proposeCommand)).toBe(false);
 
-    const exploreSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-    const proposeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-propose', 'SKILL.md');
+    const exploreSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+    const proposeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-propose', 'SKILL.md');
     expect(await fileExists(exploreSkill)).toBe(false);
     expect(await fileExists(proposeSkill)).toBe(false);
   });
@@ -712,8 +715,8 @@ describe('InitCommand - profile and detection features', () => {
     expect(showWelcomeScreenMock).toHaveBeenCalled();
     expect(confirmMock).not.toHaveBeenCalled();
 
-    const exploreSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
-    const newChangeSkill = path.join(testDir, '.claude', 'skills', 'duowenspec-new-change', 'SKILL.md');
+    const exploreSkill = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
+    const newChangeSkill = path.join(testDir, '.claude', 'skills', 'dwsp-new-change', 'SKILL.md');
     expect(await fileExists(exploreSkill)).toBe(true);
     expect(await fileExists(newChangeSkill)).toBe(true);
 
@@ -733,7 +736,7 @@ describe('InitCommand - profile and detection features', () => {
     await initCommand.execute(testDir);
 
     // Skills should exist
-    const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+    const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
     expect(await fileExists(skillFile)).toBe(true);
 
     // Commands should NOT exist
@@ -753,7 +756,7 @@ describe('InitCommand - profile and detection features', () => {
     await initCommand.execute(testDir);
 
     // Skills should NOT exist
-    const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+    const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
     expect(await fileExists(skillFile)).toBe(false);
 
     // Commands should exist
@@ -787,7 +790,7 @@ describe('InitCommand - profile and detection features', () => {
 
     expect(await fileExists(cmdFile)).toBe(false);
 
-    const skillFile = path.join(testDir, '.claude', 'skills', 'duowenspec-explore', 'SKILL.md');
+    const skillFile = path.join(testDir, '.claude', 'skills', 'dwsp-explore', 'SKILL.md');
     expect(await fileExists(skillFile)).toBe(true);
   });
 });

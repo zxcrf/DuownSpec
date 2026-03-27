@@ -9,7 +9,7 @@ import { getModoBEndPlanningHint } from './shared-b-end.js';
 
 export function getNewChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-new-change',
+    name: 'dwsp-new-change',
     description: '使用实验产物工作流发起新的 DuowenSpec 变更。适用于按步骤创建功能、修复或修改。',
     instructions: `使用实验产物驱动方式发起一个新变更。
 

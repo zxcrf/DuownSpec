@@ -18,29 +18,29 @@
 ## B 端 UI 交付总流程
 
 1. 先用 DuowenSpec 节点确定当前阶段（`explore` / `propose` / `apply` / `review` / `verify`）。
-2. 涉及 B 端页面时，优先调用 `duowenspec-b-end-delivery`，先锁定页面模式和模板路径。
-3. 进入具体实现时，按需调用 `duowenspec-b-end-components`，完成角色到组件的解析与降级。
-4. 输出结果前，必须调用 `duowenspec-b-end-review` 做一致性门禁。
+2. 涉及 B 端页面时，优先调用 `dwsp-b-end-delivery`，先锁定页面模式和模板路径。
+3. 进入具体实现时，按需调用 `dwsp-b-end-components`，完成角色到组件的解析与降级。
+4. 输出结果前，必须调用 `dwsp-b-end-review` 做一致性门禁。
 
 ## 节点与技能配合规则
 
-- `duowenspec-explore`
+- `dwsp-explore`
   - 适用：需求澄清、页面模式判断、风险识别。
   - 要求：在探索结论里写清楚拟采用的 pattern、模板路径、关键组件。
 
-- `duowenspec-propose`
+- `dwsp-propose`
   - 适用：创建或完善 proposal/design/tasks。
   - 要求：把 B 端页面的模式选择、组件策略、一致性约束写入产物，便于后续执行。
 
-- `duowenspec-apply-change`
+- `dwsp-apply-change`
   - 适用：按任务实现页面与交互。
-  - 要求：实现前先看 `duowenspec/b-end/MANIFEST.md`；组件拿不准时先走 `duowenspec-b-end-components`；完成前必须过 `duowenspec-b-end-review`。
+  - 要求：实现前先看 `duowenspec/b-end/MANIFEST.md`；组件拿不准时先走 `dwsp-b-end-components`；完成前必须过 `dwsp-b-end-review`。
 
-- `duowenspec-review-change`
+- `dwsp-review-change`
   - 适用：发布前审查。
   - 要求：审查结论必须包含一致性检查结果；有阻塞问题时不得判定通过。
 
-- `duowenspec-verify-change`
+- `dwsp-verify-change`
   - 适用：最终验证与交付前确认。
   - 要求：只在 `review` 通过后进入；验证结果与风险要明确记录。
 
@@ -77,6 +77,6 @@
 ## 禁止事项
 
 - 禁止把 `.prd` 作为需求输入。
-- 禁止跳过 `duowenspec-b-end-review` 直接宣告完成。
+- 禁止跳过 `dwsp-b-end-review` 直接宣告完成。
 - 禁止脱离模板和 Manifest 自行拼装一套新风格页面。
 - 禁止未验证就汇报“已完成”。

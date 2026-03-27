@@ -9,7 +9,7 @@ import { getModoBEndImplementationHint } from './shared-b-end.js';
 
 export function getFfChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-ff-change',
+    name: 'dwsp-ff-change',
     description: '快速完成 DuowenSpec 产物生成。适用于用户想一次性生成实现所需全部产物，而不逐步推进。',
     instructions: `用“快速推进”方式一次生成开始实现所需的全部产物。
 

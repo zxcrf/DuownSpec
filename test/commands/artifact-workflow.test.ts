@@ -412,6 +412,49 @@ describe('artifact-workflow CLI commands', () => {
       expect(json.state).toBe('ready');
       expect(json.contextFiles).toBeDefined();
       expect(typeof json.contextFiles).toBe('object');
+      expect(json.developmentMode).toBe(null);
+    });
+
+    it('uses superpowers-tdd development mode when configured', async () => {
+      await createTestChange('tdd-apply', ['proposal', 'design', 'specs', 'tasks']);
+      await fs.writeFile(
+        path.join(tempDir, 'duowenspec', 'config.yaml'),
+        'schema: spec-driven\napply:\n  developmentMode: superpowers-tdd\n'
+      );
+
+      const textResult = await runCLI(['instructions', 'apply', '--change', 'tdd-apply'], {
+        cwd: tempDir,
+      });
+      expect(textResult.exitCode).toBe(0);
+      expect(textResult.stdout).toContain('Development Mode: superpowers-tdd');
+      expect(textResult.stdout).toContain('Start by adding or updating tests so they fail');
+      expect(textResult.stdout).toContain('Implement the smallest code change');
+
+      const jsonResult = await runCLI(
+        ['instructions', 'apply', '--change', 'tdd-apply', '--json'],
+        { cwd: tempDir }
+      );
+      expect(jsonResult.exitCode).toBe(0);
+      const json = JSON.parse(jsonResult.stdout);
+      expect(json.developmentMode).toBe('superpowers-tdd');
+      expect(json.instruction).toContain('Active development mode: superpowers-tdd');
+    });
+
+    it('fails fast for invalid apply development mode value', async () => {
+      await createTestChange('invalid-mode-apply', ['proposal', 'design', 'specs', 'tasks']);
+      await fs.writeFile(
+        path.join(tempDir, 'duowenspec', 'config.yaml'),
+        'schema: spec-driven\napply:\n  developmentMode: not-supported\n'
+      );
+
+      const result = await runCLI(
+        ['instructions', 'apply', '--change', 'invalid-mode-apply'],
+        { cwd: tempDir }
+      );
+      expect(result.exitCode).toBe(1);
+      const output = getOutput(result);
+      expect(output).toContain('Invalid apply.developmentMode');
+      expect(output).toContain('superpowers-tdd');
     });
 
     it('shows schema instruction from apply block', async () => {
@@ -443,7 +486,8 @@ describe('artifact-workflow CLI commands', () => {
       });
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('complete ✓');
-      expect(result.stdout).toContain('ready to be archived');
+      expect(result.stdout).toContain('dwsp validate done-apply');
+      expect(result.stdout).toContain('apply is not complete until validation passes');
     });
 
     it('uses spec-driven schema apply configuration', async () => {

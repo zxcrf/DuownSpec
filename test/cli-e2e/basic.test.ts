@@ -132,8 +132,8 @@ describe('duowenspec CLI e2e basics', () => {
       expect(result.stdout).toContain('DuowenSpec 初始化完成');
 
       // Check that skills were created for multiple tools
-      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/duowenspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/duowenspec-explore/SKILL.md');
+      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/dwsp-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/dwsp-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
       expect(await fileExists(cursorSkillPath)).toBe(true);
     });
@@ -149,8 +149,8 @@ describe('duowenspec CLI e2e basics', () => {
       expect(result.stdout).toContain('Claude Code');
 
       // New init creates skills, not CLAUDE.md
-      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/duowenspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/duowenspec-explore/SKILL.md');
+      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/dwsp-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/dwsp-explore/SKILL.md');
       expect(await fileExists(claudeSkillPath)).toBe(true);
       expect(await fileExists(cursorSkillPath)).toBe(false); // Not selected
     });
@@ -165,8 +165,8 @@ describe('duowenspec CLI e2e basics', () => {
       expect(result.stdout).toContain('DuowenSpec 初始化完成');
 
       // With --tools none, no tool skills should be created
-      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/duowenspec-explore/SKILL.md');
-      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/duowenspec-explore/SKILL.md');
+      const claudeSkillPath = path.join(emptyProjectDir, '.claude/skills/dwsp-explore/SKILL.md');
+      const cursorSkillPath = path.join(emptyProjectDir, '.qoder/skills/dwsp-explore/SKILL.md');
 
       expect(await fileExists(claudeSkillPath)).toBe(false);
       expect(await fileExists(cursorSkillPath)).toBe(false);
@@ -197,6 +197,9 @@ describe('duowenspec CLI e2e basics', () => {
       expect(await fs.readlink(claudePath)).toBe('AGENTS.md');
       expect(await fileExists(path.join(emptyProjectDir, '.prd', 'main.md'))).toBe(false);
       expect(await fileExists(path.join(emptyProjectDir, 'duowenspec', 'b-end', 'MANIFEST.md'))).toBe(true);
+      expect(await fileExists(path.join(emptyProjectDir, 'tests'))).toBe(true);
+      expect(await fileExists(path.join(emptyProjectDir, 'src', 'test'))).toBe(false);
+      expect(await fileExists(path.join(emptyProjectDir, 'src', 'tests'))).toBe(false);
     });
 
     it('does not create CLAUDE.md when AGENTS.md already exists in scaffold init', async () => {

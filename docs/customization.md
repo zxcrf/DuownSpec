@@ -17,6 +17,7 @@ The `duowenspec/config.yaml` file is the easiest way to customize DuowenSpec for
 - **Set a default schema** - Skip `--schema` on every command
 - **Inject project context** - AI sees your tech stack, conventions, etc.
 - **Add per-artifact rules** - Custom rules for specific artifacts
+- **Set apply development mode** - Keep `/dwsp:apply` guidance aligned with your delivery style
 
 ### Quick Setup
 
@@ -43,6 +44,9 @@ rules:
   specs:
     - Use Given/When/Then format
     - Reference existing patterns before inventing new ones
+
+apply:
+  developmentMode: superpowers-tdd
 ```
 
 ### How It Works
@@ -79,6 +83,21 @@ Tech stack: TypeScript, React, Node.js, PostgreSQL
 
 - **Context** appears in ALL artifacts
 - **Rules** ONLY appear for the matching artifact
+- **apply.developmentMode** only affects `dwsp instructions apply`
+
+### Apply Development Mode
+
+If your team wants test-first implementation guidance during apply, set:
+
+```yaml
+apply:
+  developmentMode: superpowers-tdd
+```
+
+Behavior:
+- Omit this field (or set `null`) to keep existing default apply behavior
+- Set `superpowers-tdd` to append test-first guidance (failing tests → minimal code → full verification)
+- Any unsupported value will fail fast with a clear error
 
 ### Schema Resolution Order
 

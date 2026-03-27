@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getVerifyChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-verify-change',
+    name: 'dwsp-verify-change',
     description: '验证实现是否与变更产物一致。适用于归档前确认完整性、正确性与一致性。',
     instructions: `验证实现是否与变更产物（specs、tasks、design）一致。
 

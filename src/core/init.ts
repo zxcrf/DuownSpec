@@ -77,19 +77,19 @@ const PROGRESS_SPINNER = {
 };
 
 const WORKFLOW_TO_SKILL_DIR: Record<string, string> = {
-  'explore': 'duowenspec-explore',
-  'new': 'duowenspec-new-change',
-  'continue': 'duowenspec-continue-change',
-  'apply': 'duowenspec-apply-change',
-  'review': 'duowenspec-review-change',
-  'ff': 'duowenspec-ff-change',
-  'sync': 'duowenspec-sync-specs',
-  'archive': 'duowenspec-archive-change',
-  'bulk-archive': 'duowenspec-bulk-archive-change',
-  'verify': 'duowenspec-verify-change',
-  'document': 'duowenspec-document-change',
-  'onboard': 'duowenspec-onboard',
-  'propose': 'duowenspec-propose',
+  'explore': 'dwsp-explore',
+  'new': 'dwsp-new-change',
+  'continue': 'dwsp-continue-change',
+  'apply': 'dwsp-apply-change',
+  'review': 'dwsp-review-change',
+  'ff': 'dwsp-ff-change',
+  'sync': 'dwsp-sync-specs',
+  'archive': 'dwsp-archive-change',
+  'bulk-archive': 'dwsp-bulk-archive-change',
+  'verify': 'dwsp-verify-change',
+  'document': 'dwsp-document-change',
+  'onboard': 'dwsp-onboard',
+  'propose': 'dwsp-propose',
 };
 
 // -----------------------------------------------------------------------------

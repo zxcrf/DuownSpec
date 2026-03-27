@@ -62,8 +62,8 @@ describe('migration', () => {
   });
 
   it('migrates to custom skills delivery when only managed skills are detected', async () => {
-    await writeSkill(projectDir, 'duowenspec-explore');
-    await writeSkill(projectDir, 'duowenspec-apply-change');
+    await writeSkill(projectDir, 'dwsp-explore');
+    await writeSkill(projectDir, 'dwsp-apply-change');
 
     migrateIfNeeded(projectDir, [ensureClaudeTool()]);
 
@@ -86,7 +86,7 @@ describe('migration', () => {
   });
 
   it('migrates to custom both delivery when managed skills and commands are detected', async () => {
-    await writeSkill(projectDir, 'duowenspec-explore');
+    await writeSkill(projectDir, 'dwsp-explore');
     await writeManagedCommand(projectDir, 'apply');
 
     migrateIfNeeded(projectDir, [ensureClaudeTool()]);
@@ -103,7 +103,7 @@ describe('migration', () => {
       profile: 'core',
       delivery: 'both',
     });
-    await writeSkill(projectDir, 'duowenspec-explore');
+    await writeSkill(projectDir, 'dwsp-explore');
 
     migrateIfNeeded(projectDir, [ensureClaudeTool()]);
 
@@ -119,7 +119,7 @@ describe('migration', () => {
       featureFlags: {},
       delivery: 'both',
     });
-    await writeSkill(projectDir, 'duowenspec-explore');
+    await writeSkill(projectDir, 'dwsp-explore');
 
     migrateIfNeeded(projectDir, [ensureClaudeTool()]);
 

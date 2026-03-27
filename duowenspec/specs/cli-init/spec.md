@@ -34,6 +34,13 @@ duowenspec/
     └── archive/
 ```
 
+#### Scenario: Creating scaffold tests directory at project root
+
+- **WHEN** `duowenspec init <path> --scaffold` is executed
+- **THEN** the generated project at `<path>` SHALL include a top-level `tests` directory
+- **AND** the generated project at `<path>` SHALL NOT include `src/tests`
+- **AND** path resolution for these checks SHALL behave consistently across macOS, Linux, and Windows
+
 ### Requirement: AI Tool Configuration
 
 The command SHALL configure AI coding assistants with skills and slash commands using a searchable multi-select experience.

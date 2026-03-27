@@ -27,19 +27,19 @@ describe('skill-generation', () => {
       const templates = getSkillTemplates();
       const dirNames = templates.map(t => t.dirName);
 
-      expect(dirNames).toContain('duowenspec-explore');
-      expect(dirNames).toContain('duowenspec-new-change');
-      expect(dirNames).toContain('duowenspec-continue-change');
-      expect(dirNames).toContain('duowenspec-apply-change');
-      expect(dirNames).toContain('duowenspec-review-change');
-      expect(dirNames).toContain('duowenspec-ff-change');
-      expect(dirNames).toContain('duowenspec-sync-specs');
-      expect(dirNames).toContain('duowenspec-archive-change');
-      expect(dirNames).toContain('duowenspec-bulk-archive-change');
-      expect(dirNames).toContain('duowenspec-verify-change');
-      expect(dirNames).toContain('duowenspec-document-change');
-      expect(dirNames).toContain('duowenspec-onboard');
-      expect(dirNames).toContain('duowenspec-propose');
+      expect(dirNames).toContain('dwsp-explore');
+      expect(dirNames).toContain('dwsp-new-change');
+      expect(dirNames).toContain('dwsp-continue-change');
+      expect(dirNames).toContain('dwsp-apply-change');
+      expect(dirNames).toContain('dwsp-review-change');
+      expect(dirNames).toContain('dwsp-ff-change');
+      expect(dirNames).toContain('dwsp-sync-specs');
+      expect(dirNames).toContain('dwsp-archive-change');
+      expect(dirNames).toContain('dwsp-bulk-archive-change');
+      expect(dirNames).toContain('dwsp-verify-change');
+      expect(dirNames).toContain('dwsp-document-change');
+      expect(dirNames).toContain('dwsp-onboard');
+      expect(dirNames).toContain('dwsp-propose');
     });
 
     it('should have valid template structure', () => {
@@ -88,7 +88,7 @@ describe('skill-generation', () => {
       const filtered = getSkillTemplates(['propose']);
       expect(filtered).toHaveLength(1);
       expect(filtered[0].workflowId).toBe('propose');
-      expect(filtered[0].dirName).toBe('duowenspec-propose');
+      expect(filtered[0].dirName).toBe('dwsp-propose');
     });
   });
 
@@ -104,10 +104,10 @@ describe('skill-generation', () => {
     it('should include valid support template content', () => {
       const templates = getModoSupportSkillTemplates();
       for (const { template, dirName } of templates) {
-        expect(template.name).toContain('duowenspec-b-end-');
+        expect(template.name).toContain('dwsp-b-end-');
         expect(template.description).toBeTruthy();
         expect(template.instructions).toBeTruthy();
-        expect(dirName).toContain('duowenspec-b-end-');
+        expect(dirName).toContain('dwsp-b-end-');
       }
     });
   });
@@ -217,13 +217,13 @@ describe('skill-generation', () => {
       const dirNames = templates.map((template) => template.dirName);
 
       expect(dirNames).toEqual([
-        'brainstorming',
-        'executing-plans',
-        'test-driven-development',
-        'subagent-driven-development',
-        'requesting-code-review',
-        'receiving-code-review',
-        'verification-before-completion',
+        'dwsp-brainstorming',
+        'dwsp-executing-plans',
+        'dwsp-test-driven-development',
+        'dwsp-subagent-driven-development',
+        'dwsp-requesting-code-review',
+        'dwsp-receiving-code-review',
+        'dwsp-verification-before-completion',
       ]);
     });
 
@@ -232,8 +232,8 @@ describe('skill-generation', () => {
       const dirNames = templates.map((template) => template.dirName);
 
       expect(dirNames).toEqual([
-        'brainstorming',
-        'verification-before-completion',
+        'dwsp-brainstorming',
+        'dwsp-verification-before-completion',
       ]);
     });
   });

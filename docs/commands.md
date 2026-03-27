@@ -284,6 +284,7 @@ Implement tasks from the change. Works through the task list, writing code and c
 - Works through tasks one by one
 - Writes code, creates files, runs tests as needed
 - Marks tasks complete with checkboxes `[x]`
+- After tasks are done, must pass `dwsp validate <change-name>` before treating apply as complete
 
 **Example:**
 ```
@@ -312,6 +313,7 @@ AI:  Implementing add-dark-mode...
 - Can resume where you left off if interrupted
 - Use for parallel changes by specifying the change name
 - Completion state is tracked in `tasks.md` checkboxes
+- Checked tasks alone do not mean the change is ready to move on; `dwsp validate` must also pass
 
 ---
 
@@ -618,7 +620,7 @@ Different AI tools use slightly different command syntax. Use the format that ma
 | Cursor | `/dwsp-propose`, `/dwsp-apply` |
 | Windsurf | `/dwsp-propose`, `/dwsp-apply` |
 | Copilot (IDE) | `/dwsp-propose`, `/dwsp-apply` |
-| Trae | Skill-based invocations such as `/duowenspec-propose`, `/duowenspec-apply-change` (no generated `opsx-*` command files) |
+| Trae | Skill-based invocations such as `/dwsp-propose`, `/dwsp-apply-change` (no generated `opsx-*` command files) |
 
 The intent is the same across tools, but how commands are surfaced can differ by integration.
 

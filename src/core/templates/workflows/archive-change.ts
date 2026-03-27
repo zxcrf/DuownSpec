@@ -8,7 +8,7 @@ import type { SkillTemplate, CommandTemplate } from '../types.js';
 
 export function getArchiveChangeSkillTemplate(): SkillTemplate {
   return {
-    name: 'duowenspec-archive-change',
+    name: 'dwsp-archive-change',
     description: '在实验工作流中归档已完成的变更。适用于实现完成后进行收尾归档。',
     instructions: `在实验工作流中归档已完成变更。
 
@@ -64,7 +64,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
    - 若有差异："立即同步（推荐）"、"不同步直接归档"
    - 若看起来已同步："直接归档"、"仍然同步"、"取消"
 
-   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 duowenspec-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
+   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 dwsp-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
 
 5. **执行归档**
 
@@ -111,7 +111,7 @@ export function getArchiveChangeSkillTemplate(): SkillTemplate {
 - 对警告不强制阻断，但必须明确告知并取得确认
 - 移动目录时保留 .duowenspec.yaml（随目录一起移动）
 - 始终给出清晰的归档结果摘要
-- 若用户要求同步，使用 duowenspec-sync-specs 的智能体驱动方式
+- 若用户要求同步，使用 dwsp-sync-specs 的智能体驱动方式
 - 若存在增量 specs，必须先完成同步评估并展示合并摘要，再询问用户`,
     license: 'MIT',
     compatibility: '需要安装 dwsp CLI。',
@@ -179,7 +179,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
    - 若有差异："立即同步（推荐）"、"不同步直接归档"
    - 若看起来已同步："直接归档"、"仍然同步"、"取消"
 
-   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 duowenspec-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
+   若用户选择同步，使用 Task 工具（subagent_type: "general-purpose", prompt: "使用 Skill tool 调用 dwsp-sync-specs，同步变更 '<name>'。增量 spec 分析：<在此包含你分析后的增量摘要>"）。无论是否同步，之后都继续归档流程。
 
 5. **执行归档**
 
@@ -273,7 +273,7 @@ export function getOpsxArchiveCommandTemplate(): CommandTemplate {
 - 对警告不强制阻断，但必须明确告知并取得确认
 - 移动目录时保留 .duowenspec.yaml（随目录一起移动）
 - 始终给出清晰的归档结果摘要
-- 若用户要求同步，使用 Skill tool 调用 \`duowenspec-sync-specs\`（智能体驱动）
+- 若用户要求同步，使用 Skill tool 调用 \`dwsp-sync-specs\`（智能体驱动）
 - 若存在增量 specs，必须先完成同步评估并展示合并摘要，再询问用户`
   };
 }

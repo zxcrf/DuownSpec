@@ -64,17 +64,17 @@ In other words, skill/command counts are profile-dependent and delivery-dependen
 
 When selected by profile/workflow config, DuowenSpec generates these skills:
 
-- `duowenspec-propose`
-- `duowenspec-explore`
-- `duowenspec-new-change`
-- `duowenspec-continue-change`
-- `duowenspec-apply-change`
-- `duowenspec-ff-change`
-- `duowenspec-sync-specs`
-- `duowenspec-archive-change`
-- `duowenspec-bulk-archive-change`
-- `duowenspec-verify-change`
-- `duowenspec-onboard`
+- `dwsp-propose`
+- `dwsp-explore`
+- `dwsp-new-change`
+- `dwsp-continue-change`
+- `dwsp-apply-change`
+- `dwsp-ff-change`
+- `dwsp-sync-specs`
+- `dwsp-archive-change`
+- `dwsp-bulk-archive-change`
+- `dwsp-verify-change`
+- `dwsp-onboard`
 
 See [Commands](commands.md) for command behavior and [CLI](cli.md) for `init`/`update` options.
 
